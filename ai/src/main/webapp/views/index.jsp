@@ -30,10 +30,10 @@
 </div>
 <ul class="nav justify-content-end">
     <li class="nav-item">
-        <a class="nav-link" href="#">LOGIN</a>
+        <a class="nav-link" href="<c:url value="/register"/> ">Register</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="#">REGISTER</a>
+        <a class="nav-link" href="<c:url value="/login"/>">Login</a>
     </li>
 </ul>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
