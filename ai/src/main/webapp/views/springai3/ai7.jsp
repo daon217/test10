@@ -118,7 +118,7 @@
 
 
 <div class="col-sm-10">
-    <h2>Spring AI 6</h2>
+    <h2>Spring AI 7</h2>
 
     <div class="row">
         <div class="col-sm-9">
