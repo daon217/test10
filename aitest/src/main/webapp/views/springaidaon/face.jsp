@@ -19,7 +19,7 @@
       { key: 'up', label: '위쪽', message: '시선을 위로 올려주세요.' },
       { key: 'down', label: '아래쪽', message: '턱을 살짝 숙여 아래를 바라봐주세요.' }
     ],
-    analysisEndpoint: '<c:url value="/aidaon/face/analyze" />',
+    analysisEndpoint: '<c:url value="/aidaon/face/analyze"/>',
 
     init() {
       this.videoElement = document.getElementById('faceCamera');
@@ -65,7 +65,7 @@
       for (const step of this.steps) {
         const captured = await this.captureStep(step);
         if (!captured) {
-          this.updateStatus(`${step.label} 촬영에 실패했습니다. 다시 시도해주세요.`);
+          this.updateStatus(step.label + ' 촬영에 실패했습니다. 다시 시도해주세요.');
           this.isScanning = false;
           this.startButton.disabled = false;
           return;
@@ -90,9 +90,9 @@
     },
 
     showCountdown(seconds) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         let remaining = seconds;
-        this.countdownElement.textContent = `${remaining}`;
+        this.countdownElement.textContent = String(remaining);
         this.countdownElement.classList.remove('d-none');
 
         const timer = setInterval(() => {
@@ -103,7 +103,7 @@
             this.countdownElement.classList.add('d-none');
             resolve();
           } else {
-            this.countdownElement.textContent = `${remaining}`;
+            this.countdownElement.textContent = String(remaining);
           }
         }, 1000);
       });
@@ -121,38 +121,51 @@
       const context = canvas.getContext('2d');
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      return new Promise(resolve => {
-        canvas.toBlob(blob => resolve(blob), 'image/png');
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
       });
     },
 
     renderThumbnail(step, blob) {
       const url = URL.createObjectURL(blob);
-      let card = document.querySelector(`[data-angle="${step.key}"]`);
+      let card = document.querySelector('[data-angle="' + step.key + '"]');
       if (!card) {
         card = document.createElement('div');
         card.className = 'col-md-4 col-lg-2';
-        card.dataset.angle = step.key;
-        card.innerHTML = `
-                    <div class="card shadow-sm">
-                        <img class="card-img-top" alt="${step.label} 캡쳐 이미지" />
-                        <div class="card-body p-2">
-                            <p class="card-text text-center small mb-0">${step.label}</p>
-                        </div>
-                    </div>
-                `;
+        card.setAttribute('data-angle', step.key);
+
+        const cardInner = document.createElement('div');
+        cardInner.className = 'card shadow-sm';
+
+        const img = document.createElement('img');
+        img.className = 'card-img-top';
+        img.alt = step.label + ' 캡쳐 이미지';
+        cardInner.appendChild(img);
+
+        const body = document.createElement('div');
+        body.className = 'card-body p-2';
+
+        const text = document.createElement('p');
+        text.className = 'card-text text-center small mb-0';
+        text.textContent = step.label;
+        body.appendChild(text);
+
+        cardInner.appendChild(body);
+        card.appendChild(cardInner);
         this.thumbnailContainer.appendChild(card);
       }
-      const img = card.querySelector('img');
-      img.src = url;
+      const imgElement = card.querySelector('img');
+      if (imgElement) {
+        imgElement.src = url;
+      }
     },
 
     async sendForAnalysis() {
       this.updateStatus('촬영한 이미지를 분석 중입니다...');
       const formData = new FormData();
-      Object.entries(this.capturedBlobs).forEach(([key, blob]) => {
-        const file = new File([blob], `${key}.png`, { type: 'image/png' });
-        formData.append(key, file);
+      Object.keys(this.capturedBlobs).forEach((key) => {
+        const blob = this.capturedBlobs[key];
+        formData.append(key, blob, key + '.png');
       });
 
       try {
@@ -183,33 +196,58 @@
       if (data.summary) {
         const summaryCard = document.createElement('div');
         summaryCard.className = 'card mb-3 border-success';
-        summaryCard.innerHTML = `
-                    <div class="card-header bg-success text-white">종합 코칭 요약</div>
-                    <div class="card-body">
-                        <p class="card-text">${this.formatText(data.summary)}</p>
-                    </div>
-                `;
+
+        const header = document.createElement('div');
+        header.className = 'card-header bg-success text-white';
+        header.textContent = '종합 코칭 요약';
+
+        const body = document.createElement('div');
+        body.className = 'card-body';
+
+        const paragraph = document.createElement('p');
+        paragraph.className = 'card-text';
+        paragraph.innerHTML = this.formatText(data.summary);
+
+        body.appendChild(paragraph);
+        summaryCard.appendChild(header);
+        summaryCard.appendChild(body);
         this.resultContainer.appendChild(summaryCard);
       }
 
       if (data.angles) {
         const detailContainer = document.createElement('div');
         detailContainer.className = 'row g-3';
-        Object.entries(data.angles).forEach(([key, text]) => {
-          const step = this.steps.find(item => item.key === key);
+
+        Object.keys(data.angles).forEach((key) => {
+          const text = data.angles[key];
+          const step = this.steps.find((item) => item.key === key);
           const label = step ? step.label : key;
+
           const col = document.createElement('div');
           col.className = 'col-md-6';
-          col.innerHTML = `
-                        <div class="card h-100">
-                            <div class="card-header">${label} 분석</div>
-                            <div class="card-body">
-                                <p class="card-text">${this.formatText(text)}</p>
-                            </div>
-                        </div>
-                    `;
+
+          const card = document.createElement('div');
+          card.className = 'card h-100';
+
+          const header = document.createElement('div');
+          header.className = 'card-header';
+          header.textContent = label + ' 분석';
+
+          const body = document.createElement('div');
+          body.className = 'card-body';
+
+          const paragraph = document.createElement('p');
+          paragraph.className = 'card-text';
+          paragraph.innerHTML = this.formatText(text);
+
+          body.appendChild(paragraph);
+          card.appendChild(header);
+          card.appendChild(body);
+          col.appendChild(card);
+
           detailContainer.appendChild(col);
         });
+
         this.resultContainer.appendChild(detailContainer);
       }
     },
@@ -219,8 +257,9 @@
         return '';
       }
       return text
-              .replaceAll('\n\n', '</p><p class="card-text">')
-              .replaceAll('\n', '<br/>');
+              .replace(/\r\n/g, '\n')
+              .replace(/\n\n+/g, '</p><p class="card-text">')
+              .replace(/\n/g, '<br/>');
     },
 
     clearResults() {
@@ -239,7 +278,7 @@
 </script>
 
 <div class="col-sm-10">
-  <h2 class="mb-3">AI 얼굴 코칭</h2>
+  <h2>Face</h2>
   <p class="text-muted">정면과 다양한 각도를 촬영해 맞춤형 뷰티 코칭을 받아보세요.</p>
 
   <div class="row g-4">
