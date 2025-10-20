@@ -18,10 +18,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/aidaon/face")
+@RequestMapping("/appearance/face")
 @RequiredArgsConstructor
 @Slf4j
-public class AidaonFaceAnalysisController {
+public class AiAppearanceFaceAnalysisController {
 
     private final AiImageService aiImageService;
     private final AiServiceByChatClient aiServiceByChatClient;

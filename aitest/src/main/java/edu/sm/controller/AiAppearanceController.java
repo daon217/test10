@@ -4,22 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
 
 @Controller
 @Slf4j
-@RequestMapping("/springaidaon")
-public class SpringAIDaonController {
+@RequestMapping("/appearance")
+public class AiAppearanceController {
 
-    String dir = "springaidaon/";
+    String dir = "appearance/";
 
     @RequestMapping("")
     public String aimain(Model model) {

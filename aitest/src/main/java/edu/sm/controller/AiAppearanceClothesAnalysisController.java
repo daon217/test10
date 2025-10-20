@@ -18,10 +18,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/aidaon/clothes")
+@RequestMapping("/appearance/clothes")
 @RequiredArgsConstructor
 @Slf4j
-public class AidaonClothesAnalysisController {
+public class AiAppearanceClothesAnalysisController {
 
     private final AiImageService aiImageService;
     private final AiServiceByChatClient aiServiceByChatClient;

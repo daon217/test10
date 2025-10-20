@@ -4,10 +4,10 @@
   <p>Left Menu</p>
   <ul class="nav nav-pills flex-column">
     <li class="nav-item">
-      <a class="nav-link" href="/springaidaon/face">face</a>
+      <a class="nav-link" href="/appearance/face">face</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="/springaidaon/clothes">clothes</a>
+      <a class="nav-link" href="/appearance/clothes">clothes</a>
     </li>
   </ul>
   <hr class="d-sm-none">

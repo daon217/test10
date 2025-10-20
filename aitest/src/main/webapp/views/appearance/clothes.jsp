@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script>
-  const faceCoach = {
+  const clothesCoach = {
     videoElement: null,
     statusElement: null,
     startButton: null,
@@ -13,21 +13,19 @@
     isScanning: false,
     capturedBlobs: {},
     steps: [
-      { key: 'front', label: '정면', message: '정면을 바라봐주세요.' },
-      { key: 'left', label: '좌측', message: '얼굴을 왼쪽으로 돌려주세요.' },
-      { key: 'right', label: '우측', message: '얼굴을 오른쪽으로 돌려주세요.' },
-      { key: 'up', label: '위쪽', message: '시선을 위로 올려주세요.' },
-      { key: 'down', label: '아래쪽', message: '턱을 살짝 숙여 아래를 바라봐주세요.' }
+      { key: 'front', label: '정면', message: '정면에서 상반신 전체가 보이도록 서주세요.' },
+      { key: 'left', label: '좌측', message: '몸을 왼쪽으로 90도 돌려 측면 실루엣을 보여주세요.' },
+      { key: 'right', label: '우측', message: '몸을 오른쪽으로 돌려 반대쪽 실루엣을 보여주세요.' }
     ],
-    analysisEndpoint: '<c:url value="/aidaon/face/analyze"/>',
+    analysisEndpoint: '<c:url value="/appearance/clothes/analyze"/>',
 
     init() {
-      this.videoElement = document.getElementById('faceCamera');
-      this.statusElement = document.getElementById('faceStatus');
-      this.startButton = document.getElementById('faceScanButton');
-      this.resultContainer = document.getElementById('analysisResult');
-      this.thumbnailContainer = document.getElementById('capturedThumbnails');
-      this.countdownElement = document.getElementById('scanCountdown');
+      this.videoElement = document.getElementById('clothesCamera');
+      this.statusElement = document.getElementById('clothesStatus');
+      this.startButton = document.getElementById('clothesScanButton');
+      this.resultContainer = document.getElementById('clothesAnalysisResult');
+      this.thumbnailContainer = document.getElementById('clothesCapturedThumbnails');
+      this.countdownElement = document.getElementById('clothesScanCountdown');
 
       this.startButton.addEventListener('click', () => this.startScan());
       this.prepareCamera();
@@ -131,7 +129,7 @@
       let card = document.querySelector('[data-angle="' + step.key + '"]');
       if (!card) {
         card = document.createElement('div');
-        card.className = 'col-md-4 col-lg-2';
+        card.className = 'col-md-4';
         card.setAttribute('data-angle', step.key);
 
         const cardInner = document.createElement('div');
@@ -195,11 +193,11 @@
 
       if (data.summary) {
         const summaryCard = document.createElement('div');
-        summaryCard.className = 'card mb-3 border-success';
+        summaryCard.className = 'card mb-3 border-primary';
 
         const header = document.createElement('div');
-        header.className = 'card-header bg-success text-white';
-        header.textContent = '종합 코칭 요약';
+        header.className = 'card-header bg-primary text-white';
+        header.textContent = '스타일링 요약';
 
         const body = document.createElement('div');
         body.className = 'card-body';
@@ -237,24 +235,24 @@
     }
   };
 
-  document.addEventListener('DOMContentLoaded', () => faceCoach.init());
+  document.addEventListener('DOMContentLoaded', () => clothesCoach.init());
 </script>
 
 <div class="col-sm-10">
-  <h2>Face</h2>
-  <p class="text-muted">정면과 다양한 각도를 촬영해 맞춤형 뷰티 코칭을 받아보세요.</p>
+  <h2>Clothes</h2>
+  <p class="text-muted">다양한 각도에서 촬영해 맞춤형 스타일링 코칭을 받아보세요.</p>
 
   <div class="row g-4">
     <div class="col-lg-6">
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <h5 class="card-title">실시간 카메라 미리보기</h5>
-          <video id="faceCamera" class="w-100 rounded" autoplay muted playsinline></video>
+          <video id="clothesCamera" class="w-100 rounded" autoplay muted playsinline></video>
           <div class="text-center mt-3">
-            <span id="scanCountdown" class="display-5 fw-bold text-primary d-none"></span>
+            <span id="clothesScanCountdown" class="display-5 fw-bold text-primary d-none"></span>
           </div>
-          <p id="faceStatus" class="text-muted small mt-3">카메라 초기화 중...</p>
-          <button id="faceScanButton" class="btn btn-primary w-100">스캔 시작</button>
+          <p id="clothesStatus" class="text-muted small mt-3">카메라 초기화 중...</p>
+          <button id="clothesScanButton" class="btn btn-primary w-100">스캔 시작</button>
         </div>
       </div>
     </div>
@@ -263,11 +261,11 @@
         <div class="card-body">
           <h5 class="card-title">촬영된 각도</h5>
           <p class="text-muted small">각 촬영 단계마다 미리보기가 표시됩니다.</p>
-          <div id="capturedThumbnails" class="row g-3"></div>
+          <div id="clothesCapturedThumbnails" class="row g-3"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="mt-4" id="analysisResult"></div>
+  <div class="mt-4" id="clothesAnalysisResult"></div>
 </div>
