@@ -17,4 +17,16 @@ public class SpringAIDaonController {
         model.addAttribute("left", dir+"left");
         return "index";
     }
+    @RequestMapping("/face")
+    public String face(Model model) {
+        model.addAttribute("center", dir+"face");
+        model.addAttribute("left", dir+"left");
+        return "index";
+    }
+    @RequestMapping("/clothes")
+    public String clothes(Model model) {
+        model.addAttribute("center", dir+"clothes");
+        model.addAttribute("left", dir+"left");
+        return "index";
+    }
 }
