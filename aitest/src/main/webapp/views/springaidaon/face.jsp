@@ -213,43 +213,6 @@
         summaryCard.appendChild(body);
         this.resultContainer.appendChild(summaryCard);
       }
-
-      if (data.angles) {
-        const detailContainer = document.createElement('div');
-        detailContainer.className = 'row g-3';
-
-        Object.keys(data.angles).forEach((key) => {
-          const text = data.angles[key];
-          const step = this.steps.find((item) => item.key === key);
-          const label = step ? step.label : key;
-
-          const col = document.createElement('div');
-          col.className = 'col-md-6';
-
-          const card = document.createElement('div');
-          card.className = 'card h-100';
-
-          const header = document.createElement('div');
-          header.className = 'card-header';
-          header.textContent = label + ' 분석';
-
-          const body = document.createElement('div');
-          body.className = 'card-body';
-
-          const paragraph = document.createElement('p');
-          paragraph.className = 'card-text';
-          paragraph.innerHTML = this.formatText(text);
-
-          body.appendChild(paragraph);
-          card.appendChild(header);
-          card.appendChild(body);
-          col.appendChild(card);
-
-          detailContainer.appendChild(col);
-        });
-
-        this.resultContainer.appendChild(detailContainer);
-      }
     },
 
     formatText(text) {
