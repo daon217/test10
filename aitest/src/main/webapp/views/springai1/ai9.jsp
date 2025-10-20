@@ -2,5 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <div class="col-sm-10">
-  <h2>Spring Ai Daon</h2>
+    <h2>AI9 Chat System</h2>
+    <h5>Title description, Sep 2, 2017</h5>
 </div>
