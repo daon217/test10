@@ -25,13 +25,20 @@ public class AiDiaryController {
 
     private final String dir = "diary/";
 
-    @GetMapping("")
-    public String todayForm(Model model) {
+    @RequestMapping("")
+    public String aimain(Model model) {
+        model.addAttribute("center", dir + "center");
+        model.addAttribute("left", dir + "left");
+        return "index";
+    }
+
+    @GetMapping("diary")
+    public String diary(Model model) {
         if (!model.containsAttribute("diaryForm")) {
             model.addAttribute("diaryForm", new DiaryEntry());
         }
         model.addAttribute("today", LocalDate.now());
-        model.addAttribute("center", dir + "center");
+        model.addAttribute("center", dir + "diary");
         model.addAttribute("left", dir + "left");
         return "index";
     }
@@ -43,7 +50,7 @@ public class AiDiaryController {
         if (!StringUtils.hasText(diaryEntry.getTitle()) || !StringUtils.hasText(diaryEntry.getContent())) {
             model.addAttribute("errorMessage", "제목과 내용을 모두 입력해주세요.");
             model.addAttribute("today", LocalDate.now());
-            model.addAttribute("center", dir + "center");
+            model.addAttribute("center", dir + "diary");
             model.addAttribute("left", dir + "left");
             return "index";
         }
@@ -58,13 +65,13 @@ public class AiDiaryController {
             log.error("Failed to save diary", e);
             model.addAttribute("errorMessage", "일기를 저장하는 중 오류가 발생했습니다.");
             model.addAttribute("today", LocalDate.now());
-            model.addAttribute("center", dir + "center");
+            model.addAttribute("center", dir + "diary");
             model.addAttribute("left", dir + "left");
             return "index";
         }
     }
 
-    @GetMapping("/diary")
+    @GetMapping("/diarylist")
     public String diaryList(Model model) {
         try {
             List<DiaryEntry> entries = diaryService.get();
@@ -73,7 +80,7 @@ public class AiDiaryController {
             log.error("Failed to load diary list", e);
             model.addAttribute("errorMessage", "일기 목록을 불러오는 중 오류가 발생했습니다.");
         }
-        model.addAttribute("center", dir + "diary");
+        model.addAttribute("center", dir + "diarylist");
         model.addAttribute("left", dir + "left");
         return "index";
     }
@@ -84,13 +91,13 @@ public class AiDiaryController {
             DiaryEntry entry = diaryService.get(diaryId);
             if (entry == null) {
                 redirectAttributes.addFlashAttribute("errorMessage", "해당 일기를 찾을 수 없습니다.");
-                return "redirect:/diary/diary";
+                return "redirect:/diary/diarylist";
             }
             model.addAttribute("entry", entry);
         } catch (Exception e) {
             log.error("Failed to load diary detail", e);
             redirectAttributes.addFlashAttribute("errorMessage", "일기를 불러오는 중 오류가 발생했습니다.");
-            return "redirect:/diary/diary";
+            return "redirect:/diary/diarylist";
         }
         model.addAttribute("center", dir + "view");
         model.addAttribute("left", dir + "left");
