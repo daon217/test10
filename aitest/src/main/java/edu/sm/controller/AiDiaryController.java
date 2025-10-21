@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @Slf4j
-@RequestMapping("/book")
-public class AiBookController {
+@RequestMapping("/diary")
+public class AiDiaryController {
 
-    String dir = "book/";
+    String dir = "diary/";
 
     @RequestMapping("")
     public String aimain(Model model) {
@@ -18,9 +18,9 @@ public class AiBookController {
         model.addAttribute("left", dir+"left");
         return "index";
     }
-    @RequestMapping("/book")
-    public String book(Model model) {
-        model.addAttribute("center", dir+"book");
+    @RequestMapping("/diary")
+    public String diary(Model model) {
+        model.addAttribute("center", dir+"diary");
         model.addAttribute("left", dir+"left");
         return "index";
     }

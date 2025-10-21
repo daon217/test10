@@ -2,5 +2,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <div class="col-sm-10">
-  <h2>Book</h2>
+  <h2>Diary</h2>
 </div>
