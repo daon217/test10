@@ -32,7 +32,7 @@ public class AiSttService {
     private OpenAiAudioTranscriptionModel openAiAudioTranscriptionModel;
     private OpenAiAudioSpeechModel openAiAudioSpeechModel;
 
-    // ##### 생성자 #####
+    // ##### 생성자 #####z
     public AiSttService(ChatClient.Builder chatClientBuilder,
                         OpenAiAudioTranscriptionModel openAiAudioTranscriptionModel,
                         OpenAiAudioSpeechModel openAiAudioSpeechModel) {
