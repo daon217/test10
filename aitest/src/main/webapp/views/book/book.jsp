@@ -54,7 +54,7 @@
 
 <div class="col-sm-10">
   <h2>recommend Book</h2>
-  <p class="text-muted">AI가 오늘 읽기 좋은 책을 추천해 드립니다.</p>
+  <p class="text-muted">간단한 질문에 답하면 AI가 오늘 읽기 좋은 책을 추천해 드립니다.</p>
 
   <form id="recommend-form">
     <div class="form-group">
