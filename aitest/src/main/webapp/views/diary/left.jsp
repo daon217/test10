@@ -4,7 +4,10 @@
   <p>Left Menu</p>
   <ul class="nav nav-pills flex-column">
     <li class="nav-item">
-      <a class="nav-link" href="/diary/diary">today's diary</a>
+      <a class="nav-link" href="<c:url value='/diary'/>">Today's Diary</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="<c:url value='/diary/diary'/>">Diary List</a>
     </li>
   </ul>
   <hr class="d-sm-none">
