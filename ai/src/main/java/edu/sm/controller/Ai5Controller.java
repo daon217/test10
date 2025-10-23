@@ -1,22 +1,16 @@
 package edu.sm.controller;
 
 
-import edu.sm.app.springai.service4.AiChatService;
-import edu.sm.app.springai.service4.ETLService;
 import edu.sm.app.springai.service5.BoomBarrierService;
 import edu.sm.app.springai.service5.GoService;
 import edu.sm.app.springai.service5.HeatingSystemService;
 import edu.sm.app.springai.service5.RecommendMovieService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 
