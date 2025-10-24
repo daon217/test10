@@ -14,13 +14,15 @@ public class AiCctvController {
 
     @RequestMapping("")
     public String main(Model model) {
-        model.addAttribute("center", dir+"center");
-        model.addAttribute("left", dir+"left");
+        model.addAttribute("center", dir + "center");
+        model.addAttribute("left", dir + "left");
         return "index";
     }
+
     @RequestMapping("/cctv")
     public String cctv(Model model) {
-        model.addAttribute("center", dir+"cctv");
-        model.addAttribute("left", dir+"left");
+        model.addAttribute("center", dir + "cctv");
+        model.addAttribute("left", dir + "left");
         return "index";
     }
+}
