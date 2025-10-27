@@ -69,6 +69,7 @@
                 <a class="nav-link" href="<c:url value="/doors"/>">DOORS</a>
             </li>
         </ul>
+
     </div>
 </nav>
 <div class="container" style="margin-top:30px; margin-bottom: 30px;">
