@@ -19,24 +19,40 @@ public class SpringAI3Controller {
         model.addAttribute("left", dir+"left");
         return "index";
     }
-    @RequestMapping("/ai1")
-    public String ai1(Model model) {
-        model.addAttribute("center", dir+"ai1");
+    @RequestMapping("/carwash_entry")
+    public String carwash_entry(Model model) {
+        model.addAttribute("center", dir+"carwash_entry");
         model.addAttribute("left", dir+"left");
         return "index";
     }
-    @RequestMapping("/ai2")
-    public String ai2(Model model) {
-        model.addAttribute("center", dir+"ai2");
+    @RequestMapping("/carwash_plan")
+    public String carwash_plan(Model model) {
+        model.addAttribute("center", dir+"carwash_plan");
         model.addAttribute("left", dir+"left");
         return "index";
     }
-    @RequestMapping("/ai3")
-    public String ai3(Model model) {
-        model.addAttribute("center", dir+"ai3");
+    @RequestMapping("/carwash_progress")
+    public String carwash_progress(Model model) {
+        model.addAttribute("center", dir+"carwash_progress");
         model.addAttribute("left", dir+"left");
         return "index";
     }
-
-
+    @RequestMapping("/gatelog")
+    public String gatelog(Model model) {
+        model.addAttribute("center", dir+"gatelog");
+        model.addAttribute("left", dir+"left");
+        return "index";
+    }
+    @RequestMapping("/vehicle")
+    public String vehicle(Model model) {
+        model.addAttribute("center", dir+"vehicle");
+        model.addAttribute("left", dir+"left");
+        return "index";
+    }
+    @RequestMapping("/washorder")
+    public String washorder(Model model) {
+        model.addAttribute("center", dir + "washorder");
+        model.addAttribute("left", dir + "left");
+        return "index";
+    }
 }

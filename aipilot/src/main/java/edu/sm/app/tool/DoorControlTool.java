@@ -1,6 +1,6 @@
 package edu.sm.app.tool;
 
-import edu.sm.app.service.DoorUserService; // 변경: MockImpl -> DoorUserService
+import edu.sm.app.service.DoorUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;

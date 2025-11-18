@@ -1,7 +1,6 @@
 package edu.sm.app.service;
 
 import edu.sm.app.tool.DoorControlTool;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.SystemMessage;

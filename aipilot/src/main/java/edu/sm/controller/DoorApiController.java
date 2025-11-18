@@ -2,7 +2,7 @@ package edu.sm.controller;
 
 import edu.sm.app.dto.DoorAccessRecord;
 import edu.sm.app.dto.DoorUser;
-import edu.sm.app.service.DoorUserService; // 변경: MockImpl -> DoorUserService
+import edu.sm.app.service.DoorUserService;
 import edu.sm.app.service.FaceRecognitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
