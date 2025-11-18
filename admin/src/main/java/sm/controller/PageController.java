@@ -27,5 +27,11 @@ public class PageController {
         model.addAttribute("center", dir+"ai3");
         return "index";
     }
+    @RequestMapping("/cctv")
+    public String cctv(Model model) {
+        model.addAttribute("center", dir+"cctv");
+        return "index";
+    }
+
 
 }
