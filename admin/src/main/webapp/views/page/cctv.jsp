@@ -1,5 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<div class="main-container">
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %><div class="main-container">
   <div class="pd-ltr-20 xs-pd-20-10">
     <div class="min-height-200px">
       <div class="page-header">
