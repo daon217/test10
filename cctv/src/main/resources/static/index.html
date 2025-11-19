@@ -153,22 +153,8 @@
         }
     })();
 
-    const ANALYSIS_ENDPOINT = (() => {
-        if (window.CCTV_ANALYSIS_ENDPOINT) {
-            return window.CCTV_ANALYSIS_ENDPOINT;
-        }
-        if (encodedEndpoint) {
-            try {
-                return decodeURIComponent(encodedEndpoint);
-            } catch (err) {
-                console.warn('analysisEndpoint decode error', err);
-            }
-        }
-        if (parentOrigin) {
-            return `${parentOrigin}/cctv/api/analysis`;
-        }
-        return `${window.location.origin}/cctv/api/analysis`;
-    })();
+    // AI 분석 서버(Admin)의 주소를 직접 지정 (HTTPS 및 8444 포트 필수)
+    const ANALYSIS_ENDPOINT = "https://localhost:8444/cctv/api/analysis";
 
     const overlayUI = {
         updateBadge(state, text) {
