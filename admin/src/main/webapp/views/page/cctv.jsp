@@ -33,7 +33,7 @@
           <div class="card-box p-0">
             <iframe
                     id="cctvFrame"
-                    src="http://localhost:8090"
+                    src="https://<%= request.getServerName() %>:8090"
                     title="Mun'cok CCTV"
                     class="cctv-frame"
                     allow="camera; microphone; fullscreen"
