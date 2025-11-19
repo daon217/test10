@@ -109,7 +109,6 @@
 </head>
 <body>
 <h1>Mun'cok CCTV</h1>
-<p>브라우저에 연결된 카메라를 WebRTC로 미리보기 합니다.</p>
 <div class="analysis-panel">
     <div class="analysis-header">
         <h2>AI 재난 감지</h2>
@@ -205,13 +204,13 @@
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             videoEl.srcObject = stream;
-            statusEl.textContent = '카메라가 연결되었습니다.';
+            statusEl.textContent = 'cctv 작동중';
             if (!isAnalyzing) {
                 isAnalyzing = true;
                 startAnalysisLoop();
             }
         } catch (err) {
-            statusEl.textContent = '카메라 장치에 접근할 수 없습니다. 권한을 확인해주세요.';
+            statusEl.textContent = 'cctv에 접근할 수 없습니다.';
             statusEl.classList.add('error');
             retryBtn.hidden = false;
             console.error('camera error', err);
@@ -274,7 +273,7 @@
                 broadcaster({ severity: 'normal', message: 'AI 분석 결과 이상 없음', timestamp });
             } else {
                 overlayUI.updateBadge('alert', '위험 감지');
-                overlayUI.updateCopy('AI가 재난 징후를 감지하여 즉시 신고 시뮬레이션을 수행했습니다.');
+                overlayUI.updateCopy('AI가 재난 징후를 감지하여 즉시 신고를 접수했습니다.');
                 overlayUI.pushLog(resultText, 'danger');
                 broadcaster({ severity: 'alert', message: resultText, timestamp });
             }
@@ -282,7 +281,7 @@
             console.error('분석 실패', error);
             overlayUI.updateBadge('error', '분석 실패');
             const friendlyMessage = error.message?.includes('Failed to fetch')
-                ? 'AI 분석 서버에 연결할 수 없습니다. 관리자 페이지의 인증서 신뢰 여부와 네트워크를 확인해주세요.'
+                ? 'AI 분석 서버에 연결할 수 없습니다.'
                 : error.message;
             overlayUI.updateCopy(friendlyMessage);
             overlayUI.pushLog(friendlyMessage, 'warning');
