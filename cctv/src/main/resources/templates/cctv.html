@@ -48,7 +48,7 @@
 <video id="preview" autoplay playsinline muted></video>
 <div id="ws-log" class="log-box">초기화 중...</div>
 
-<script>
+<script th:inline="javascript">
     // ==========================================
     // [설정] 여기에 내 IP (10.20.36.180) 입력
     // ==========================================
@@ -59,6 +59,18 @@
 
     const ANALYSIS_INTERVAL_MS = 30000; // 30초
     const ANALYSIS_PROMPT = "현재 CCTV 화면에서 관측되는 상황을 2문장 이내로 설명하고, 화재·지진·붕괴·인명사고 등 재난 징후가 있으면 반드시 EmergencyCallTool.call119 도구를 호출하세요. 재난이 없다면 NO_DISASTER_DETECTED만 응답하세요.";
+
+    // 1. Thymeleaf로 서버에서 전달받은 ID 처리
+    let serverId = [[${cctvId}]];
+    if (!serverId) serverId = "";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    // ID 우선순위: 1.서버전달값 -> 2.URL 파라미터 -> 3.랜덤생성
+    const CCTV_ID = serverId || urlParams.get('id') || 'cctv-' + Math.floor(Math.random() * 1000);
+
+    // 화면 표시
+    document.querySelector('h1').textContent = `Mun'cok CCTV (${CCTV_ID})`;
+    document.title = `CCTV - ${CCTV_ID}`;
 
     const videoEl = document.getElementById('preview');
     const logEl = document.getElementById('ws-log');
@@ -83,32 +95,24 @@
         log(msg) { logEl.textContent = msg; console.log(msg); }
     };
 
-    // [핵심 수정] 분석 결과를 웹소켓으로 Admin에게 전송
     const broadcaster = (payload) => {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            // 웹소켓을 통해 JSON 메시지 전송
+            payload.cctvId = CCTV_ID;
             socket.send(JSON.stringify({
                 type: 'CCTV_ANALYSIS_RESULT',
                 payload: payload
             }));
-            console.log("분석 결과 전송 완료");
-        } else {
-            console.warn("웹소켓 미연결로 결과 전송 실패");
+            console.log(`[${CCTV_ID}] 분석 결과 전송 완료`);
         }
     };
 
-    // 1. 카메라 시작
     async function startCamera() {
         try {
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "environment" },
-                audio: false
-            });
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             videoEl.srcObject = localStream;
-            overlayUI.log("카메라 작동 중. 서버 연결 대기...");
+            overlayUI.log(`${CCTV_ID} 카메라 준비 완료. 서버 연결 중...`);
             connectWebSocket();
 
-            // 카메라 켜지면 분석 루프 시작
             if (!isAnalyzing) {
                 isAnalyzing = true;
                 startAnalysisLoop();
@@ -119,12 +123,11 @@
         }
     }
 
-    // 2. 웹소켓 연결
     function connectWebSocket() {
         socket = new WebSocket(SIGNALING_URL);
 
         socket.onopen = () => {
-            overlayUI.log("서버 연결됨 (분석 데이터 전송 가능)");
+            overlayUI.log(`서버 연결됨 (ID: ${CCTV_ID})`);
         };
 
         socket.onclose = () => {
@@ -134,31 +137,55 @@
 
         socket.onmessage = async (event) => {
             const msg = JSON.parse(event.data);
+
+            // [중요 수정 1] viewer_joined는 모든 카메라가 받아야 하므로 ID 체크 안 함
             if (msg.type === 'viewer_joined') {
-                overlayUI.log("관리자 접속! 영상 송출 시작");
+                overlayUI.log("관리자 접속! Offer 전송");
                 createPeerConnection();
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
-                socket.send(JSON.stringify({ type: 'offer', sdp: offer.sdp }));
-            } else if (msg.type === 'answer') {
-                if(peerConnection) await peerConnection.setRemoteDescription(new RTCSessionDescription(msg));
-            } else if (msg.type === 'candidate') {
-                if(peerConnection && msg.candidate) await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+
+                socket.send(JSON.stringify({
+                    type: 'offer',
+                    id: CCTV_ID,
+                    sdp: offer.sdp
+                }));
+            }
+            // [중요 수정 2] answer와 candidate는 반드시 '내 ID'로 온 것만 처리해야 함
+            else if (msg.type === 'answer') {
+                if (msg.id === CCTV_ID) {  // <--- 내 것인지 확인!
+                    if(peerConnection) {
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(msg));
+                        overlayUI.log("연결 성공 (Remote Set)");
+                    }
+                }
+            }
+            else if (msg.type === 'candidate') {
+                if (msg.id === CCTV_ID) {  // <--- 내 것인지 확인!
+                    if(peerConnection && msg.candidate) {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                    }
+                }
             }
         };
     }
 
-    // 3. WebRTC P2P 연결
     function createPeerConnection() {
         if (peerConnection) peerConnection.close();
         peerConnection = new RTCPeerConnection(rtcConfig);
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
         peerConnection.onicecandidate = (event) => {
-            if (event.candidate) socket.send(JSON.stringify({ type: 'candidate', candidate: event.candidate }));
+            if (event.candidate) {
+                socket.send(JSON.stringify({
+                    type: 'candidate',
+                    id: CCTV_ID,
+                    candidate: event.candidate
+                }));
+            }
         };
     }
 
-    // 4. AI 분석 로직 (이미지 캡처 -> HTTP 전송)
     const captureFrame = () => {
         return new Promise((resolve) => {
             if (!videoEl || videoEl.videoWidth === 0) { resolve(null); return; }
@@ -182,13 +209,8 @@
         const timestamp = new Date().toISOString();
 
         try {
-            const response = await fetch(ANALYSIS_ENDPOINT, {
-                method: 'POST',
-                body: formData
-            });
-
+            const response = await fetch(ANALYSIS_ENDPOINT, { method: 'POST', body: formData });
             const rawText = (await response.text()).trim();
-            // 마지막 줄만 추출 (NO_DISASTER_DETECTED 등)
             const lines = rawText.split('\n').filter(line => line.trim().length > 0);
             const resultText = lines.length ? lines[lines.length - 1] : '';
 
@@ -209,7 +231,7 @@
     };
 
     const startAnalysisLoop = () => {
-        runAnalysis(); // 즉시 실행
+        runAnalysis();
         analysisTimer = setInterval(runAnalysis, ANALYSIS_INTERVAL_MS);
     };
 

@@ -1,4 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
+<script src="/vendors/scripts/core.js"></script>
+<script src="/vendors/scripts/script.min.js"></script>
+<script src="/vendors/scripts/process.js"></script>
+<script src="/vendors/scripts/layout-settings.js"></script>
+
 <div class="main-container">
   <div class="pd-ltr-20 xs-pd-20-10">
     <div class="min-height-200px">
@@ -6,7 +11,7 @@
         <div class="row">
           <div class="col-md-12 col-sm-12">
             <div class="title">
-              <h4>CCTV 실시간 모니터링</h4>
+              <h4>CCTV 통합 관제 센터</h4>
             </div>
           </div>
         </div>
@@ -16,12 +21,9 @@
         <div class="col-lg-12">
           <div class="ai-analysis-card">
             <div class="ai-analysis-header">
-              <h5 class="mb-1">AI 재난 감지 상태</h5>
-              <span id="ai-analysis-status" class="status waiting">연결 대기 중...</span>
+              <h5 class="mb-1">AI 통합 재난 감지 로그</h5>
+              <span id="global-status" class="status waiting">서버 연결 대기 중...</span>
             </div>
-            <p id="ai-analysis-detail" class="ai-analysis-detail">
-              CCTV와 연결되면 30초마다 분석 결과가 이곳에 표시됩니다.
-            </p>
             <ul id="ai-analysis-history" class="ai-analysis-history placeholder">
               <li>아직 수신된 분석 결과가 없습니다.</li>
             </ul>
@@ -29,23 +31,14 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="card-box p-0" style="position: relative; background: #000; border-radius: 20px; overflow: hidden; display: flex; justify-content: center; align-items: center; min-height: 480px;">
+      <div class="row" id="cctv-grid-container">
+      </div>
 
-            <video id="remoteVideo" autoplay playsinline controls
-                   style="width: 100%; max-width: 860px; height: auto; max-height: 480px; object-fit: contain;">
-            </video>
-
-            <div style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;">
-              <button id="connectBtn" class="btn btn-primary btn-lg" onclick="startMonitoring()" style="display: none;">
-                <i class="fa fa-refresh"></i> 서버 재연결
-              </button>
-              <button id="callBtn" class="btn btn-success btn-lg" onclick="callCamera()" style="display: none;">
-                <i class="fa fa-video-camera"></i> 카메라 호출 (재시도)
-              </button>
-            </div>
-          </div>
+      <div class="row mt-3">
+        <div class="col-12 text-center">
+          <button id="connectBtn" class="btn btn-primary btn-lg" onclick="startMonitoring()">
+            <i class="fa fa-refresh"></i> 시스템 재연결
+          </button>
         </div>
       </div>
     </div>
@@ -62,9 +55,7 @@
     border: 1px solid rgba(255,255,255,0.05);
     margin-bottom: 20px;
   }
-  .ai-analysis-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .ai-analysis-detail { margin-bottom: 12px; color: rgba(255,255,255,0.75); font-size: 1rem; }
-
+  .ai-analysis-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 15px;}
   .ai-analysis-history { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .ai-analysis-history.placeholder { color: rgba(255,255,255,0.5); }
   .ai-analysis-history li { background: rgba(255,255,255,0.08); border-radius: 14px; padding: 8px 14px; font-size: 0.85rem; display: flex; gap: 10px; }
@@ -79,56 +70,74 @@
   .text-danger { color: #ff9494 !important; }
   .text-warning { color: #ffdd9b !important; }
   .text-success { color: #85f0c0 !important; }
+
+  .cctv-col { margin-bottom: 20px; }
+  .cctv-card {
+    background: #000;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border: 2px solid #333;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  }
+  .cctv-card video { width: 100%; height: 100%; object-fit: contain; }
+  .cctv-label {
+    position: absolute; top: 15px; left: 15px;
+    background: rgba(0,0,0,0.7); color: #fff;
+    padding: 5px 10px; border-radius: 6px;
+    font-weight: bold; font-size: 0.9rem; z-index: 10;
+  }
+  .cctv-status-overlay { position: absolute; bottom: 15px; right: 15px; z-index: 10; }
 </style>
 
 <script>
   (function() {
-    const remoteVideo = document.getElementById('remoteVideo');
-    const statusEl = document.getElementById('ai-analysis-status');
-    const detailEl = document.getElementById('ai-analysis-detail');
+    // [핵심 해결] dashboard3.js 에러 방지용 더미 함수
+    // 만약 dashboard3.js가 실행되더라도 에러가 나지 않도록 막습니다.
+    if(typeof ApexCharts !== 'undefined') {
+      ApexCharts.exec = function() {};
+    }
+
     const historyEl = document.getElementById('ai-analysis-history');
+    const globalStatusEl = document.getElementById('global-status');
     const connectBtn = document.getElementById('connectBtn');
-    const callBtn = document.getElementById('callBtn');
+    const gridContainer = document.getElementById('cctv-grid-container');
 
     const SIGNALING_URL = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.hostname + ':8444/signal';
 
     let socket;
-    let peerConnection;
+    const peerConnections = new Map();
+
     const rtcConfig = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     };
 
-    const updateStatus = (state, text, detail) => {
-      statusEl.textContent = text;
-      statusEl.className = `status ${state}`;
-      if(detail) detailEl.textContent = detail;
-    };
-
-    const addHistory = (timeText, summary, accentClass) => {
+    const addHistory = (timeText, summary, accentClass, cctvId) => {
       if (historyEl.classList.contains('placeholder')) {
         historyEl.innerHTML = '';
         historyEl.classList.remove('placeholder');
       }
       const item = document.createElement('li');
       if (accentClass) item.classList.add(accentClass);
-      item.innerHTML = `<span class="time">${timeText}</span><span class="message">${summary}</span>`;
+      const sourceLabel = cctvId ? `[${cctvId}] ` : '';
+      item.innerHTML = `<span class="time">${timeText}</span><span class="message">${sourceLabel}${summary}</span>`;
       historyEl.prepend(item);
-      while (historyEl.children.length > 5) {
+      while (historyEl.children.length > 10) {
         historyEl.removeChild(historyEl.lastElementChild);
       }
     };
 
-    // 1. 서버 연결 시작 함수
     window.startMonitoring = function() {
-      connectBtn.style.display = 'none'; // 연결 시도 시 버튼 숨김
-      updateStatus('waiting', '자동 연결 시도 중...', '서버에 접속하고 있습니다.');
+      connectBtn.style.display = 'none';
+      globalStatusEl.textContent = '서버 연결 중...';
 
       socket = new WebSocket(SIGNALING_URL);
 
       socket.onopen = () => {
-        updateStatus('waiting', 'CCTV 호출 중...', '서버에 접속했습니다. CCTV 응답을 기다립니다.');
-        callBtn.style.display = 'inline-block';
-        callCamera();
+        globalStatusEl.textContent = '모니터링 활성화';
+        globalStatusEl.className = 'status safe';
+        socket.send(JSON.stringify({ type: 'viewer_joined' }));
       };
 
       socket.onmessage = async (event) => {
@@ -139,72 +148,117 @@
           return;
         }
 
+        const cctvId = msg.id || 'unknown_camera';
+
         if (msg.type === 'offer') {
-          console.log("영상 신호 수신!");
-          createPeerConnection();
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(msg));
-          const answer = await peerConnection.createAnswer();
-          await peerConnection.setLocalDescription(answer);
-          socket.send(JSON.stringify({ type: 'answer', sdp: answer.sdp }));
+          await handleOffer(cctvId, msg);
         }
         else if (msg.type === 'candidate') {
-          if (peerConnection && msg.candidate) {
-            await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+          const pc = peerConnections.get(cctvId);
+          if (pc && msg.candidate) {
+            await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
           }
         }
       };
 
       socket.onclose = () => {
-        updateStatus('error', '연결 끊김', '서버와의 연결이 끊어졌습니다. 재연결을 시도해주세요.');
-        connectBtn.style.display = 'inline-block'; // 끊기면 재연결 버튼 표시
-        callBtn.style.display = 'none';
+        globalStatusEl.textContent = '서버 연결 끊김';
+        globalStatusEl.className = 'status error';
+        connectBtn.style.display = 'inline-block';
+        peerConnections.forEach(pc => pc.close());
+        peerConnections.clear();
+        gridContainer.innerHTML = '';
       };
     };
 
-    window.callCamera = function() {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: 'viewer_joined' }));
+    async function handleOffer(cctvId, msg) {
+      if (peerConnections.has(cctvId)) {
+        peerConnections.get(cctvId).close();
+        peerConnections.delete(cctvId);
+        const existingCard = document.getElementById(`card-${cctvId}`);
+        if(existingCard) existingCard.remove();
       }
-    };
+
+      createVideoElement(cctvId);
+
+      const pc = new RTCPeerConnection(rtcConfig);
+      peerConnections.set(cctvId, pc);
+
+      pc.ontrack = (event) => {
+        const videoEl = document.getElementById(`video-${cctvId}`);
+        const statusEl = document.getElementById(`status-${cctvId}`);
+        if (videoEl) {
+          videoEl.srcObject = event.streams[0];
+          if(statusEl) {
+            statusEl.textContent = 'LIVE';
+            statusEl.className = 'status safe';
+          }
+        }
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.send(JSON.stringify({
+            type: 'candidate',
+            id: cctvId,
+            candidate: event.candidate
+          }));
+        }
+      };
+
+      await pc.setRemoteDescription(new RTCSessionDescription(msg));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      socket.send(JSON.stringify({
+        type: 'answer',
+        id: cctvId,
+        sdp: answer.sdp
+      }));
+    }
+
+    function createVideoElement(cctvId) {
+      if (document.getElementById(`card-${cctvId}`)) return;
+
+      const colDiv = document.createElement('div');
+      colDiv.className = 'col-xl-4 col-lg-4 col-md-6 col-sm-12 cctv-col';
+      colDiv.id = `card-${cctvId}`;
+
+      colDiv.innerHTML = `
+            <div class="cctv-card">
+                <span class="cctv-label"><i class="fa fa-video-camera"></i> ${cctvId}</span>
+                <video id="video-${cctvId}" autoplay playsinline controls muted></video>
+                <div class="cctv-status-overlay">
+                    <span id="status-${cctvId}" class="status waiting">연결 중...</span>
+                </div>
+            </div>
+        `;
+      gridContainer.appendChild(colDiv);
+    }
 
     function handleAnalysisResult(payload) {
       const timestamp = payload.timestamp ? new Date(payload.timestamp) : new Date();
       const timeText = timestamp.toLocaleTimeString('ko-KR', { hour12: false });
       const severity = payload.severity || 'info';
       const message = payload.message || '상세 정보 없음';
+      const sourceId = payload.cctvId || 'Unknown';
 
       if (severity === 'alert') {
-        updateStatus('alert', '재난 징후 감지!', `[${timeText}] 경고: ${message}`);
-        addHistory(timeText, message, 'text-danger');
-      } else if (severity === 'error') {
-        updateStatus('error', '분석 오류', message);
-        addHistory(timeText, message, 'text-warning');
-      } else {
-        updateStatus('safe', '이상 징후 없음', `최근 분석(${timeText}) : 이상 징후가 발견되지 않았습니다.`);
-        addHistory(timeText, '이상 없음', 'text-success');
+        addHistory(timeText, message, 'text-danger', sourceId);
+        const statusEl = document.getElementById(`status-${sourceId}`);
+        if(statusEl) {
+          statusEl.textContent = '위험 감지';
+          statusEl.className = 'status alert';
+        }
+      } else if (severity === 'normal') {
+        const statusEl = document.getElementById(`status-${sourceId}`);
+        if(statusEl && statusEl.textContent === '위험 감지') {
+          statusEl.textContent = 'LIVE';
+          statusEl.className = 'status safe';
+        }
       }
     }
 
-    function createPeerConnection() {
-      if (peerConnection) peerConnection.close();
-      peerConnection = new RTCPeerConnection(rtcConfig);
-
-      peerConnection.ontrack = (event) => {
-        remoteVideo.srcObject = event.streams[0];
-        callBtn.style.display = 'none';
-        if (statusEl.classList.contains('waiting')) {
-          updateStatus('safe', '영상 수신 중', 'AI 분석 데이터를 기다리고 있습니다...');
-        }
-      };
-
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          socket.send(JSON.stringify({ type: 'candidate', candidate: event.candidate }));
-        }
-      };
-    }
-
-    // [핵심] 페이지 로드 시 자동으로 연결 시작
     startMonitoring();
 
   })();
