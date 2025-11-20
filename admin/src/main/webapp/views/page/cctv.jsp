@@ -38,8 +38,8 @@
             </video>
 
             <div style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;">
-              <button id="connectBtn" class="btn btn-primary btn-lg" onclick="startMonitoring()">
-                <i class="fa fa-play"></i> 서버 연결 시작
+              <button id="connectBtn" class="btn btn-primary btn-lg" onclick="startMonitoring()" style="display: none;">
+                <i class="fa fa-refresh"></i> 서버 재연결
               </button>
               <button id="callBtn" class="btn btn-success btn-lg" onclick="callCamera()" style="display: none;">
                 <i class="fa fa-video-camera"></i> 카메라 호출 (재시도)
@@ -98,7 +98,6 @@
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     };
 
-    // UI 업데이트 함수
     const updateStatus = (state, text, detail) => {
       statusEl.textContent = text;
       statusEl.className = `status ${state}`;
@@ -119,10 +118,10 @@
       }
     };
 
-    // 1. 서버 연결 시작
+    // 1. 서버 연결 시작 함수
     window.startMonitoring = function() {
-      connectBtn.style.display = 'none';
-      updateStatus('waiting', '서버 연결 시도 중...', '시그널링 서버에 접속하고 있습니다.');
+      connectBtn.style.display = 'none'; // 연결 시도 시 버튼 숨김
+      updateStatus('waiting', '자동 연결 시도 중...', '서버에 접속하고 있습니다.');
 
       socket = new WebSocket(SIGNALING_URL);
 
@@ -135,13 +134,11 @@
       socket.onmessage = async (event) => {
         const msg = JSON.parse(event.data);
 
-        // AI 분석 결과 처리 로직
         if (msg.type === 'CCTV_ANALYSIS_RESULT') {
           handleAnalysisResult(msg.payload);
           return;
         }
 
-        // WebRTC 신호 처리
         if (msg.type === 'offer') {
           console.log("영상 신호 수신!");
           createPeerConnection();
@@ -158,8 +155,8 @@
       };
 
       socket.onclose = () => {
-        updateStatus('error', '연결 끊김', '서버와의 연결이 끊어졌습니다.');
-        connectBtn.style.display = 'inline-block';
+        updateStatus('error', '연결 끊김', '서버와의 연결이 끊어졌습니다. 재연결을 시도해주세요.');
+        connectBtn.style.display = 'inline-block'; // 끊기면 재연결 버튼 표시
         callBtn.style.display = 'none';
       };
     };
@@ -170,7 +167,6 @@
       }
     };
 
-    // [수정됨] AI 분석 결과 핸들러 (문구 수정)
     function handleAnalysisResult(payload) {
       const timestamp = payload.timestamp ? new Date(payload.timestamp) : new Date();
       const timeText = timestamp.toLocaleTimeString('ko-KR', { hour12: false });
@@ -184,7 +180,6 @@
         updateStatus('error', '분석 오류', message);
         addHistory(timeText, message, 'text-warning');
       } else {
-        // 여기가 수정된 부분입니다.
         updateStatus('safe', '이상 징후 없음', `최근 분석(${timeText}) : 이상 징후가 발견되지 않았습니다.`);
         addHistory(timeText, '이상 없음', 'text-success');
       }
@@ -208,5 +203,9 @@
         }
       };
     }
+
+    // [핵심] 페이지 로드 시 자동으로 연결 시작
+    startMonitoring();
+
   })();
 </script>
