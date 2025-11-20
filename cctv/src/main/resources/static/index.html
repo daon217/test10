@@ -202,7 +202,11 @@
         statusEl.textContent = '카메라 준비 중...';
         statusEl.classList.remove('error');
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            // 수정됨: video: true 대신 facingMode 옵션 추가
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" },
+                audio: false
+            });
             videoEl.srcObject = stream;
             statusEl.textContent = 'cctv 작동중';
             if (!isAnalyzing) {
