@@ -502,9 +502,8 @@
 								<li><a href="form-wizard.html">Form Wizard</a></li>
 								<li><a href="html5-editor.html">HTML5 Editor</a></li>
 								<li><a href="form-pickers.html">Form Pickers</a></li>
-								<li>
-									<a href="<c:url value='/page/cctv'/>">CCTV 모니터링</a>
-								</li>
+								<li><a href="<c:url value='/page/cctv'/>">CCTV 모니터링</a></li>
+								<li><a href="<c:url value='/page/env'/>">AI 온습도 조절</a></li>
 							</ul>
 						</li>
 						<br>
@@ -600,7 +599,7 @@
 		<script src="/src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
 		<script src="/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
 		<script src="/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
-		<script src="/vendors/scripts/dashboard3.js"></script>
+
 		<!-- Google Tag Manager (noscript) -->
 		<noscript
 			><iframe
