@@ -36,14 +36,13 @@ public class SecurityConfig  {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //CSRF, CORS
         http.csrf((csrf) -> csrf.disable());
+        //http.cors(Customizer.withDefaults());
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern(CorsConfiguration.ALL);
+        configuration.addAllowedOrigin(CorsConfiguration.ALL);
         configuration.addAllowedMethod(CorsConfiguration.ALL);
         configuration.addAllowedHeader(CorsConfiguration.ALL);
-        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        http.cors(cors -> cors.configurationSource(source));
+        source.registerCorsConfiguration("/**,/chbot", configuration);
         // 권한 규칙 작성
         http.authorizeHttpRequests(authorize -> authorize
                         //@PreAuthrization을 사용할 것이기 때문에 모든 경로에 대한 인증처리는 Pass

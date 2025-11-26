@@ -1,0 +1,263 @@
+/* ============================================
+   반려동물 케어 시스템 - 공통 스타일
+   ============================================ */
+
+/* ========== 기본 설정 ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-primary);
+    font-size: var(--font-base);
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-main);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========== 타이포그래피 ========== */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: var(--font-bold);
+    line-height: 1.3;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+
+h1 { font-size: var(--font-5xl); }
+h2 { font-size: var(--font-4xl); }
+h3 { font-size: var(--font-3xl); }
+h4 { font-size: var(--font-2xl); }
+h5 { font-size: var(--font-xl); }
+h6 { font-size: var(--font-lg); }
+
+p {
+    margin-bottom: var(--space-4);
+    line-height: 1.7;
+}
+
+/* ========== 버튼 (Bootstrap 4 호환) ========== */
+.btn-pet-primary {
+    background: var(--primary-color);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: var(--space-3) var(--space-6);
+    font-weight: var(--font-semibold);
+    transition: all var(--transition-base);
+}
+
+.btn-pet-primary:hover {
+    background: var(--primary-dark);
+    color: var(--text-white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+    text-decoration: none;
+}
+
+.btn-pet-secondary {
+    background: var(--secondary-color);
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: var(--space-3) var(--space-6);
+    font-weight: var(--font-semibold);
+    transition: all var(--transition-base);
+}
+
+.btn-pet-secondary:hover {
+    background: var(--secondary-dark);
+    color: var(--text-white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-secondary);
+    text-decoration: none;
+}
+
+.btn-pet-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius-full);
+    padding: calc(var(--space-3) - 2px) var(--space-6);
+    font-weight: var(--font-semibold);
+    transition: all var(--transition-base);
+}
+
+.btn-pet-outline:hover {
+    background: var(--primary-color);
+    color: var(--text-white);
+    text-decoration: none;
+}
+
+/* ========== 카드 컴포넌트 ========== */
+.pet-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-light);
+}
+
+.pet-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.pet-card-header {
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: var(--space-4);
+}
+
+.pet-card-body {
+    padding: var(--space-4) 0;
+}
+
+.pet-card-footer {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-light);
+    margin-top: var(--space-4);
+}
+
+/* ========== 서비스 카드 ========== */
+.service-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    text-align: center;
+    transition: all var(--transition-base);
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.service-card:hover {
+    border-color: var(--primary-light);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.service-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--space-4);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+    color: var(--text-white);
+}
+
+.service-title {
+    font-size: var(--font-2xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--space-3);
+    color: var(--text-primary);
+}
+
+.service-desc {
+    color: var(--text-secondary);
+    font-size: var(--font-base);
+}
+
+/* ========== 배지 ========== */
+.pet-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-full);
+    background: var(--primary-bg);
+    color: var(--primary-color);
+}
+
+.pet-badge-success {
+    background: #e7f5ff;
+    color: var(--success-color);
+}
+
+.pet-badge-warning {
+    background: #fff4e6;
+    color: var(--warning-color);
+}
+
+.pet-badge-info {
+    background: #e7f5ff;
+    color: var(--info-color);
+}
+
+/* ========== 섹션 ========== */
+.section {
+    padding: var(--space-20) 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: var(--space-12);
+}
+
+.section-title h2 {
+    position: relative;
+    display: inline-block;
+}
+
+.section-title h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: var(--radius-full);
+}
+
+/* ========== 펫 아이콘 애니메이션 ========== */
+@keyframes paw-bounce {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+}
+
+.paw-icon {
+    display: inline-block;
+    animation: paw-bounce 2s infinite;
+}
+
+/* ========== 유틸리티 클래스 ========== */
+.text-primary { color: var(--primary-color) !important; }
+.text-secondary { color: var(--secondary-color) !important; }
+.bg-primary-light { background-color: var(--primary-bg) !important; }
+.bg-secondary-light { background-color: var(--secondary-bg) !important; }
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .section {
+        padding: var(--space-12) 0;
+    }
+
+    h1 { font-size: var(--font-4xl); }
+    h2 { font-size: var(--font-3xl); }
+    h3 { font-size: var(--font-2xl); }
+}
+
+@media (max-width: 576px) {
+    h1 { font-size: var(--font-3xl); }
+    h2 { font-size: var(--font-2xl); }
+
+    .service-card {
+        padding: var(--space-6);
+    }
+}

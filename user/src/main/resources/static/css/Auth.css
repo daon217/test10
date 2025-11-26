@@ -1,0 +1,598 @@
+/* ============================================
+   로그인/회원가입 페이지 전용 스타일
+   ============================================ */
+
+/* 인증 컨테이너 */
+.auth-container {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #ffeaea 0%, #e3fff9 100%);
+}
+
+/* 심플한 카드 (좌우 분할 없음) */
+.auth-card-simple {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 1rem;
+}
+
+.auth-form-area-full {
+    padding: 3rem;
+}
+
+/* 헤더 - 중앙 정렬 */
+.auth-form-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.auth-logo-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-logo-center .auth-logo-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #FF6B6B, #FA5252);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.auth-logo-center h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0;
+}
+
+.auth-form-header h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form-header p {
+    color: #6c757d;
+    margin: 0;
+}
+
+/* ========== 회원가입 다단계 폼 ========== */
+
+/* 진행 단계 표시 */
+.register-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+    background: linear-gradient(135deg, #FF6B6B, #FA5252);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.step.active .step-label {
+    color: #FF6B6B;
+    font-weight: 700;
+}
+
+.step.completed .step-number {
+    background: #4ECDC4;
+    color: white;
+}
+
+.step.completed .step-label {
+    color: #4ECDC4;
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: #e9ecef;
+    position: relative;
+    top: -20px;
+}
+
+/* 단계별 컨텐츠 */
+.register-step-content {
+    display: none;
+}
+
+.register-step-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.step-subtitle {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+/* 역할 선택 카드 */
+.role-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.role-card {
+    position: relative;
+    padding: 2rem 1.5rem;
+    border: 3px solid #e9ecef;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    background: white;
+}
+
+.role-card:hover {
+    border-color: #FF6B6B;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.15);
+}
+
+.role-card.selected {
+    border-color: #FF6B6B;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(78, 205, 196, 0.05) 100%);
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.2);
+}
+
+.role-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.role-card label {
+    cursor: pointer;
+    margin: 0;
+}
+
+.role-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #FFE3E3, #E3FFF9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #FF6B6B;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover .role-icon,
+.role-card.selected .role-icon {
+    transform: scale(1.1);
+    box-shadow: 0 8px 16px rgba(255, 107, 107, 0.2);
+}
+
+.role-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.role-desc {
+    font-size: 0.9rem;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.95rem;
+}
+
+.form-group label .required {
+    color: #FF6B6B;
+    margin-left: 0.25rem;
+}
+
+/* 2열 레이아웃 */
+.form-row-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-row-group .form-group {
+    margin-bottom: 0;
+}
+
+/* 입력 필드 */
+.form-control-auth {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control-auth:focus {
+    outline: none;
+    border-color: #FF6B6B;
+    box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.15);
+}
+
+.form-control-auth.is-invalid {
+    border-color: #dc3545;
+}
+
+.form-control-auth.is-valid {
+    border-color: #28a745;
+}
+
+/* 중복확인 버튼이 있는 입력 필드 */
+.input-with-button {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-with-button .form-control-auth {
+    flex: 1;
+}
+
+.btn-check {
+    padding: 0.875rem 1.5rem;
+    background: white;
+    color: #FF6B6B;
+    border: 2px solid #FF6B6B;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-check:hover {
+    background: #FF6B6B;
+    color: white;
+}
+
+/* 피드백 메시지 */
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.form-control-auth.is-invalid + .invalid-feedback {
+    display: block;
+}
+
+.valid-feedback {
+    color: #28a745;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.form-control-auth.is-valid + .valid-feedback {
+    display: block;
+}
+
+/* 비밀번호 강도 표시 */
+.password-strength {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* 체크박스 */
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.form-check input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.form-check label {
+    margin: 0;
+    cursor: pointer;
+    color: #495057;
+    font-weight: 400;
+}
+
+/* 약관 섹션 */
+.terms-section {
+    background: #f8f9fa;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.terms-section hr {
+    margin: 1rem 0;
+    border-top: 1px solid #dee2e6;
+}
+
+.terms-section .form-check label {
+    font-size: 0.95rem;
+}
+
+.terms-section a {
+    color: #FF6B6B;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.terms-section a:hover {
+    text-decoration: underline;
+}
+
+/* 버튼 */
+.btn-auth-primary {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #FF6B6B, #FA5252);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-auth-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+}
+
+.btn-auth-secondary {
+    width: 100%;
+    padding: 1rem;
+    background: white;
+    color: #495057;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-auth-secondary:hover {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* 버튼 그룹 (이전/다음) */
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* 비밀번호 토글 */
+.password-toggle {
+    position: relative;
+}
+
+.password-toggle input {
+    padding-right: 3rem;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #adb5bd;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: color 0.3s ease;
+}
+
+.password-toggle-btn:hover {
+    color: #6c757d;
+}
+
+/* 로그인 옵션 */
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password {
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    color: #FF6B6B;
+    text-decoration: underline;
+}
+
+/* 링크 */
+.auth-links {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.auth-links a {
+    color: #FF6B6B;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.auth-links a:hover {
+    color: #FA5252;
+    text-decoration: underline;
+}
+
+/* 알림 메시지 */
+.alert {
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-top: 1rem;
+}
+
+.alert-danger {
+    background: #ffe3e3;
+    color: #dc3545;
+    border: 1px solid #ffcccc;
+}
+
+.alert i {
+    margin-right: 0.5rem;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .auth-form-area-full {
+        padding: 2rem 1.5rem;
+    }
+
+    .register-steps {
+        padding: 0;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+    }
+
+    .step-number {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .role-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row-group {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-logo-center h2 {
+        font-size: 1.5rem;
+    }
+
+    .auth-form-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .step-title {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1rem 0;
+    }
+
+    .auth-card-simple {
+        margin: 0 0.5rem;
+    }
+
+    .auth-form-area-full {
+        padding: 1.5rem 1rem;
+    }
+}
