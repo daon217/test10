@@ -29,8 +29,8 @@ public class CctvAnalysisController {
             @RequestParam("attach") MultipartFile attach
     ) throws IOException {
         if (attach == null || attach.isEmpty() || attach.getContentType() == null || !attach.getContentType().startsWith("image/")) {
-            log.warn("Invalid attachment received for CCTV analysis. Returning NO_DISASTER_DETECTED.");
-            return Flux.just("NO_DISASTER_DETECTED");
+            log.warn("Invalid attachment received for CCTV analysis. Returning NO_PET_VISIBLE.");
+            return Flux.just("NO_PET_VISIBLE");
         }
 
         return cctvAnalysisService.analyzeAndRespond(question, attach.getContentType(), attach.getBytes());

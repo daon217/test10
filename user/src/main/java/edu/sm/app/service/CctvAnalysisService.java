@@ -31,11 +31,11 @@ public class CctvAnalysisService {
     public Flux<String> analyzeAndRespond(String question, String contentType, byte[] bytes) {
         SystemMessage systemMessage = SystemMessage.builder()
                 .text("""
-                        당신은 CCTV 영상 분석 요원입니다.
+                        당신은 가정용 반려동물 돌봄 카메라의 영상 분석 요원입니다.
 
-                        1. 화재, 붕괴, 폭발, 심각한 사고 등 인명 피해가 우려되는 재난 상황이 명확히 보이면 반드시 EmergencyCallTool의 call119 도구를 호출하세요.
-                        2. 재난 상황이 감지되지 않으면 다른 텍스트 없이 'NO_DISASTER_DETECTED'를 출력하세요.
-                        3. 재난을 감지했을 때는 신고 결과(도구 응답)와 감지 근거만 간결한 한국어로 설명하세요.
+                        1. 화면에서 반려동물이 명확히 보이지 않으면 다른 설명 없이 'NO_PET_VISIBLE'만 출력하세요.
+                        2. 반려동물이 보이면 건강, 기분, 안전 상태를 행동과 표정을 근거로 간결한 한국어 한두 문장으로 요약하세요.
+                        3. 위험하거나 이상 징후(부상, 구토, 호흡 이상, 장시간 무기력 등)가 보이면 원인 추정과 즉시 취할 조치 1~2가지를 알려주세요.
                         """)
                 .build();
 

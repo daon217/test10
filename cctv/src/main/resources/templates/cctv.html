@@ -26,10 +26,10 @@
     // ==========================================
     // [설정] 내 IP 주소 입력 (Admin 서버)
     // ==========================================
-    const ADMIN_HOST = "10.20.36.109";
-    const SIGNALING_URL = `wss://${ADMIN_HOST}:8443/signal`;
-    const ANALYSIS_ENDPOINT = `https://${ADMIN_HOST}:8444/cctv/api/analysis`;
-    const ANALYSIS_INTERVAL = 30000; // 30초
+    const SIGNALING_PROTOCOL = location.protocol === "https:" ? "wss" : "ws";
+    const SIGNALING_URL = `${SIGNALING_PROTOCOL}://${location.hostname}:8443/signal`;
+    const ANALYSIS_ENDPOINT = `${location.protocol}//${location.hostname}:8443/cctv/api/analysis`;
+    const ANALYSIS_INTERVAL = 30000;
 
     // 1. ID 생성
     let serverId = [[${cctvId}]];
@@ -140,20 +140,25 @@
 
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
-            formData.append('question', "화재, 연기, 쓰러짐, 사고 등 위험 상황이 보이면 설명하고 'alert'라고 답해. 아니면 'normal'이라고만 답해.");
+            formData.append('question', "가정용 반려동물 돌봄 카메라야. 화면에 반려동물이 명확히 보이지 않으면 '반려동물이 탐색되지 않습니다'만 답해. 보이면 건강/기분/안전 상태를 간단한 한국어로 요약하고 위험하거나 이상하면 '위험', 평소처럼 보이면 '정상'이라고 포함해줘.");
             formData.append('attach', blob, 'frame.png');
 
             try {
                 const res = await fetch(ANALYSIS_ENDPOINT, { method: 'POST', body: formData });
                 const text = await res.text(); // 서버 응답 (NDJSON 등)
 
-                // 간단한 결과 파싱 (예시)
-                let severity = 'normal';
-                let message = '이상 없음';
+                if (text.includes('NO_PET_VISIBLE')) {
+                    aiStatusEl.className = "badge";
+                    aiStatusEl.textContent = "반려동물 미확인";
+                    return;
+                }
 
-                if (text.includes('alert') || text.includes('위험') || text.includes('화재')) {
+                const cleaned = text.trim();
+                let severity = 'normal';
+                let message = cleaned ? cleaned.substring(0, 100) : '이상 없음';
+
+                if (/alert|위험|부상|구토|무기력|호흡 이상/i.test(cleaned)) {
                     severity = 'alert';
-                    message = text.substring(0, 50); // 너무 길면 자르기
                 }
 
                 // 결과 전송
