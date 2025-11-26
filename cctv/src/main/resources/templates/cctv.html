@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Mun'cok CCTV</title>
+    <title>home cam</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <style>
         body { background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-family: sans-serif; }
@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-<h2 id="title">CCTV 초기화 중...</h2>
+<h2 id="title">CAM 초기화 중...</h2>
 <video id="preview" autoplay playsinline muted></video>
 <div class="info">
     <span id="status" class="badge">연결 대기</span>
@@ -27,7 +27,7 @@
     // [설정] 내 IP 주소 입력 (Admin 서버)
     // ==========================================
     const ADMIN_HOST = "10.20.36.109";
-    const SIGNALING_URL = `wss://${ADMIN_HOST}:8444/signal`;
+    const SIGNALING_URL = `wss://${ADMIN_HOST}:8443/signal`;
     const ANALYSIS_ENDPOINT = `https://${ADMIN_HOST}:8444/cctv/api/analysis`;
     const ANALYSIS_INTERVAL = 30000; // 30초
 

@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="title">
-                            <h4>AI 홈캠 실시간 모니터링</h4>
+                            <h4>Ai Home Cam</h4>
                         </div>
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                 <div class="col-lg-12">
                     <div class="ai-analysis-card">
                         <div class="ai-analysis-header">
-                            <h5 class="mb-1">AI 재난 감지 상태</h5>
+                            <h5 class="mb-1">AI 애완동물 상태요약</h5>
                             <span id="global-status" class="status waiting">연결 대기 중...</span>
                         </div>
                         <ul id="ai-analysis-history" class="ai-analysis-history placeholder">
@@ -123,7 +123,7 @@
             socket = new WebSocket(SIGNALING_URL);
 
             socket.onopen = function() {
-                globalStatusEl.textContent = "모니터링 활성화";
+                globalStatusEl.textContent = "홈캠 활성화";
                 globalStatusEl.className = "status safe";
                 socket.send(JSON.stringify({ "type": "viewer_joined" }));
             };
