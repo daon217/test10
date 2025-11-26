@@ -36,4 +36,9 @@ public class MainController {
         model.addAttribute("center", "homecam");
         return "index";
     }
+    @RequestMapping("/clothes-recommend")
+    public String clothesRecommend(Model model) {
+        model.addAttribute("center", "clothes-recommend");
+        return "index";
+    }
 }
