@@ -39,6 +39,9 @@
     <c:if test="${center == 'login' || center == 'register'}">
         <link rel="stylesheet" href="<c:url value='/css/auth.css'/>">
     </c:if>
+    <c:if test="${center == 'homecam'}">
+        <link rel="stylesheet" href="<c:url value='/css/homecam.css'/>">
+    </c:if>
 </head>
 <body>
 
@@ -251,6 +254,10 @@
 <!-- 페이지별 JS -->
 <c:if test="${center == null || center == 'center'}">
     <script src="<c:url value='/js/scroll-video.js'/>"></script>
+</c:if>
+<c:if test="${center == 'homecam'}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="<c:url value='/js/homecam.js'/>"></script>
 </c:if>
 
 </body>

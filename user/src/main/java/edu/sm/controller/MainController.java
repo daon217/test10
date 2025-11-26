@@ -26,4 +26,10 @@ public class MainController {
         model.addAttribute("center", "register");
         return "index";
     }
+
+    @RequestMapping("/homecam")
+    public String homecam(Model model) {
+        model.addAttribute("center", "homecam");
+        return "index";
+    }
 }

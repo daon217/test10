@@ -1,0 +1,207 @@
+:root {
+    --dark: #0d1b2a;
+    --panel: #101827;
+    --border: #1f2a3d;
+    --accent: #6c8cff;
+    --danger: #ff4d6d;
+    --success: #4ade80;
+    --warning: #fbbf24;
+}
+
+.homecam-wrapper {
+    padding: 80px 0 40px;
+    background: linear-gradient(135deg, rgba(13, 27, 42, 0.9), rgba(16, 24, 39, 0.95)), url('/images/dog-run.mp4') center/cover no-repeat;
+    color: #f8fafc;
+}
+
+.camera-card, .analysis-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+
+.card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    color: #8ba2ff;
+    margin-bottom: 6px;
+}
+
+.video-shell {
+    position: relative;
+    background: #000;
+    border-bottom: 1px solid var(--border);
+}
+
+.video-shell video {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+}
+
+.video-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.65));
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.video-overlay[data-state="on"] { opacity: 0; }
+.video-overlay[data-state="processing"] { opacity: 0.25; }
+.video-overlay[data-state="error"] { opacity: 0.7; }
+
+.overlay-content {
+    text-align: center;
+    color: #e5edff;
+}
+
+.overlay-pulse {
+    width: 22px;
+    height: 22px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(108, 140, 255, 0.7);
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(108, 140, 255, 0.7); }
+    70% { box-shadow: 0 0 0 18px rgba(108, 140, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(108, 140, 255, 0); }
+}
+
+.control-bar {
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.control-left button { min-width: 140px; }
+
+.question-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.question-input label { color: #cbd5f5; font-size: 0.9rem; }
+
+.question-input input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: #e5edff;
+}
+
+.status-group .status-badge { margin-left: 6px; }
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: #d4dcf4;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.status-badge.on { background: rgba(74, 222, 128, 0.12); border-color: rgba(74, 222, 128, 0.4); color: #bbf7d0; }
+.status-badge.processing { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.4); color: #fcd34d; }
+.status-badge.error { background: rgba(255, 77, 109, 0.12); border-color: rgba(255, 77, 109, 0.4); color: #fecdd3; }
+.status-badge.neutral { background: rgba(255,255,255,0.05); }
+
+.analysis-card .analysis-feed { padding: 18px 20px; border-top: 1px solid var(--border); }
+
+.analysis-highlight {
+    background: linear-gradient(135deg, rgba(108, 140, 255, 0.12), rgba(108, 140, 255, 0.05));
+    border: 1px solid rgba(108, 140, 255, 0.35);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin: 18px 20px;
+}
+
+.analysis-highlight.alert {
+    background: linear-gradient(135deg, rgba(255, 77, 109, 0.18), rgba(255, 77, 109, 0.06));
+    border-color: rgba(255, 77, 109, 0.5);
+}
+
+.highlight-label {
+    font-size: 0.85rem;
+    color: #cbd5f5;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.analysis-feed .feed-header { color: #cbd5f5; font-size: 0.95rem; }
+
+.analysis-log {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    max-height: 260px;
+    overflow: auto;
+}
+
+.analysis-log li {
+    padding: 10px 12px;
+    border-bottom: 1px dashed var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    color: #e5edff;
+}
+
+.analysis-log li .time {
+    font-size: 0.8rem;
+    color: #9ca3b8;
+    min-width: 70px;
+}
+
+.analysis-log li.placeholder { color: #9ca3b8; text-align: center; justify-content: center; }
+
+.risk-chip {
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+}
+
+.risk-chip.safe { background: rgba(74, 222, 128, 0.1); color: #bbf7d0; }
+.risk-chip.alert { background: rgba(255, 77, 109, 0.14); color: #fecdd3; border-color: rgba(255, 77, 109, 0.5); }
+
+.notice-box {
+    margin: 16px 20px 20px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+    background: rgba(255,255,255,0.03);
+    color: #cbd5f5;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 992px) {
+    .homecam-wrapper { padding-top: 40px; }
+    .video-shell video { height: 320px; }
+    .control-bar { gap: 12px; }
+    .control-left, .control-right { width: 100%; }
+    .question-input { flex-direction: column; align-items: flex-start; width: 100%; }
+    .question-input input { width: 100%; }
+}
