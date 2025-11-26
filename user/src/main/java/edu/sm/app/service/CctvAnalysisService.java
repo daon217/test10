@@ -1,5 +1,6 @@
 package edu.sm.app.service;
 
+import edu.sm.app.tool.EmergencyCallTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -10,7 +11,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeType;
 import reactor.core.publisher.Flux;
-import edu.sm.app.tool.EmergencyCallTool;
 
 /**
  * Service that sends CCTV snapshots to the configured AI model

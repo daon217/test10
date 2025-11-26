@@ -1,5 +1,6 @@
 /**
  * 반려동물 케어 시스템 - 메인 JavaScript (최적화)
+ * 수정됨: 모바일 드롭다운 충돌 코드 제거 (Bootstrap 기본 기능 사용)
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -122,6 +123,7 @@ function initEmergencyBanner() {
 
 /**
  * 모바일 메뉴 토글
+ * 수정사항: 충돌을 일으키던 handleMobileDropdown 함수 및 호출 제거
  */
 function initMobileMenu() {
     const toggler = document.querySelector('.navbar-toggler');
@@ -129,10 +131,21 @@ function initMobileMenu() {
 
     if (!toggler || !navCollapse) return;
 
-    const navLinks = navCollapse.querySelectorAll('.nav-link');
+    // 메뉴 링크 클릭 시 모바일 메뉴 닫기 (드롭다운 토글 제외)
+    const navLinks = navCollapse.querySelectorAll('.nav-link:not(.dropdown-toggle)');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
-            if (window.innerWidth <= 768 && $(navCollapse).hasClass('show')) {
+            if (window.innerWidth <= 991 && $(navCollapse).hasClass('show')) {
+                $(navCollapse).collapse('hide');
+            }
+        });
+    });
+
+    // 드롭다운 내부 항목 클릭 시에도 메뉴 닫기
+    const dropdownItems = navCollapse.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function() {
+            if (window.innerWidth <= 991 && $(navCollapse).hasClass('show')) {
                 $(navCollapse).collapse('hide');
             }
         });
