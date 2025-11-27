@@ -102,10 +102,12 @@ public class ClothesRecommendService {
             String fittingImageDesc = asText(parsed, "fittingImageDesc", "AI가 준비한 가상 피팅 설명입니다.");
             String fittingImageUrl = asText(parsed, "fittingImageUrl", PLACEHOLDER_IMAGE);
 
-            String virtualFittingUrl = createVirtualFitting(imageBytes, clothingType, recommendedSize, palette);
+            // [수정] animalType을 createVirtualFitting에 전달
+            String virtualFittingUrl = createVirtualFitting(imageBytes, animalType, clothingType, recommendedSize, palette);
             if (StringUtils.hasText(virtualFittingUrl)) {
                 fittingImageUrl = virtualFittingUrl;
-                fittingImageDesc = "업로드한 사진에 추천 의상을 합성한 AI 가상 피팅 미리보기입니다.";
+                // [수정]: 이미지가 성공적으로 생성되면, 설명 텍스트를 "ai이미지"로 변경합니다.
+                fittingImageDesc = "ai이미지";
             }
 
             return ClothesRecommendResult.builder()
@@ -154,37 +156,66 @@ public class ClothesRecommendService {
         return text;
     }
 
-    private String createVirtualFitting(byte[] imageBytes, String clothingType, String recommendedSize, List<String> palette) {
+    // [수정] animalType 파라미터 추가
+    private String createVirtualFitting(byte[] imageBytes, String animalType, String clothingType, String recommendedSize, List<String> palette) {
         if (imageBytes == null || imageBytes.length == 0) {
             return null;
         }
 
-        String prompt = buildVirtualFittingPrompt(clothingType, recommendedSize, palette);
+        // [수정] animalType을 buildVirtualFittingPrompt에 전달
+        String prompt = buildVirtualFittingPrompt(animalType, clothingType, recommendedSize, palette);
         String aiGenerated = tryGenerateVirtualFittingWithAi(prompt);
         if (StringUtils.hasText(aiGenerated)) {
             return aiGenerated;
         }
 
-        return renderVirtualFittingOverlay(imageBytes, clothingType, recommendedSize, palette);
+        // [수정] animalType을 renderVirtualFittingOverlay에 전달
+        return renderVirtualFittingOverlay(imageBytes, animalType, clothingType, recommendedSize, palette);
     }
 
-    private String buildVirtualFittingPrompt(String clothingType, String recommendedSize, List<String> palette) {
+    // [수정] animalType 파라미터 추가 및 로직 수정 (종/색상 유지 및 배경 제거를 강력하게 요청)
+    private String buildVirtualFittingPrompt(String animalType, String clothingType, String recommendedSize, List<String> palette) {
         String paletteText = (palette == null || palette.isEmpty()) ? "부드러운 중성 컬러" : String.join(", ", palette);
         String safeClothing = StringUtils.hasText(clothingType) && !"N/A".equalsIgnoreCase(clothingType)
                 ? clothingType
-                : "편안한 기본 의상";
+                : "편안한 펫 의류"; // Fallback을 "편안한 펫 의류"로 변경
+
         String safeSize = StringUtils.hasText(recommendedSize) && !"N/A".equalsIgnoreCase(recommendedSize)
                 ? recommendedSize
                 : "표준 사이즈";
 
-        return "업로드된 반려동물 전신 사진을 기준으로, " + safeClothing + "를 " + safeSize
-                + " 사이즈로 자연스럽게 입힌 가상 피팅 이미지를 만들어주세요. "
-                + " 업로드된 사진을 분석해서 강아지면 강아지 고양이면 고양이 사진으로 만들어줘. 꼭 무슨 종인지 판단하고 만들어줘. "
-                + " 업로드된 사진을 분석했을때 고양이면 고양이 사진만 만들고 다른 동물의 사진은 만들지 마. "
-                + " 업로드된 사진을 분석했을때 강아지면 강아지 사진만 만들고 다른 동물의 사진은 만들지 마."
-                + " 업로드 된 사진에 동물의 색을 분석해서 같은색 동물의 이미지를 만들어줘. "
-                + "동물의 표정, 체형, 털색을 원본과 동일하게 유지하고, 실사 톤으로 렌더링하세요. "
-                + "의류 색상은 추천 팔레트(" + paletteText + ") 중 잘 어울리는 조합을 사용합니다. 배경은 원본과 유사하게 깔끔하게 유지합니다.";
+        // AI가 분석한 종을 명시적으로 사용
+        String safeAnimal = StringUtils.hasText(animalType) && !"분석 실패".equals(animalType)
+                ? animalType
+                : "반려동물";
+
+        // [핵심 수정 1]: 옷의 스타일을 클래식하고 기능적으로 변경
+        String styleInstruction = "옷은 반려동물의 편안함과 기능성에 초점을 맞춘 **클래식하고 깔끔한 디자인**으로 연출해 주세요. **과도한 레이어링, 사람 옷 같은 복잡한 디테일, 불필요한 장식(모자, 스카프, 과장된 액세서리)** 등은 피하고, 실제 펫 의류처럼 보이게 합니다.";
+
+        // [핵심 수정 2]: 배경 제거/단색 배경을 강력하게 요청
+        String backgroundInstruction = "배경은 불필요한 요소 없이 순수한 흰색 스튜디오 배경으로 처리하여 동물이 돋보이게 합니다. 배경을 투명하게 하거나, 피팅룸이나 복잡한 환경은 절대 넣지 마세요.";
+
+        // [핵심 수정 3]: 종/색상 유지를 강력하게 강제하는 프롬프트 (가장 강력한 지시)
+        String identityInstruction = "업로드된 반려동물 사진을 픽셀 단위로 분석하십시오. 당신은 이 동물이 **'" + safeAnimal + "'** 임을 완벽하게 이해해야 합니다. 해당 동물의 **특정 종, 털의 색상 및 패턴, 얼굴 표정, 체형**을 어떤 오차도 없이 **100% 동일하게** 구현하십시오. 다른 종이나 색깔로 변형하는 것은 **절대 금지**입니다. 이 지시를 최우선으로 지키세요.";
+
+        // [핵심 수정 4]: 동물이 옷을 입는 행위를 명확히 지시하고, 옷 위에 동물을 프린트하는 것을 금지
+        String fittingActionInstruction = "반드시 '" + safeAnimal + "'이(가) 이 옷을 **실제로 입고 있는 모습**을 렌더링해야 합니다. 옷에 " + safeAnimal + "의 이미지를 **프린팅하는 방식으로 만들지 마십시오**. 마치 실제로 입혀 놓은 것처럼 자연스럽게 표현해야 합니다.";
+
+        // [핵심 수정 5]: 이미지에 텍스트를 포함하지 않도록 명시적으로 지시 (극단적 강화)
+        String noTextInImageInstruction = "**경고: 이미지 생성 결과물에는 절대로(NEVER) 글자, 텍스트, 라벨, 워터마크, 제목, 한국어 문자, 어떠한 설명 문구도 시각적으로 포함하지 마십시오. 특히 '업로드한 사진에 추천 의상을 합성한 AI 가상 피팅 미리보기'와 같은 주석은 절대 금지합니다.**";
+
+        // [핵심 수정 6]: 불필요한 UI/데이터 시각화 요소 제거 (컬러 블록, 측정값 방지)
+        String noUiElementsInstruction = "이미지 내에 **컬러 팔레트, 색상 블록, 측정값, 치수, UI 인터페이스 요소, 프레임, 캔버스 배경**을 넣지 마십시오. 오직 반려동물의 가상 피팅 결과만 중앙에 위치해야 합니다.";
+
+
+        return identityInstruction + " "
+                + safeAnimal + "에게 " + safeClothing + "를 " + safeSize + " 사이즈로 자연스럽게 입힌 가상 피팅 이미지를 실사 톤으로 렌더링하세요. "
+                + fittingActionInstruction + " "
+                + styleInstruction + " " // 수정된 스타일 지침 적용
+                + backgroundInstruction + " "
+                + noTextInImageInstruction + " "
+                + noUiElementsInstruction
+                + " 의류 색상은 추천 팔레트(" + paletteText + ") 중 잘 어울리는 조합을 사용합니다.";
     }
 
     private String tryGenerateVirtualFittingWithAi(String prompt) {
@@ -225,7 +256,8 @@ public class ClothesRecommendService {
         return null;
     }
 
-    private String renderVirtualFittingOverlay(byte[] imageBytes, String clothingType, String recommendedSize, List<String> palette) {
+    // [수정] animalType 파라미터 추가
+    private String renderVirtualFittingOverlay(byte[] imageBytes, String animalType, String clothingType, String recommendedSize, List<String> palette) {
         try {
             BufferedImage original = ImageIO.read(new ByteArrayInputStream(imageBytes));
             if (original == null) {
@@ -318,10 +350,10 @@ public class ClothesRecommendService {
                         당신은 반려동물 패션 스타일리스트입니다. 업로드된 반려동물 전신 사진을 분석해 아래 JSON 형식으로만 답하세요.
                         필수 키: animalType, backLength, chestGirth, neckGirth, recommendedSize, clothingType,
                         colorAnalysis, fittingImageDesc, fittingImageUrl, colorPalette.
-                        - 길이는 cm 단위로 한 자리 소수점 이내 숫자와 단위를 함께 적습니다. 예) "38.2 cm"
+                        - 길이는 cm 단위로 한 자리 소수점 이내 숫자와 단위를 함께 적습니다. 예: "38.2 cm"
                         - recommendedSize는 XXS/XS/S/M/L/XL 같은 의류 사이즈 문자열을 사용합니다.
                         - colorPalette는 대표 색상 3~5개 HEX 코드 배열로 제공합니다.
-                        - 사진의 동물의 종과 색을 구분해서 이미지를 만들때 종과 색을 맞춰서 만들어.
+                        - animalType은 반려동물의 '종류', '종(Breed)', '주요 특징(털 색깔/패턴)'을 상세히 포함하여 작성해야 합니다. 예: '골든 리트리버 (금색)', '삼색 코리안 숏헤어 고양이'
                         - fittingImageUrl은 외부 이미지를 생성하지 말고 PLACEHOLDER를 유지하세요.
                         - 사진은 여러개를 만들지 않고 꼭 하나만 만들어.
                         - 모든 텍스트 값(animalType, clothingType, colorAnalysis, fittingImageDesc 등)은 자연스럽고 명확한 한국어로 작성하세요.

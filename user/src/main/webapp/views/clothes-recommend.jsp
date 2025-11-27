@@ -126,6 +126,7 @@
         <div class="pet-card">
             <label class="upload-area" for="fullBodyImage">
 
+
                 <input type="file" id="fullBodyImage" class="file-input" accept="image/*" multiple>
                 <i class="fas fa-camera upload-icon"></i>
                 <p class="mb-1 text-primary" id="upload-text">
@@ -140,11 +141,13 @@
             </label>
 
 
+
             <button type="button" id="analyze-btn" class="btn btn-pet-primary btn-block mt-4" disabled
                     onclick="runAIAnalysis()" style="height: 3rem; font-size: 1.1rem;">
                 <span id="btn-text"><i class="fas fa-magic mr-2"></i> AI 사이즈 추천 시작</span>
                 <div class="spinner-border text-light" role="status" id="loading-spinner">
                     <span class="sr-only">Loading...</span>
+
 
                 </div>
             </button>
@@ -154,15 +157,18 @@
             <div class="result-card">
                 <h5 class="text-primary"><i class="fas fa-ruler-combined mr-2"></i> 신체 치수 및 권장 사이즈</h5>
                 <ul
+
                         class="measurement-list">
                     <li><span class="label">반려동물 종류</span><span class="value" id="animal-type-result">N/A</span></li>
                     <li><span class="label">추정 등 길이</span><span class="value" id="back-length-result">N/A</span></li>
                     <li><span class="label">추정 가슴 둘레</span><span class="value" id="chest-result">N/A</span></li>
+
                     <li><span class="label">추정 목 둘레</span><span class="value" id="neck-result">N/A</span></li>
                     <li><span class="label">권장 사이즈</span><span class="value" id="pet-size-result">N/A</span></li>
                     <li><span class="label">권장 의류 유형</span><span class="value" id="clothing-type">N/A</span></li>
                 </ul>
             </div>
+
 
             <div class="result-card">
                 <h5 style="color: var(--secondary-color);"><i class="fas fa-palette mr-2"></i> 어울리는 컬러 추천</h5>
@@ -185,6 +191,7 @@
             <div class="fitting-image-card pet-card">
                 <h5 class="text-primary" style="margin-bottom: 0;"><i class="fas fa-user-check mr-2"></i> AI 가상 피팅 이미지</h5>
                 <p id="fitting-status" class="mt-2">AI 분석 결과가 여기에 표시됩니다.</p>
+
 
                 <img id="fitting-result-img" style="display: none;"
                      src="<c:url value='/images/virtual-fitting-placeholder.png'/>" alt="AI 가상 피팅 결과">
@@ -210,6 +217,7 @@
         fileInput.addEventListener('change', function(e) {
             const files = e.target.files;
             if (files && files.length > 0) {
+
                 // **다중 파일 처리**: AI 분석은 첫 번째 파일만 사용합니다.
                 const selectedFile = files[0];
 
@@ -219,7 +227,8 @@
                     previewImg.src = e.target.result;
                     imagePreview.style.display = 'block';
                     if (files.length > 1) {
-                        uploadText.innerHTML = `<strong>${selectedFile.name} 외 ${files.length - 1}개 파일 선택됨. (AI 분석은 첫 번째 파일만 사용합니다.)</strong>`;
+                        uploadText.innerHTML = `<strong>${selectedFile.name} 외 ${files.length - 1}개 파일 선택됨.
+ (AI 분석은 첫 번째 파일만 사용합니다.)</strong>`;
                     } else {
                         uploadText.innerHTML = '<strong>' + selectedFile.name + '</strong>';
                     }
@@ -238,15 +247,16 @@
         });
 
         const colorChips = document.getElementById('color-chips');
-
         function renderColorChips(palette) {
-            const safePalette = Array.isArray(palette) && palette.length > 0 ? palette : ['#FFC0CB', '#ADD8E6', '#90EE90', '#FFE4B5'];
+            const safePalette = Array.isArray(palette) && palette.length > 0 ?
+                palette : ['#FFC0CB', '#ADD8E6', '#90EE90', '#FFE4B5'];
             colorChips.innerHTML = '';
             safePalette.forEach(hex => {
                 const chip = document.createElement('div');
                 chip.className = 'color-chip';
                 chip.style.backgroundColor = hex;
                 chip.title = hex;
+
                 colorChips.appendChild(chip);
             });
         }
@@ -268,31 +278,35 @@
 
             const formData = new FormData();
             formData.append('image', selectedFile);
-
             fetch('<c:url value="/api/clothes-recommend/analyze"/>', {
                 method: 'POST',
                 body: formData
             })
                 .then(res => {
                     if (!res.ok) {
+
                         return res.json().then(body => { throw new Error(body?.colorAnalysis || '분석 실패'); });
                     }
                     return res.json();
                 })
                 .then(data => {
+
                     // 결과 업데이트
                     document.getElementById('animal-type-result').textContent = data.animalType || 'N/A';
                     document.getElementById('back-length-result').textContent = data.backLength || 'N/A';
                     document.getElementById('chest-result').textContent = data.chestGirth || 'N/A';
+
                     document.getElementById('neck-result').textContent = data.neckGirth || 'N/A';
                     document.getElementById('pet-size-result').textContent = data.recommendedSize || 'N/A';
-                    document.getElementById('clothing-type').textContent = data.clothingType || 'N/A';
+                    document.getElementById('clothing-type').textContent = data.clothingType ||
+                        'N/A';
 
                     document.getElementById('color-recommend-text').innerHTML = data.colorAnalysis || 'AI 분석 실패';
                     renderColorChips(data.colorPalette);
 
                     // DALL-E 이미지 URL 업데이트
-                    document.getElementById('fitting-status').textContent = data.fittingImageDesc || 'AI가 생성한 가상 피팅 이미지입니다.';
+                    // data.fittingImageDesc가 비어있으면 빈 문자열("")을 표시하여 설명 텍스트를 숨깁니다.
+                    document.getElementById('fitting-status').textContent = data.fittingImageDesc || '';
 
                     const imageUrl = data.fittingImageUrl || '/images/virtual-fitting-placeholder.png';
                     const fittingImage = document.getElementById('fitting-result-img');
@@ -304,21 +318,25 @@
                     alert(error.message || 'AI 분석에 실패했습니다. (서버 로그 확인)');
 
                     // 오류 발생 시 임시로 기본값 설정
+
                     document.getElementById('animal-type-result').textContent = '분석 실패';
                     document.getElementById('back-length-result').textContent = 'N/A';
                     document.getElementById('chest-result').textContent = 'N/A';
                     document.getElementById('neck-result').textContent = 'N/A';
+
                     document.getElementById('pet-size-result').textContent = 'N/A';
                     document.getElementById('clothing-type').textContent = 'N/A';
                     document.getElementById('color-recommend-text').innerHTML = error.message || '분석 오류: 다시 시도해주세요.';
                     renderColorChips();
-                    document.getElementById('fitting-status').textContent = '분석 실패';
+                    document.getElementById('fitting-status').textContent
+                        = '분석 실패';
                     document.getElementById('fitting-result-img').src = '/images/virtual-fitting-placeholder.png';
                 })
                 .finally(() => {
                     // 로딩 종료 및 결과 표시
                     analyzeBtn.disabled = false;
                     btnText.style.display = 'inline';
+
                     loadingSpinner.style.display = 'none';
                     resultSection.style.display = 'grid';
 
