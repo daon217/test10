@@ -3,6 +3,8 @@ package edu.sm.app.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder
 public class ClothesRecommendResult {
@@ -15,4 +17,5 @@ public class ClothesRecommendResult {
     private String colorAnalysis;   // 컬러 추천 분석 결과
     private String fittingImageDesc; // 가상 피팅 이미지 설명
     private String fittingImageUrl; // 가상 피팅 이미지 URL
+    private List<String> colorPalette; // 추천 색상 팔레트(HEX)
 }

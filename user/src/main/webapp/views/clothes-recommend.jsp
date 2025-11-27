@@ -237,6 +237,22 @@
             }
         });
 
+        const colorChips = document.getElementById('color-chips');
+
+        function renderColorChips(palette) {
+            const safePalette = Array.isArray(palette) && palette.length > 0 ? palette : ['#FFC0CB', '#ADD8E6', '#90EE90', '#FFE4B5'];
+            colorChips.innerHTML = '';
+            safePalette.forEach(hex => {
+                const chip = document.createElement('div');
+                chip.className = 'color-chip';
+                chip.style.backgroundColor = hex;
+                chip.title = hex;
+                colorChips.appendChild(chip);
+            });
+        }
+
+        renderColorChips();
+
         // AI 분석 함수
         window.runAIAnalysis = function() {
             const fileInput = document.getElementById('fullBodyImage');
@@ -259,7 +275,7 @@
             })
                 .then(res => {
                     if (!res.ok) {
-                        throw new Error('Server responded with an error or invalid format. Status: ' + res.status);
+                        return res.json().then(body => { throw new Error(body?.colorAnalysis || '분석 실패'); });
                     }
                     return res.json();
                 })
@@ -273,16 +289,19 @@
                     document.getElementById('clothing-type').textContent = data.clothingType || 'N/A';
 
                     document.getElementById('color-recommend-text').innerHTML = data.colorAnalysis || 'AI 분석 실패';
+                    renderColorChips(data.colorPalette);
 
                     // DALL-E 이미지 URL 업데이트
                     document.getElementById('fitting-status').textContent = data.fittingImageDesc || 'AI가 생성한 가상 피팅 이미지입니다.';
 
-                    document.getElementById('fitting-result-img').style.display = 'block';
-                    document.getElementById('fitting-result-img').src = '<c:url value="' + (data.fittingImageUrl || '/images/virtual-fitting-placeholder.png') + '"/>';
+                    const imageUrl = data.fittingImageUrl || '/images/virtual-fitting-placeholder.png';
+                    const fittingImage = document.getElementById('fitting-result-img');
+                    fittingImage.style.display = 'block';
+                    fittingImage.src = imageUrl;
                 })
                 .catch(error => {
                     console.error('AI 분석 중 오류 발생:', error);
-                    alert('AI 분석에 실패했습니다. (서버 로그 확인)');
+                    alert(error.message || 'AI 분석에 실패했습니다. (서버 로그 확인)');
 
                     // 오류 발생 시 임시로 기본값 설정
                     document.getElementById('animal-type-result').textContent = '분석 실패';
@@ -291,9 +310,10 @@
                     document.getElementById('neck-result').textContent = 'N/A';
                     document.getElementById('pet-size-result').textContent = 'N/A';
                     document.getElementById('clothing-type').textContent = 'N/A';
-                    document.getElementById('color-recommend-text').innerHTML = '분석 오류: 다시 시도해주세요.';
+                    document.getElementById('color-recommend-text').innerHTML = error.message || '분석 오류: 다시 시도해주세요.';
+                    renderColorChips();
                     document.getElementById('fitting-status').textContent = '분석 실패';
-                    document.getElementById('fitting-result-img').src = '<c:url value="/images/virtual-fitting-placeholder.png"/>';
+                    document.getElementById('fitting-result-img').src = '/images/virtual-fitting-placeholder.png';
                 })
                 .finally(() => {
                     // 로딩 종료 및 결과 표시

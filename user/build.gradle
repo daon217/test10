@@ -1,4 +1,3 @@
-// user/build.gradle 파일 전체 코드
 plugins {
     id 'java'
     id 'war'
@@ -32,18 +31,8 @@ ext {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // =======================================================
-    // [수정] ImageClient 오류 해결을 위한 공식 OpenAI SDK 추가
-    // Spring AI의 ImageClient 대신 이 SDK를 사용합니다.
-    // =======================================================
-    // Spring AI Chat 모델은 유지합니다.
-    implementation 'org.springframework.ai:spring-ai-openai'
-    // Image 생성: 공식 API를 사용하는 외부 클라이언트 (오류 회피용)
-    implementation 'com.aallam.openai:openai-client:3.9.0'
-
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     compileOnly 'org.projectlombok:lombok'
-
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -66,6 +55,7 @@ dependencies {
 
     //SpringAi Lib
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
     implementation 'org.springframework.ai:spring-ai-pdf-document-reader'
     implementation 'org.springframework.ai:spring-ai-tika-document-reader'
@@ -96,12 +86,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-dependencyManagement
-        {
-            imports {
-                mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
-            }
-        }
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
+}
 
 tasks.named('test') {
     useJUnitPlatform()
