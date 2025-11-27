@@ -63,7 +63,7 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
     implementation 'org.springframework.ai:spring-ai-rag'
 
-// Mybatis & postgresql Driver
+    // Mybatis & postgresql Driver
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
     runtimeOnly 'org.postgresql:postgresql'
 

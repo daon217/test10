@@ -24,7 +24,9 @@ public class ClothesRecommendController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping(value = "/analyze", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClothesRecommendResult> analyzePhoto(
-            @RequestParam("image") MultipartFile attach
+            @RequestParam("image") MultipartFile attach,
+            // [수정] animalType 파라미터 추가
+            @RequestParam(value = "animalType", required = false) String animalType
     ) throws IOException {
         if (attach == null || attach.isEmpty() || attach.getContentType() == null || !attach.getContentType().startsWith("image/")) {
             log.warn("Invalid attachment received for clothes recommendation.");
@@ -43,7 +45,8 @@ public class ClothesRecommendController {
             return ResponseEntity.badRequest().body(invalidResult);
         }
 
-        ClothesRecommendResult result = clothesRecommendService.analyzeAndRecommend(attach);
+        // [수정] animalType을 서비스에 전달
+        ClothesRecommendResult result = clothesRecommendService.analyzeAndRecommend(attach, animalType);
         return ResponseEntity.ok(result);
     }
 }

@@ -22,7 +22,8 @@ public class ClothesRecommendService {
 
     private static final String PLACEHOLDER_IMAGE = "/images/virtual-fitting-placeholder.png";
 
-    public ClothesRecommendResult analyzeAndRecommend(MultipartFile attach) {
+    // [수정] explicitAnimalType 파라미터 추가
+    public ClothesRecommendResult analyzeAndRecommend(MultipartFile attach, String explicitAnimalType) {
         ClothesRecommendResult fallback = ClothesRecommendResult.builder()
                 .animalType("분석 실패")
                 .backLength("N/A")
@@ -63,7 +64,12 @@ public class ClothesRecommendService {
             else if (backLength < 50) size = "L";
             else size = "XL";
 
-            String animalType = ratio > 1.2 ? "중형견" : "소형견/고양이";
+            // [수정] 명시적 타입이 있다면 사용, 없다면 기존 로직 사용
+            String animalType = explicitAnimalType;
+            if (animalType == null || animalType.trim().isEmpty()) {
+                animalType = ratio > 1.2 ? "중형견" : "소형견/고양이";
+            }
+
             String clothingType = ratio > 1.4 ? "하네스가 잘 어울리는 원마일웨어" : "활동성 높은 티셔츠";
 
             Color averageColor = extractAverageColor(image);
@@ -78,7 +84,7 @@ public class ClothesRecommendService {
                     animalType, clothingType, colorName);
 
             return ClothesRecommendResult.builder()
-                    .animalType(animalType)
+                    .animalType(animalType) // 수정된 animalType 사용
                     .backLength(String.format("%.0f cm (추정)", backLength))
                     .chestGirth(String.format("%.0f cm (추정)", chest))
                     .neckGirth(String.format("%.0f cm (추정)", neck))
