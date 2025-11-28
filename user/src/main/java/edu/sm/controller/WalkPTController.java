@@ -85,12 +85,4 @@ public class WalkPTController {
         model.addAttribute("center", "walkpt/worker/work-progress");
         return "index";
     }
-
-    // ===== Chat Pages =====
-
-    @RequestMapping("/chat/list")
-    public String chatList(Model model) {
-        model.addAttribute("center", "walkpt/chat/list");
-        return "index";
-    }
 }

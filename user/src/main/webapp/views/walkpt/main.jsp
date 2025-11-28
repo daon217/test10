@@ -242,11 +242,8 @@
                         <p id="notes">낯을 많이 가려서 처음엔 조금 경계할 수 있어요. 다른 강아지를 보면 짖을 수 있으니 주의해주세요.</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-pet-secondary" onclick="openChatFromModal()">
-                            <i class="fas fa-comment"></i> 채팅하기
-                        </button>
                         <button type="button" class="btn btn-pet-primary" onclick="applyToJobFromModal()">
-                            <i class="fas fa-paper-plane"></i> 지원하기
+                            <i class="fas fa-paper-plane"></i> 채팅하기
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                     </div>
