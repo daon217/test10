@@ -1,0 +1,258 @@
+@charset "UTF-8";
+
+/* 다단계 회원가입 전용 스타일 */
+.register-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.register-steps .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.register-steps .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.register-steps .step.active .step-number {
+    background: linear-gradient(135deg, #FF6B6B, #FA5252);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.register-steps .step.completed .step-number {
+    background: #51CF66;
+    color: white;
+}
+
+.register-steps .step-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.register-steps .step.active .step-label {
+    color: #FF6B6B;
+    font-weight: 700;
+}
+
+.register-steps .step-line {
+    width: 60px;
+    height: 2px;
+    background: #e9ecef;
+    margin: 0 1rem;
+    margin-bottom: 2rem;
+}
+
+.register-step-content {
+    display: none;
+}
+
+.register-step-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.role-selection {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.role-card {
+    border: 2px solid #e9ecef;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative; /* 클릭 영역 확보 */
+}
+
+.role-card:hover {
+    border-color: #FFB3B3;
+    background: #FFF5F5;
+}
+
+.role-card.selected {
+    border-color: #FF6B6B;
+    background: #FFE3E3;
+}
+
+.role-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.role-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #FF6B6B;
+}
+
+.role-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.role-desc {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.terms-section {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.terms-section .form-check {
+    margin-bottom: 1rem;
+}
+
+.terms-section .form-check:last-child {
+    margin-bottom: 0;
+}
+
+.terms-section a {
+    color: #FF6B6B;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.terms-section a:hover {
+    text-decoration: underline;
+}
+
+/* 반려동물 정보 입력 스타일 */
+.pet-form-container {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid #e9ecef;
+}
+
+.pet-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.pet-form-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pet-remove-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pet-remove-btn:hover {
+    background: #c82333;
+}
+
+.add-pet-btn {
+    width: 100%;
+    padding: 1rem;
+    background: white;
+    color: #FF6B6B;
+    border: 2px dashed #FF6B6B;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.add-pet-btn:hover {
+    background: #FFF5F5;
+}
+
+.pet-photo-upload {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.pet-photo-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #e9ecef;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid #FF6B6B;
+}
+
+.pet-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pet-photo-preview i {
+    font-size: 3rem;
+    color: #adb5bd;
+}
+
+.photo-upload-label {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: #FF6B6B;
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.photo-upload-label:hover {
+    background: #FA5252;
+}
+
+.photo-upload-label input[type="file"] {
+    display: none;
+}

@@ -53,6 +53,10 @@ dependencies {
     implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
     implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
 
+    // GraphHopper Embedded
+//    implementation 'com.graphhopper:graphhopper-web:8.0'
+    implementation 'com.graphhopper:graphhopper-core:8.0'
+
     //SpringAi Lib
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'

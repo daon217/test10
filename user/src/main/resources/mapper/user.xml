@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.sm.app.repository.UserRepository">
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="userMap" type="User">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="role" property="role"/>
+        <result column="profile_image" property="profileImage"/>
+        <result column="join_date" property="joinDate"/>
+        <result column="last_login" property="lastLogin"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 사용자 등록 -->
+    <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO users (username, password, name, email, phone, role, profile_image, status)
+        VALUES (#{username}, #{password}, #{name}, #{email}, #{phone}, #{role}, #{profileImage}, 'ACTIVE')
+    </insert>
+
+    <!-- 사용자 조회 (ID) -->
+    <select id="select" parameterType="Integer" resultMap="userMap">
+        SELECT * FROM users WHERE user_id = #{userId} AND status != 'DELETED'
+    </select>
+
+    <!-- 사용자 조회 (Username) -->
+    <select id="selectByUsername" parameterType="String" resultMap="userMap">
+        SELECT * FROM users WHERE username = #{username} AND status != 'DELETED'
+    </select>
+
+    <!-- 전체 사용자 조회 -->
+    <select id="selectAll" resultMap="userMap">
+        SELECT * FROM users WHERE status != 'DELETED' ORDER BY created_at DESC
+    </select>
+
+    <!-- 사용자 정보 수정 -->
+    <update id="update" parameterType="User">
+        UPDATE users
+        SET name = #{name},
+            email = #{email},
+            phone = #{phone},
+            profile_image = #{profileImage},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 비밀번호 변경 -->
+    <update id="updatePassword" parameterType="map">
+        UPDATE users
+        SET password = #{newPassword},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 마지막 로그인 시간 업데이트 -->
+    <update id="updateLastLogin" parameterType="Integer">
+        UPDATE users
+        SET last_login = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 사용자 삭제 (소프트 삭제) -->
+    <update id="delete" parameterType="Integer">
+        UPDATE users
+        SET status = 'DELETED',
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 아이디 중복 체크 -->
+    <select id="existsByUsername" parameterType="String" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM users WHERE username = #{username}
+    </select>
+
+    <!-- 이메일 중복 체크 -->
+    <select id="existsByEmail" parameterType="String" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM users WHERE email = #{email}
+    </select>
+
+    <!-- 역할별 사용자 수 조회 -->
+    <select id="countByRole" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM users WHERE role = #{role} AND status = 'ACTIVE'
+    </select>
+
+</mapper>

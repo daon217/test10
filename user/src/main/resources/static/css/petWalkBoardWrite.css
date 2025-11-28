@@ -1,0 +1,222 @@
+/* ============================================
+   반려동물 산책 메이트 글쓰기 전용 스타일
+   (petwalk-write.css)
+   ============================================ */
+
+/* 폰트 & 컬러 토큰 (다른 petwalk CSS와 동일하게) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Pretendard:wght@400;500;600&display=swap');
+
+:root {
+    --pw-font-display: 'Poppins', 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+    --pw-font-body: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+
+    --pw-color-primary: #FF6B6B;
+    --pw-color-primary-soft: #FFE3E3;
+    --pw-color-primary-dark: #E54646;
+    --pw-color-secondary: #4ECDC4;
+    --pw-color-accent: #FFD43B;
+
+    --pw-color-bg: #f3f4f8;
+    --pw-color-card: #ffffff;
+    --pw-color-text-main: #111827;
+    --pw-color-text-sub: #6b7280;
+    --pw-color-border: #e5e7eb;
+
+    --pw-radius-lg: 24px;
+    --pw-radius-md: 18px;
+    --pw-radius-sm: 999px;
+}
+
+/* 전체 배경 */
+.pet-write-page {
+    padding: 40px 0 60px 0;
+    background: linear-gradient(120deg, #fff8f9 0%, #f0f9ff 40%, #ecfeff 100%);
+    font-family: var(--pw-font-body);
+}
+
+/* 중앙 래퍼 */
+.pet-write-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 18px 40px;
+}
+
+/* 헤더 영역 */
+.write-header {
+    margin-bottom: 18px;
+}
+
+.write-title {
+    font-family: var(--pw-font-display);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--pw-color-text-main);
+}
+
+.write-sub {
+    font-size: 13px;
+    color: var(--pw-color-text-sub);
+    line-height: 1.6;
+}
+
+/* 폼 카드 */
+.write-card {
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: var(--pw-radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    padding: 20px 22px 22px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+}
+
+/* 필드 공통 */
+.write-field {
+    margin-bottom: 16px;
+}
+
+.write-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: inline-block;
+    color: var(--pw-color-text-main);
+}
+
+/* 인풋/셀렉트/텍스트 영역 */
+.write-input,
+.write-select,
+.write-textarea {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 9px 11px;
+    font-size: 13px;
+    box-sizing: border-box;
+    outline: none;
+    font-family: var(--pw-font-body);
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.write-textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+.write-input:focus,
+.write-select:focus,
+.write-textarea:focus {
+    border-color: var(--pw-color-primary);
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25);
+    background: #fef2f2;
+}
+
+/* 두 칸 레이아웃 */
+.write-row-2 {
+    display: flex;
+    gap: 12px;
+}
+
+.write-row-2 > div {
+    flex: 1;
+}
+
+/* 헬퍼 텍스트 */
+.write-helper {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+/* 사진 업로드 박스 */
+.write-photo-box {
+    border-radius: 12px;
+    border: 1px dashed #fb7185;
+    background: linear-gradient(135deg, #fff7f9, #fef9c3);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--pw-color-text-main);
+}
+
+.write-photo-box input[type="file"] {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+/* AI 추천 옵션 */
+.write-ai-option {
+    font-size: 13px;
+    color: var(--pw-color-text-sub);
+}
+
+.write-ai-option input[type="checkbox"] {
+    margin-right: 6px;
+}
+
+/* 버튼 영역 */
+.write-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* 버튼 공통 */
+.write-btn-cancel,
+.write-btn-submit {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--pw-font-body);
+    transition: all 0.2s ease;
+}
+
+/* 취소 버튼 */
+.write-btn-cancel {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.write-btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+/* 등록 버튼 */
+.write-btn-submit {
+    background: linear-gradient(135deg, #FF6B6B, #FF922B);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 12px 24px rgba(248, 113, 113, 0.4);
+}
+
+.write-btn-submit:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+/* 링크 밑줄 방지 (혹시 클릭 요소 생길 때 대비) */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .pet-write-wrapper {
+        padding: 0 14px 30px;
+    }
+
+    .write-card {
+        padding: 18px 16px 20px;
+    }
+
+    .write-row-2 {
+        flex-direction: column;
+    }
+}

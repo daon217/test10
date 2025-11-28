@@ -169,6 +169,280 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* ========================================
+   보건·안전 정보 배너
+   ======================================== */
+.health-alert-section {
+    padding: 0 0 3rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.health-alert-banner {
+    background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%);
+    border-radius: 1.5rem;
+    padding: 2rem 2.5rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.health-alert-banner::before {
+    content: '🦠';
+    position: absolute;
+    font-size: 150px;
+    opacity: 0.1;
+    top: -30px;
+    right: -30px;
+    transform: rotate(-15deg);
+}
+
+.alert-icon {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.alert-content {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.alert-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-desc {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    opacity: 0.95;
+}
+
+.alert-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.alert-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.alert-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+/* ========================================
+   내 반려동물 요약 위젯
+   ======================================== */
+.my-pet-summary-section {
+    padding: 3rem 0;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 1;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-header h3 i {
+    color: #FF6B6B;
+}
+
+.pet-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 1.25rem;
+    padding: 1.75rem 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 107, 107, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    border-color: #FF6B6B;
+}
+
+.summary-card:hover::before {
+    opacity: 1;
+}
+
+.summary-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: white;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.walk-summary .summary-icon {
+    background: linear-gradient(135deg, #FF6B6B, #FA5252);
+}
+
+.health-summary .summary-icon {
+    background: linear-gradient(135deg, #4ECDC4, #38D9A9);
+}
+
+.diary-summary .summary-icon {
+    background: linear-gradient(135deg, #9775FA, #7950F2);
+}
+
+.homecam-summary .summary-icon {
+    background: linear-gradient(135deg, #FFD43B, #FF922B);
+}
+
+.summary-content {
+    position: relative;
+    z-index: 1;
+}
+
+.summary-content h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+}
+
+.summary-data {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.data-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.data-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.data-value.health-good {
+    color: #51CF66;
+}
+
+.data-value.health-warning {
+    color: #FFD43B;
+}
+
+.data-value.health-danger {
+    color: #FF6B6B;
+}
+
+.summary-note {
+    font-size: 0.875rem;
+    color: #495057;
+    margin-bottom: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summary-note i {
+    color: #FF6B6B;
+}
+
 /* 서비스 섹션 */
 .services-section {
     padding: 80px 0;
@@ -412,6 +686,9 @@
     .hero-stats-grid {
         gap: 1.5rem;
     }
+    .pet-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
@@ -467,6 +744,44 @@
         padding: 2.5rem 1.5rem;
         border-radius: 1.5rem;
     }
+
+    /* 보건 배너 반응형 */
+    .health-alert-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .alert-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+
+    .alert-title {
+        font-size: 1.25rem;
+        justify-content: center;
+    }
+
+    .alert-desc {
+        font-size: 0.9rem;
+    }
+
+    .alert-actions {
+        justify-content: center;
+    }
+
+    /* 펫 요약 위젯 반응형 */
+    .pet-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -476,5 +791,22 @@
     .hero-stats-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
+    }
+
+    .health-alert-section {
+        padding: 0 0 2rem 0;
+    }
+
+    .health-alert-banner {
+        border-radius: 1rem;
+    }
+
+    .alert-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .alert-actions .btn {
+        width: 100%;
     }
 }

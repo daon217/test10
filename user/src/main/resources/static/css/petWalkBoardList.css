@@ -1,0 +1,589 @@
+/* ============================================
+   반려동물 함께 산책 메이트 리스트 전용 스타일
+   (petWalkBoardList.jsp)
+   ============================================ */
+
+/* 폰트 & 컬러 토큰 */
+:root {
+    --pw-font-display: 'DM Sans', 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+    --pw-font-body: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+
+    --pw-color-primary: #FF6B6B;
+    --pw-color-primary-soft: #FFE3E3;
+    --pw-color-primary-dark: #E54646;
+    --pw-color-secondary: #4ECDC4;
+    --pw-color-accent: #FFD43B;
+
+    --pw-color-bg: #f3f4f8;
+    --pw-color-card: #ffffff;
+    --pw-color-text-main: #111827;
+    --pw-color-text-sub: #6b7280;
+    --pw-color-border: #e5e7eb;
+
+    --pw-radius-lg: 24px;
+    --pw-radius-md: 18px;
+    --pw-radius-sm: 999px;
+}
+
+/* 페이지 전체 */
+.petwalk-list-page {
+    padding: 40px 0 60px 0;
+    background: radial-gradient(circle at 0% 0%, #FFE4E6 0%, #E0F2FE 35%, #ECFEFF 100%);
+    font-family: var(--pw-font-body);
+}
+
+/* 중앙 카드 래퍼 */
+.pet-board-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    border-radius: var(--pw-radius-lg);
+    padding: 28px 22px 30px 22px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* 상단 헤더 라인 */
+.pet-board-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--pw-color-border);
+    margin-bottom: 20px;
+}
+
+.pet-board-title {
+    font-family: var(--pw-font-display);
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--pw-color-text-main);
+}
+
+.pet-board-subtitle {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    color: var(--pw-color-text-sub);
+}
+
+.pet-board-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    border-radius: var(--pw-radius-sm);
+    background: var(--pw-color-primary-soft);
+    color: var(--pw-color-primary-dark);
+    font-size: 0.82rem;
+    font-weight: 600;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.pet-board-badge i {
+    font-size: 0.9rem;
+}
+
+/* ================================
+   AI 추천 상단 배너
+   ================================ */
+
+.ai-banner {
+    background: radial-gradient(circle at 0 0, #FFE3E3 0%, #FEFCE8 40%, #FFF 100%);
+    border-radius: var(--pw-radius-md);
+    border: 1px solid rgba(248, 250, 252, 0.9);
+    padding: 18px 18px 20px 18px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    margin-bottom: 22px;
+}
+
+.ai-banner-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.ai-banner-header {
+    font-family: var(--pw-font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--pw-color-text-main);
+    margin-bottom: 6px;
+}
+
+.ai-banner-sub {
+    font-size: 0.9rem;
+    color: var(--pw-color-text-sub);
+    line-height: 1.5;
+}
+
+.ai-banner-tag {
+    align-self: flex-start;
+    padding: 6px 12px;
+    border-radius: var(--pw-radius-sm);
+    background: rgba(37, 99, 235, 0.06);
+    color: #1d4ed8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.ai-banner-tag i {
+    font-size: 0.9rem;
+}
+
+/* 배너 통계 */
+.ai-banner-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.ai-banner-stat {
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px dashed rgba(148, 163, 184, 0.5);
+}
+
+.ai-banner-stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.ai-banner-stat-value {
+    font-family: var(--pw-font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--pw-color-primary-dark);
+}
+
+/* ================================
+   AI 추천 카드 섹션
+   ================================ */
+
+.ai-reco-section {
+    margin-bottom: 26px;
+}
+
+.ai-reco-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--pw-color-text-main);
+    margin-bottom: 4px;
+}
+
+.ai-reco-header i {
+    color: var(--pw-color-primary);
+}
+
+.ai-reco-desc {
+    font-size: 0.85rem;
+    color: var(--pw-color-text-sub);
+    margin-bottom: 14px;
+}
+
+.ai-reco-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.ai-reco-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--pw-color-card);
+    border-radius: 18px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.ai-reco-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+    background: #fef2f2;
+}
+
+.ai-reco-thumb {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+.ai-reco-body {
+    padding: 10px 12px 12px 12px;
+}
+
+.ai-reco-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--pw-color-text-main);
+}
+
+.ai-reco-meta {
+    font-size: 0.8rem;
+    color: var(--pw-color-text-sub);
+    line-height: 1.4;
+}
+
+/* ================================
+   검색 / 정렬 바
+   ================================ */
+
+.board-search-bar {
+    margin-top: 4px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.board-search-input {
+    flex: 1;
+    border-radius: 999px;
+    border: 1px solid var(--pw-color-border);
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.board-search-input:focus {
+    border-color: var(--pw-color-primary);
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.3);
+}
+
+.board-btn {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #FF6B6B, #FF922B);
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 10px 20px rgba(248, 113, 113, 0.35);
+}
+
+.board-btn i {
+    font-size: 0.9rem;
+}
+
+.board-sort-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    font-size: 0.85rem;
+    color: var(--pw-color-text-sub);
+}
+
+.board-sort-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.board-sort-select {
+    border-radius: 999px;
+    border: 1px solid var(--pw-color-border);
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    outline: none;
+    background: #ffffff;
+    min-width: 120px;
+}
+
+.board-result-count strong {
+    color: var(--pw-color-primary-dark);
+}
+
+/* ================================
+   전체 게시글 리스트
+   ================================ */
+
+.board-section {
+    margin-top: 10px;
+}
+
+.board-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.board-tabs-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.board-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--pw-color-text-main);
+}
+
+.board-tab-buttons {
+    display: inline-flex;
+    gap: 6px;
+    background: #f3f4f6;
+    border-radius: 999px;
+    padding: 3px;
+}
+
+.board-tab-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.board-tab-btn.active {
+    background: #ffffff;
+    color: var(--pw-color-primary-dark);
+    box-shadow: 0 4px 8px rgba(148, 163, 184, 0.4);
+}
+
+.board-write-btn {
+    border-radius: 999px;
+    border: none;
+    font-size: 0.85rem;
+    padding: 7px 16px;
+    background: linear-gradient(135deg, #4ECDC4, #22C55E);
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+}
+
+.board-write-btn i {
+    font-size: 0.9rem;
+}
+
+/* 카드형 리스트 */
+.board-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.board-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--pw-color-card);
+    border-radius: 18px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.board-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+    background: #fdf2f8;
+}
+
+.board-card-thumb {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+}
+
+.board-card-body {
+    padding: 10px 12px 12px 12px;
+}
+
+.board-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--pw-color-text-main);
+}
+
+.board-card-text {
+    font-size: 0.8rem;
+    color: var(--pw-color-text-sub);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.board-card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* 페이징 버튼 */
+.board-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.page-btn {
+    min-width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 1px solid var(--pw-color-border);
+    background: #ffffff;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: #4b5563;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+    border-color: var(--pw-color-primary);
+    color: var(--pw-color-primary-dark);
+}
+
+.page-btn.active {
+    background: linear-gradient(135deg, #FF6B6B, #FF922B);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 10px 20px rgba(248, 113, 113, 0.4);
+}
+
+/* ================================
+   반응형
+   ================================ */
+
+@media (max-width: 992px) {
+    .ai-reco-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .board-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .pet-board-wrapper {
+        padding: 18px 14px 24px 14px;
+        border-radius: 18px;
+    }
+
+    .pet-board-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ai-banner-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ai-banner-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-reco-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .board-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .ai-reco-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ================================
+   🔸 폰트 설정 (상단 head에 추가)
+   ================================ */
+/* Google Fonts import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Pretendard:wght@400;500;600&display=swap');
+
+:root {
+    --pw-font-display: 'Poppins', 'Pretendard', 'Noto Sans KR', sans-serif;
+    --pw-font-body: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+/* ================================
+   🔸 링크 및 텍스트 hover 제거
+   ================================ */
+a {
+    text-decoration: none !important;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    text-decoration: none !important;
+    color: var(--pw-color-primary-dark);
+}
+
+/* ================================
+   🔸 카드 hover 효과 고급화
+   ================================ */
+.ai-reco-card:hover,
+.board-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+    background: linear-gradient(180deg, #fff, #fff0f3);
+    transition: all 0.25s ease-in-out;
+}
+
+.ai-reco-card:hover .ai-reco-title,
+.board-card:hover .board-card-title {
+    color: var(--pw-color-primary-dark);
+}
+
+/* ================================
+   🔸 버튼 hover 효과 개선
+   ================================ */
+.board-btn:hover,
+.board-write-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* ================================
+   🔸 페이지 배경 살짝 부드럽게
+   ================================ */
+.petwalk-list-page {
+    background: linear-gradient(120deg, #fff8f9 0%, #f0f9ff 40%, #ecfeff 100%);
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

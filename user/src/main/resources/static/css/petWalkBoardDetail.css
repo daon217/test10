@@ -1,0 +1,360 @@
+/* ============================================
+   반려동물 산책 메이트 게시글 상세 전용 스타일
+   (petwalk-detail.css)
+   ============================================ */
+
+/* 폰트 & 컬러 토큰 */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Pretendard:wght@400;500;600&display=swap');
+
+:root {
+    --pw-font-display: 'Poppins', 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+    --pw-font-body: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+
+    --pw-color-primary: #FF6B6B;
+    --pw-color-primary-soft: #FFE3E3;
+    --pw-color-primary-dark: #E54646;
+    --pw-color-secondary: #4ECDC4;
+    --pw-color-accent: #FFD43B;
+
+    --pw-color-bg: #f3f4f8;
+    --pw-color-card: #ffffff;
+    --pw-color-text-main: #111827;
+    --pw-color-text-sub: #6b7280;
+    --pw-color-border: #e5e7eb;
+
+    --pw-radius-lg: 24px;
+    --pw-radius-md: 18px;
+    --pw-radius-sm: 999px;
+}
+
+/* 전체 배경 */
+.pet-detail-page {
+    padding: 40px 0 60px 0;
+    background: linear-gradient(120deg, #fff8f9 0%, #f0f9ff 40%, #ecfeff 100%);
+    font-family: var(--pw-font-body);
+}
+
+/* 중앙 래퍼 */
+.pet-detail-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 18px 40px;
+}
+
+/* 공통: 카드 느낌 */
+.detail-header,
+.detail-main-card,
+.comment-section {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+/* 헤더 영역 */
+.detail-header {
+    padding: 16px 18px;
+    margin: 20px 0 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    background: radial-gradient(circle at 0 0, #ffe4e6 0%, #fef9c3 45%, #ffffff 100%);
+    border: 1px solid #fecdd3;
+}
+
+.detail-header-left-title {
+    font-family: var(--pw-font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--pw-color-text-main);
+}
+
+.detail-header-meta {
+    font-size: 12px;
+    color: var(--pw-color-text-sub);
+}
+
+.detail-header-right {
+    font-size: 12px;
+    color: var(--pw-color-text-sub);
+}
+
+.detail-header-right strong {
+    color: var(--pw-color-primary-dark);
+}
+
+/* 본문 영역 */
+.detail-main-card {
+    padding: 20px 22px 22px;
+    margin-bottom: 22px;
+}
+
+.detail-content-text {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 18px;
+    white-space: pre-line;
+    color: var(--pw-color-text-main);
+}
+
+/* 메인 이미지 */
+.detail-main-image {
+    display: block;
+    margin: 0 auto 10px;
+    max-width: 100%;
+    border-radius: 16px;
+    background: #f3f4f6;
+    object-fit: cover;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+}
+
+/* 반려견 메타 정보 */
+.detail-pet-meta {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--pw-color-text-sub);
+    line-height: 1.6;
+    padding-top: 8px;
+    border-top: 1px dashed var(--pw-color-border);
+}
+
+/* 댓글 영역 */
+.comment-section {
+    padding: 18px 20px 20px;
+}
+
+.comment-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--pw-color-text-main);
+}
+
+/* 댓글 작성 폼 */
+.comment-form {
+    border-radius: 14px;
+    border: 1px solid var(--pw-color-border);
+    padding: 10px 12px 12px;
+    margin-bottom: 16px;
+    background: #f9fafb;
+}
+
+.comment-form textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 80px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 8px 10px;
+    font-size: 13px;
+    outline: none;
+    font-family: var(--pw-font-body);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comment-form textarea:focus {
+    border-color: var(--pw-color-primary);
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25);
+}
+
+.comment-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.comment-btn {
+    border-radius: 999px;
+    border: none;
+    padding: 7px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #FF6B6B, #FF922B);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 10px 20px rgba(248, 113, 113, 0.4);
+    transition: all 0.2s ease;
+}
+
+.comment-btn:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+/* 댓글 리스트 */
+.comment-list {
+    margin-top: 10px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 4px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 13px;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.comment-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--pw-color-primary-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pw-color-primary-dark);
+}
+
+.comment-body {
+    flex: 1;
+}
+
+.comment-author-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: var(--pw-color-text-main);
+}
+
+.comment-badge {
+    font-size: 11px;
+    color: #be123c;
+    background: #ffe4e6;
+    border-radius: 999px;
+    padding: 2px 8px;
+}
+
+.comment-text {
+    margin-bottom: 4px;
+    color: var(--pw-color-text-main);
+}
+
+.comment-meta {
+    font-size: 11px;
+    color: #9ca3af;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.comment-small-btn {
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease;
+}
+
+.comment-small-btn:hover {
+    color: var(--pw-color-primary-dark);
+}
+
+/* 대댓글 */
+.reply-item {
+    margin-left: 38px;
+    padding-left: 18px;
+    border-left: 2px solid #e5e7eb;
+}
+
+.reply-arrow {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 2px;
+}
+
+/* 대댓글 작성 폼 */
+.reply-form {
+    margin-left: 38px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+}
+
+.reply-form textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 60px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 6px 8px;
+    font-size: 12px;
+    outline: none;
+    font-family: var(--pw-font-body);
+}
+
+.reply-form textarea:focus {
+    border-color: var(--pw-color-primary);
+    box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+}
+
+.reply-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.reply-btn {
+    border-radius: 999px;
+    border: none;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff959f, #fb7185);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 8px 16px rgba(244, 114, 182, 0.35);
+    transition: all 0.2s ease;
+}
+
+.reply-btn:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+/* 링크 밑줄 제거 (혹시 들어가는 경우 대비) */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .pet-detail-wrapper {
+        padding: 0 14px 30px;
+    }
+
+    .detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .reply-item {
+        margin-left: 24px;
+        padding-left: 14px;
+    }
+
+    .comment-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+}

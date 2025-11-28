@@ -83,6 +83,153 @@
     </div>
 </section>
 
+<!-- ========== 보건·안전 정보 배너 ========== -->
+<section class="health-alert-section">
+    <div class="container">
+        <div class="health-alert-banner">
+            <div class="alert-icon">
+                <i class="fas fa-shield-virus"></i>
+            </div>
+            <div class="alert-content">
+                <h3 class="alert-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    현재 유행 중인 반려동물 전염병 주의보
+                </h3>
+                <p class="alert-desc">
+                    최근 <strong>개 파보바이러스</strong> 및 <strong>켄넬코프</strong> 감염이 증가하고 있습니다.
+                    산책 후 발·입 씻기, 다른 반려동물과의 접촉 주의, 예방접종 확인이 필요합니다.
+                </p>
+                <div class="alert-actions">
+                    <a href="<c:url value='/health-info'/>" class="btn btn-light btn-sm">
+                        <i class="fas fa-info-circle"></i> 자세히 보기
+                    </a>
+                    <a href="<c:url value='/vaccination-check'/>" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-syringe"></i> 예방접종 확인
+                    </a>
+                </div>
+            </div>
+            <button class="alert-close" onclick="closeHealthAlert()" aria-label="배너 닫기">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 내 반려동물 요약 위젯 (로그인 시에만 표시) ========== -->
+<c:if test="${not empty sessionScope.user}">
+    <section class="my-pet-summary-section">
+        <div class="container">
+            <div class="section-header">
+                <h3>
+                    <i class="fas fa-paw"></i>
+                    내 반려동물 요약
+                </h3>
+                <a href="<c:url value='/mypage'/>" class="btn btn-pet-outline btn-sm">
+                    전체 보기 <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <div class="pet-summary-grid">
+                <!-- 최근 산책 -->
+                <div class="summary-card walk-summary">
+                    <div class="summary-icon">
+                        <i class="fas fa-walking"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h4>최근 산책</h4>
+                        <div class="summary-data">
+                            <div class="data-item">
+                                <span class="data-label">이번 주</span>
+                                <span class="data-value">5회</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">총 거리</span>
+                                <span class="data-value">12.3km</span>
+                            </div>
+                        </div>
+                        <p class="summary-note">
+                            <i class="fas fa-check-circle"></i>
+                            목표 달성! 👏
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 건강 상태 -->
+                <div class="summary-card health-summary">
+                    <div class="summary-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h4>건강 체크</h4>
+                        <div class="summary-data">
+                            <div class="data-item">
+                                <span class="data-label">마지막 검진</span>
+                                <span class="data-value">2024-11-15</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">상태</span>
+                                <span class="data-value health-good">양호</span>
+                            </div>
+                        </div>
+                        <p class="summary-note">
+                            <i class="fas fa-info-circle"></i>
+                            다음 접종: 2025-01-10
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 최근 다이어리 -->
+                <div class="summary-card diary-summary">
+                    <div class="summary-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h4>최근 기록</h4>
+                        <div class="summary-data">
+                            <div class="data-item">
+                                <span class="data-label">마지막 기록</span>
+                                <span class="data-value">오늘</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">총 기록</span>
+                                <span class="data-value">247개</span>
+                            </div>
+                        </div>
+                        <p class="summary-note">
+                            <i class="fas fa-camera"></i>
+                            "공원에서 즐거운 산책 🌳"
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 홈캠 알림 -->
+                <div class="summary-card homecam-summary">
+                    <div class="summary-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h4>홈캠 알림</h4>
+                        <div class="summary-data">
+                            <div class="data-item">
+                                <span class="data-label">오늘 알림</span>
+                                <span class="data-value">3건</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">상태</span>
+                                <span class="data-value health-good">정상</span>
+                            </div>
+                        </div>
+                        <p class="summary-note">
+                            <i class="fas fa-bell"></i>
+                            마지막: 14:30 (과도한 짖음)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</c:if>
+
 <!-- 주요 서비스 -->
 <section class="services-section">
     <div class="container">
@@ -117,7 +264,7 @@
             </div>
 
             <!-- 3. 산책 알바 -->
-            <div class="service-card" onclick="location.href='<c:url value='/walk-helper'/>'">
+            <div class="service-card" onclick="location.href='<c:url value='/walkpt'/>'">
                 <div class="service-icon">
                     <i class="fas fa-people-carry"></i>
                 </div>
@@ -259,4 +406,48 @@
             });
         }
     });
+
+    // 보건·안전 배너 닫기
+    function closeHealthAlert() {
+        const banner = document.querySelector('.health-alert-banner');
+        if (banner) {
+            banner.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                banner.style.display = 'none';
+                // 로컬 스토리지에 닫힌 상태 저장 (24시간)
+                localStorage.setItem('healthAlertClosed', Date.now());
+            }, 300);
+        }
+    }
+
+    // 페이지 로드 시 배너 상태 확인
+    document.addEventListener('DOMContentLoaded', function() {
+        const alertClosed = localStorage.getItem('healthAlertClosed');
+        if (alertClosed) {
+            const timeDiff = Date.now() - parseInt(alertClosed);
+            const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+            // 24시간이 지나지 않았으면 배너 숨김
+            if (hoursDiff < 24) {
+                const banner = document.querySelector('.health-alert-banner');
+                if (banner) {
+                    banner.style.display = 'none';
+                }
+            }
+        }
+    });
 </script>
+
+<style>
+    /* 배너 애니메이션 */
+    @keyframes slideOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+</style>

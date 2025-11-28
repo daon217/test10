@@ -2,276 +2,296 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <link rel="stylesheet" href="<c:url value='/css/health-check.css'/>">
+<style>
+    .symptom-input-section {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .symptom-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        resize: vertical;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .symptom-textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+    }
+
+    .input-label {
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: block;
+        color: #333;
+    }
+</style>
 
 <script>
-    (function () {
-        const mapUrl = '<c:url value="/map"/>';
-        let selectedFile = null;
-        let selectedCategory = null;
-        let cameraStream = null;
+(function () {
+    const mapUrl = '<c:url value="/map"/>';
+    let selectedFile = null;
+    let cameraStream = null;
 
-        function isMobile() {
-            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    function isMobile() {
+        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    function startCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('이 브라우저에서는 카메라를 사용할 수 없습니다.');
+            return;
         }
 
-        function startCamera() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('이 브라우저에서는 카메라를 사용할 수 없습니다.');
-                return;
-            }
+        const video = document.getElementById('cameraVideo');
+        const constraints = {
+            video: isMobile()
+                ? { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: 'environment' } }
+                : { width: { ideal: 1280 }, height: { ideal: 720 } }
+        };
 
-            const video = document.getElementById('cameraVideo');
-            const constraints = {
-                video: isMobile()
-                    ? { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: 'environment' } }
-                    : { width: { ideal: 1280 }, height: { ideal: 720 } }
-            };
-
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(function (stream) {
-                    cameraStream = stream;
-                    video.srcObject = stream;
-                    video.play();
-                    document.getElementById('cameraSection').style.display = 'block';
-                    document.getElementById('uploadSection').style.display = 'none';
-                })
-                .catch(function (err) {
-                    console.error('카메라 오류:', err);
-                    alert('카메라 접근에 실패했습니다.');
-                });
-        }
-
-        function stopCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            const video = document.getElementById('cameraVideo');
-            if (video) video.srcObject = null;
-            document.getElementById('cameraSection').style.display = 'none';
-            document.getElementById('uploadSection').style.display = 'block';
-        }
-
-        function capturePhoto() {
-            const video = document.getElementById('cameraVideo');
-            if (!video || !cameraStream) {
-                alert('카메라가 준비되지 않았습니다.');
-                return;
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-
-            canvas.toBlob(function (blob) {
-                if (blob) {
-                    const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
-                    stopCamera();
-                    handleFileSelect(file);
-                }
-            }, 'image/jpeg', 0.9);
-        }
-
-        function handleFileSelect(file) {
-            if (!file) return;
-
-            if (!file.type.match('image/(jpeg|png)')) {
-                alert('JPG 또는 PNG 파일만 업로드 가능합니다.');
-                return;
-            }
-
-            if (file.size > 10 * 1024 * 1024) {
-                alert('파일 크기는 10MB 이하여야 합니다.');
-                return;
-            }
-
-            selectedFile = file;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const preview = document.getElementById('previewImage');
-                const container = document.getElementById('previewContainer');
-                preview.src = e.target.result;
-                container.style.display = 'block';
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(function (stream) {
+                cameraStream = stream;
+                video.srcObject = stream;
+                video.play();
+                document.getElementById('cameraSection').style.display = 'block';
                 document.getElementById('uploadSection').style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-
-            updateAnalyzeButton();
-        }
-
-        function resetUpload() {
-            selectedFile = null;
-            selectedCategory = null;
-
-            document.getElementById('imageInput').value = '';
-            document.getElementById('previewImage').src = '';
-            document.getElementById('previewContainer').style.display = 'none';
-            document.getElementById('uploadSection').style.display = 'block';
-            document.getElementById('resultsSection').classList.remove('active');
-
-            document.querySelectorAll('.category-option').forEach(opt => {
-                opt.classList.remove('selected');
-                opt.querySelector('input').checked = false;
+            })
+            .catch(function (err) {
+                console.error('카메라 오류:', err);
+                alert('카메라 접근에 실패했습니다.');
             });
+    }
 
-            updateAnalyzeButton();
+    function stopCamera() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+        }
+        const video = document.getElementById('cameraVideo');
+        if (video) video.srcObject = null;
+        document.getElementById('cameraSection').style.display = 'none';
+        document.getElementById('uploadSection').style.display = 'block';
+    }
+
+    function capturePhoto() {
+        const video = document.getElementById('cameraVideo');
+        if (!video || !cameraStream) {
+            alert('카메라가 준비되지 않았습니다.');
+            return;
         }
 
-        function updateAnalyzeButton() {
-            const btn = document.getElementById('analyzeBtn');
-            if (btn) {
-                btn.disabled = !(selectedFile && selectedCategory);
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+
+        canvas.toBlob(function (blob) {
+            if (blob) {
+                const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
+                stopCamera();
+                handleFileSelect(file);
             }
+        }, 'image/jpeg', 0.9);
+    }
+
+    function handleFileSelect(file) {
+        if (!file) return;
+
+        if (!file.type.match('image/(jpeg|png)')) {
+            alert('JPG 또는 PNG 파일만 업로드 가능합니다.');
+            return;
         }
 
-        function performAnalysis() {
-            if (!selectedFile || !selectedCategory) return;
+        if (file.size > 10 * 1024 * 1024) {
+            alert('파일 크기는 10MB 이하여야 합니다.');
+            return;
+        }
 
-            document.getElementById('loadingOverlay').classList.add('active');
+        selectedFile = file;
 
-            const formData = new FormData();
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const preview = document.getElementById('previewImage');
+            const container = document.getElementById('previewContainer');
+            preview.src = e.target.result;
+            container.style.display = 'block';
+            document.getElementById('uploadSection').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+
+        updateAnalyzeButton();
+    }
+
+    function resetUpload() {
+        selectedFile = null;
+
+        document.getElementById('imageInput').value = '';
+        document.getElementById('previewImage').src = '';
+        document.getElementById('previewContainer').style.display = 'none';
+        document.getElementById('uploadSection').style.display = 'block';
+        document.getElementById('resultsSection').classList.remove('active');
+
+        updateAnalyzeButton();
+    }
+
+    function updateAnalyzeButton() {
+        const btn = document.getElementById('analyzeBtn');
+        const textInput = document.getElementById('symptomText');
+        const textValue = textInput ? textInput.value.trim() : '';
+
+        if (btn) {
+            // Enable if either file is selected OR text is entered
+            btn.disabled = !(selectedFile || textValue.length > 0);
+        }
+    }
+
+    function performAnalysis() {
+        const textInput = document.getElementById('symptomText');
+        const textValue = textInput ? textInput.value.trim() : '';
+
+        if (!selectedFile && !textValue) return;
+
+        document.getElementById('loadingOverlay').classList.add('active');
+
+        const formData = new FormData();
+        if (selectedFile) {
             formData.append('image', selectedFile);
-            formData.append('category', selectedCategory);
-
-            fetch('<c:url value="/api/health-check/analyze"/>', {
-                method: 'POST',
-                body: formData
-            })
-                .then(res => res.ok ? res.json() : Promise.reject())
-                .then(data => displayResults(data))
-                .catch(() => displayDemoResults())
-                .finally(() => document.getElementById('loadingOverlay').classList.remove('active'));
+        }
+        if (textValue) {
+            formData.append('text', textValue);
         }
 
-        function displayResults(data) {
-            const levelConfig = {
-                'caution': { icon: '⚠️', text: '주의 관찰' },
-                'observation': { icon: '👀', text: '지속 관찰 필요' },
-                'hospital-recommended': { icon: '🏥', text: '병원 방문 권장' }
-            };
+        fetch('<c:url value="/api/health-check/analyze"/>', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(data => displayResults(data))
+            .catch(err => {
+                console.error('분석 오류:', err);
+                alert('AI 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            })
+            .finally(() => document.getElementById('loadingOverlay').classList.remove('active'));
+    }
 
-            const config = levelConfig[data.level] || { icon: '❓', text: '분석 결과' };
+    function displayResults(data) {
+        if (!data || data.error) {
+            alert('분석 결과를 가져오지 못했습니다.');
+            return;
+        }
 
-            document.getElementById('levelBadge').className = 'level-badge ' + (data.level || '');
-            document.getElementById('levelIcon').textContent = config.icon;
-            document.getElementById('levelText').textContent = config.text;
-            document.getElementById('diagnosisFindings').innerHTML = data.findings || '';
-            document.getElementById('recommendations').innerHTML = data.recommendations || '';
-            document.getElementById('confidenceValue').textContent = (data.confidence || 0) + '%';
+        const levelConfig = {
+            'caution': { icon: '⚠️', text: '주의 관찰' },
+            'observation': { icon: '👀', text: '지속 관찰 필요' },
+            'hospital-recommended': { icon: '🏥', text: '병원 방문 권장' }
+        };
 
-            setTimeout(() => {
-                document.getElementById('confidenceFill').style.width = (data.confidence || 0) + '%';
-            }, 100);
+        const config = levelConfig[data.level] || { icon: '❓', text: '분석 결과' };
 
-            const hospitalSection = document.getElementById('hospitalSection');
-            if (data.level === 'hospital-recommended') {
-                hospitalSection.classList.add('active');
-                if (data.costs) {
-                    document.getElementById('initialCost').textContent = data.costs.initial || '';
-                    document.getElementById('followUpCost').textContent = data.costs.followUp || '';
-                    document.getElementById('estimatedCost').textContent = data.costs.estimated || '';
-                }
-            } else {
-                hospitalSection.classList.remove('active');
+        document.getElementById('levelBadge').className = 'level-badge ' + (data.level || '');
+        document.getElementById('levelIcon').textContent = config.icon;
+        document.getElementById('levelText').textContent = config.text;
+        document.getElementById('diagnosisFindings').innerHTML = data.findings || '';
+        document.getElementById('recommendations').innerHTML = data.recommendations || '';
+        document.getElementById('confidenceValue').textContent = (data.confidence || 0) + '%';
+
+        setTimeout(() => {
+            document.getElementById('confidenceFill').style.width = (data.confidence || 0) + '%';
+        }, 100);
+
+        const hospitalSection = document.getElementById('hospitalSection');
+        if (data.level === 'hospital-recommended') {
+            hospitalSection.classList.add('active');
+            if (data.costs) {
+                document.getElementById('initialCost').textContent = data.costs.initial || '';
+                document.getElementById('followUpCost').textContent = data.costs.followUp || '';
+                document.getElementById('estimatedCost').textContent = data.costs.estimated || '';
             }
-
-            document.getElementById('resultsSection').classList.add('active');
-            setTimeout(() => {
-                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-            }, 300);
-
-            saveToHistory(data);
+        } else {
+            hospitalSection.classList.remove('active');
         }
 
-        function displayDemoResults() {
-            const categoryNames = { 'eyes': '눈', 'skin': '피부', 'teeth': '치아', 'wound': '상처' };
-            const part = categoryNames[selectedCategory] || '해당';
+        document.getElementById('resultsSection').classList.add('active');
+        setTimeout(() => {
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }, 300);
 
-            displayResults({
-                level: 'observation',
-                findings: '<strong>' + part + ' 부위 분석 결과:</strong><br><br>• 경미한 이상 징후가 관찰됩니다.<br>• 현재로서는 심각한 문제는 보이지 않습니다.<br>• 지속적인 관찰이 필요합니다.',
-                recommendations: '• 며칠간 상태를 주의 깊게 관찰해주세요.<br>• 증상이 악화되거나 다른 이상 징후가 나타나면 즉시 병원을 방문하세요.',
-                confidence: 85,
-                costs: { initial: '30,000원 ~ 50,000원', followUp: '20,000원 ~ 30,000원', estimated: '35,000원' }
-            });
-        }
+        saveToHistory(data);
+    }
 
-        function saveToHistory(data) {
-            fetch('<c:url value="/api/health-check/history"/>', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    category: selectedCategory,
-                    level: data.level,
-                    findings: data.findings,
-                    recommendations: data.recommendations,
-                    confidence: data.confidence,
-                    timestamp: new Date().toISOString()
-                })
+    function saveToHistory(data) {
+        fetch('<c:url value="/api/health-check/history"/>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                level: data.level,
+                findings: data.findings,
+                recommendations: data.recommendations,
+                confidence: data.confidence,
+                timestamp: new Date().toISOString()
             })
-                .then(res => res.json())
-                .then(result => console.log('저장 완료:', result))
-                .catch(err => console.error('저장 오류:', err));
-        }
+        })
+            .then(res => res.json())
+            .then(result => console.log('저장 완료:', result))
+            .catch(err => console.error('저장 오류:', err));
+    }
 
-        window.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('openFileBtn').addEventListener('click', function () {
-                document.getElementById('imageInput').click();
-            });
-
-            document.getElementById('openCameraBtn').addEventListener('click', startCamera);
-            document.getElementById('captureBtn').addEventListener('click', capturePhoto);
-            document.getElementById('closeCameraBtn').addEventListener('click', stopCamera);
-
-            document.getElementById('imageInput').addEventListener('change', function (e) {
-                handleFileSelect(e.target.files[0]);
-            });
-
-            const dragArea = document.getElementById('uploadDragArea');
-            dragArea.addEventListener('dragover', function (e) {
-                e.preventDefault();
-                dragArea.classList.add('drag-over');
-            });
-            dragArea.addEventListener('dragleave', function (e) {
-                e.preventDefault();
-                dragArea.classList.remove('drag-over');
-            });
-            dragArea.addEventListener('drop', function (e) {
-                e.preventDefault();
-                dragArea.classList.remove('drag-over');
-                if (e.dataTransfer.files.length > 0) {
-                    handleFileSelect(e.dataTransfer.files[0]);
-                }
-            });
-
-            document.getElementById('removeImageBtn').addEventListener('click', function (e) {
-                e.stopPropagation();
-                resetUpload();
-            });
-
-            document.querySelectorAll('.category-option').forEach(option => {
-                option.addEventListener('click', function () {
-                    document.querySelectorAll('.category-option').forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    this.querySelector('input').checked = true;
-                    selectedCategory = this.querySelector('input').value;
-                    updateAnalyzeButton();
-                });
-            });
-
-            document.getElementById('analyzeBtn').addEventListener('click', function () {
-                if (selectedFile && selectedCategory) {
-                    performAnalysis();
-                }
-            });
-
-            document.getElementById('findHospitalBtn').addEventListener('click', function () {
-                window.location.href = mapUrl;
-            });
+    window.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('openFileBtn').addEventListener('click', function () {
+            document.getElementById('imageInput').click();
         });
-    })();
+
+        document.getElementById('openCameraBtn').addEventListener('click', startCamera);
+        document.getElementById('captureBtn').addEventListener('click', capturePhoto);
+        document.getElementById('closeCameraBtn').addEventListener('click', stopCamera);
+
+        document.getElementById('imageInput').addEventListener('change', function (e) {
+            handleFileSelect(e.target.files[0]);
+        });
+
+        const dragArea = document.getElementById('uploadDragArea');
+        dragArea.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dragArea.classList.add('drag-over');
+        });
+        dragArea.addEventListener('dragleave', function (e) {
+            e.preventDefault();
+            dragArea.classList.remove('drag-over');
+        });
+        dragArea.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dragArea.classList.remove('drag-over');
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+
+        document.getElementById('removeImageBtn').addEventListener('click', function (e) {
+            e.stopPropagation();
+            resetUpload();
+        });
+
+        document.getElementById('symptomText').addEventListener('input', updateAnalyzeButton);
+
+        document.getElementById('analyzeBtn').addEventListener('click', function () {
+            performAnalysis();
+        });
+
+        document.getElementById('findHospitalBtn').addEventListener('click', function () {
+            window.location.href = mapUrl;
+        });
+    });
+})();
 </script>
 
 <div class="health-check-container">
@@ -280,7 +300,7 @@
             <h1><i class="fas fa-heartbeat" style="color: var(--primary-color);"></i> AI 가상 진단</h1>
             <p class="subtitle">
                 반려동물의 건강 상태를 AI가 빠르게 예비 진단합니다<br>
-                눈, 피부, 치아, 상처 부위를 촬영하여 업로드해주세요
+                사진을 업로드하거나 증상을 입력해주세요
             </p>
         </div>
 
@@ -296,8 +316,8 @@
         <div class="upload-section">
             <div id="uploadSection">
                 <div class="upload-method-header">
-                    <h3><i class="fas fa-images"></i> 이미지 선택 방법</h3>
-                    <p>아래 두 가지 방법 중 하나를 선택하세요</p>
+                    <h3><i class="fas fa-images"></i> 이미지 선택 (선택사항)</h3>
+                    <p>사진이 있으면 더 정확한 분석이 가능합니다</p>
                 </div>
 
                 <div class="upload-actions">
@@ -343,40 +363,20 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-
-                <div class="category-selection">
-                    <h5 style="text-align: center; margin-bottom: var(--space-4);">
-                        <i class="fas fa-clipboard-list"></i> 진단 부위 선택
-                    </h5>
-                    <div class="category-grid">
-                        <label class="category-option">
-                            <input type="radio" name="category" value="eyes">
-                            <div class="category-icon">👁️</div>
-                            <div class="category-label">눈</div>
-                        </label>
-                        <label class="category-option">
-                            <input type="radio" name="category" value="skin">
-                            <div class="category-icon">🐾</div>
-                            <div class="category-label">피부</div>
-                        </label>
-                        <label class="category-option">
-                            <input type="radio" name="category" value="teeth">
-                            <div class="category-icon">🦷</div>
-                            <div class="category-label">치아</div>
-                        </label>
-                        <label class="category-option">
-                            <input type="radio" name="category" value="wound">
-                            <div class="category-icon">🩹</div>
-                            <div class="category-label">상처</div>
-                        </label>
-                    </div>
-                </div>
-
-                <button class="analyze-btn" id="analyzeBtn" disabled>
-                    <i class="fas fa-search-plus mr-2"></i>
-                    AI 분석 시작하기
-                </button>
             </div>
+
+            <div class="symptom-input-section">
+                <label for="symptomText" class="input-label">
+                    <i class="fas fa-comment-medical"></i> 증상 설명 (선택사항)
+                </label>
+                <textarea id="symptomText" class="symptom-textarea"
+                    placeholder="반려동물의 증상을 자세히 적어주세요. (예: 3일 전부터 밥을 안 먹고 기운이 없어요)"></textarea>
+            </div>
+
+            <button class="analyze-btn" id="analyzeBtn" disabled>
+                <i class="fas fa-search-plus mr-2"></i>
+                AI 분석 시작하기
+            </button>
         </div>
 
         <div class="results-section" id="resultsSection">
@@ -468,6 +468,6 @@
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-content">
         <div class="loading-spinner"></div>
-        <div class="loading-text">AI가 이미지를 분석하고 있습니다...</div>
+        <div class="loading-text">AI가 증상과 이미지를 분석하고 있습니다...</div>
     </div>
 </div>

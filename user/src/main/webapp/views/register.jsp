@@ -1,158 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<style>
-    /* 다단계 회원가입 전용 스타일 */
-    .register-steps {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 0 1rem;
-    }
-
-    .register-steps .step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .register-steps .step-number {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #e9ecef;
-        color: #6c757d;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.3s ease;
-    }
-
-    .register-steps .step.active .step-number {
-        background: linear-gradient(135deg, #FF6B6B, #FA5252);
-        color: white;
-        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-    }
-
-    .register-steps .step.completed .step-number {
-        background: #51CF66;
-        color: white;
-    }
-
-    .register-steps .step-label {
-        font-size: 0.875rem;
-        color: #6c757d;
-        font-weight: 500;
-    }
-
-    .register-steps .step.active .step-label {
-        color: #FF6B6B;
-        font-weight: 700;
-    }
-
-    .register-steps .step-line {
-        width: 80px;
-        height: 2px;
-        background: #e9ecef;
-        margin: 0 1rem;
-        margin-bottom: 2rem;
-    }
-
-    .register-step-content {
-        display: none;
-    }
-
-    .register-step-content.active {
-        display: block;
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .role-selection {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .role-card {
-        border: 2px solid #e9ecef;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .role-card:hover {
-        border-color: #FFB3B3;
-        background: #FFF5F5;
-    }
-
-    .role-card.selected {
-        border-color: #FF6B6B;
-        background: #FFE3E3;
-    }
-
-    .role-card input[type="radio"] {
-        display: none;
-    }
-
-    .role-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: #FF6B6B;
-    }
-
-    .role-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #212529;
-        margin-bottom: 0.5rem;
-    }
-
-    .role-desc {
-        font-size: 0.875rem;
-        color: #6c757d;
-    }
-
-    .terms-section {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .terms-section .form-check {
-        margin-bottom: 1rem;
-    }
-
-    .terms-section .form-check:last-child {
-        margin-bottom: 0;
-    }
-
-    .terms-section a {
-        color: #FF6B6B;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .terms-section a:hover {
-        text-decoration: underline;
-    }
-</style>
-
 <!-- 회원가입 컨테이너 -->
 <div class="auth-container" style="min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;">
-    <div style="max-width: 600px; width: 100%; background: white; border-radius: 1.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 3rem 2.5rem;">
+    <div style="max-width: 700px; width: 100%; background: white; border-radius: 1.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 3rem 2.5rem;">
         <!-- 헤더 -->
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #FF6B6B, #FA5252); border-radius: 1rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 4px 12px rgba(255,107,107,0.3);">
@@ -176,11 +27,16 @@
             <div class="step-line"></div>
             <div class="step" id="step-indicator-3">
                 <div class="step-number">3</div>
+                <div class="step-label">반려동물</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" id="step-indicator-4">
+                <div class="step-number">4</div>
                 <div class="step-label">완료</div>
             </div>
         </div>
 
-        <form id="registerForm" action="<c:url value='/register'/>" method="post">
+        <form id="registerForm" action="<c:url value='/register'/>" method="post" enctype="multipart/form-data">
 
             <!-- ========== STEP 1: 역할 선택 ========== -->
             <div class="register-step-content active" id="step-1">
@@ -189,7 +45,7 @@
 
                 <div class="role-selection">
                     <label class="role-card" for="role-owner">
-                        <input type="radio" name="userRole" id="role-owner" value="OWNER" checked>
+                        <input type="radio" name="userRole" id="role-owner" value="OWNER">
                         <div class="role-icon"><i class="fas fa-dog"></i></div>
                         <div class="role-title">반려인</div>
                         <div class="role-desc">반려동물과 함께하는 보호자</div>
@@ -293,8 +149,117 @@
                 </div>
             </div>
 
-            <!-- ========== STEP 3: 약관 동의 ========== -->
+            <!-- ========== STEP 3: 반려동물 정보 입력 (반려인만) ========== -->
             <div class="register-step-content" id="step-3">
+                <h4 style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.5rem;">반려동물 정보를 입력해주세요</h4>
+                <p style="color: #6c757d; margin-bottom: 2rem;">최소 1마리 이상 등록해주세요</p>
+
+                <!-- 반려동물 폼 컨테이너 -->
+                <div id="petFormsContainer">
+                    <!-- 첫 번째 반려동물 폼 -->
+                    <div class="pet-form-container" data-pet-index="0">
+                        <div class="pet-form-header">
+                            <div class="pet-form-title">
+                                <i class="fas fa-paw"></i>
+                                반려동물 #1
+                            </div>
+                        </div>
+
+                        <!-- 사진 업로드 -->
+                        <div class="pet-photo-upload">
+                            <div class="pet-photo-preview" id="pet-photo-preview-0">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <label class="photo-upload-label">
+                                <i class="fas fa-upload mr-2"></i> 사진 업로드
+                                <input type="file" name="petPhoto_0" accept="image/*" onchange="previewPetPhoto(0, this)">
+                            </label>
+                        </div>
+
+                        <!-- 2열 레이아웃 -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <!-- 이름 -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-weight: 600; color: #212529;">이름 <span style="color: #dc3545;">*</span></label>
+                                <input type="text" class="form-control" name="petName_0" placeholder="반려동물 이름"
+                                       style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;" required>
+                            </div>
+
+                            <!-- 종류 -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-weight: 600; color: #212529;">종류 <span style="color: #dc3545;">*</span></label>
+                                <select class="form-control" name="petType_0" id="petType_0" onchange="toggleCustomPetType(0)"
+                                        style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="DOG">강아지</option>
+                                    <option value="CAT">고양이</option>
+                                    <option value="ETC">기타 (직접 입력)</option>
+                                </select>
+                                <!-- 기타 선택 시 직접 입력 필드 -->
+                                <input type="text" class="form-control mt-2" name="customPetType_0" id="customPetType_0"
+                                       placeholder="어떤 동물을 키우시나요?"
+                                       style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef; display: none;"
+                                       maxlength="20">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <!-- 품종 -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-weight: 600; color: #212529;">품종</label>
+                                <input type="text" class="form-control" name="petBreed_0" placeholder="예: 골든 리트리버"
+                                       style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;">
+                            </div>
+
+                            <!-- 성별 -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-weight: 600; color: #212529;">성별 <span style="color: #dc3545;">*</span></label>
+                                <select class="form-control" name="petGender_0"
+                                        style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="MALE">수컷</option>
+                                    <option value="FEMALE">암컷</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <!-- 나이 -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-weight: 600; color: #212529;">나이 <span style="color: #dc3545;">*</span></label>
+                                <input type="number" class="form-control" name="petAge_0" placeholder="나이 (년)" min="0" max="30"
+                                       style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;" required>
+                            </div>
+
+                            <!-- 몸무게 -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-weight: 600; color: #212529;">몸무게 <span style="color: #dc3545;">*</span></label>
+                                <input type="number" class="form-control" name="petWeight_0" placeholder="몸무게 (kg)" step="0.1" min="0"
+                                       style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 반려동물 추가 버튼 -->
+                <button type="button" class="add-pet-btn" onclick="addPetForm()">
+                    <i class="fas fa-plus-circle mr-2"></i> 반려동물 추가
+                </button>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)"
+                            style="height: 3rem; border-radius: 0.75rem; font-weight: 600;">
+                        <i class="fas fa-arrow-left mr-2"></i> 이전
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(4)"
+                            style="background: linear-gradient(135deg, #FF6B6B, #FA5252); border: none; height: 3rem; border-radius: 0.75rem; font-weight: 600;">
+                        다음 <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== STEP 4: 약관 동의 ========== -->
+            <div class="register-step-content" id="step-4">
                 <h4 style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.5rem;">약관 동의</h4>
                 <p style="color: #6c757d; margin-bottom: 2rem;">아래 약관에 동의하고 가입을 완료하세요</p>
 
@@ -327,7 +292,7 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)"
+                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(3)"
                             style="height: 3rem; border-radius: 0.75rem; font-weight: 600;">
                         <i class="fas fa-arrow-left mr-2"></i> 이전
                     </button>
@@ -348,121 +313,5 @@
     </div>
 </div>
 
-<script>
-    let currentStep = 1;
-
-    // 다음 단계
-    function nextStep(step) {
-        if (!validateStep(currentStep)) return;
-
-        document.getElementById('step-' + currentStep).classList.remove('active');
-        document.getElementById('step-indicator-' + currentStep).classList.remove('active');
-        document.getElementById('step-indicator-' + currentStep).classList.add('completed');
-
-        currentStep = step;
-        document.getElementById('step-' + currentStep).classList.add('active');
-        document.getElementById('step-indicator-' + currentStep).classList.add('active');
-        window.scrollTo(0, 0);
-    }
-
-    // 이전 단계
-    function prevStep(step) {
-        document.getElementById('step-' + currentStep).classList.remove('active');
-        document.getElementById('step-indicator-' + currentStep).classList.remove('active');
-
-        currentStep = step;
-        document.getElementById('step-' + currentStep).classList.add('active');
-        document.getElementById('step-indicator-' + currentStep).classList.add('active');
-        document.getElementById('step-indicator-' + currentStep).classList.remove('completed');
-        window.scrollTo(0, 0);
-    }
-
-    // 단계 검증
-    function validateStep(step) {
-        if (step === 2) {
-            const fields = ['username', 'password', 'passwordConfirm', 'name', 'email', 'phone'];
-            for (let field of fields) {
-                if (!document.getElementById(field).value) {
-                    alert('모든 필수 항목을 입력해주세요.');
-                    return false;
-                }
-            }
-            if (document.getElementById('password').value !== document.getElementById('passwordConfirm').value) {
-                alert('비밀번호가 일치하지 않습니다.');
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // 역할 카드 선택
-    document.querySelectorAll('.role-card').forEach(card => {
-        card.addEventListener('click', function() {
-            document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-            this.classList.add('selected');
-        });
-    });
-
-    // 비밀번호 토글
-    function togglePassword(inputId) {
-        const input = document.getElementById(inputId);
-        const icon = document.getElementById(inputId + '-icon');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    }
-
-    // 아이디 중복 확인
-    function checkUsername() {
-        const username = document.getElementById('username').value;
-        if (!username) {
-            alert('아이디를 입력해주세요.');
-            return;
-        }
-        alert('사용 가능한 아이디입니다.');
-    }
-
-    // 전체 약관 동의
-    function toggleAllTerms() {
-        const agreeAll = document.getElementById('agreeAll').checked;
-        document.querySelectorAll('.term-checkbox').forEach(cb => cb.checked = agreeAll);
-    }
-
-    // 전화번호 자동 하이픈
-    document.getElementById('phone').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/[^0-9]/g, '');
-        if (value.length > 0) {
-            if (value.length <= 3) {
-                e.target.value = value;
-            } else if (value.length <= 7) {
-                e.target.value = value.slice(0, 3) + '-' + value.slice(3);
-            } else {
-                e.target.value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
-            }
-        }
-    });
-
-    // 비밀번호 확인 검증
-    document.getElementById('passwordConfirm').addEventListener('input', function() {
-        const password = document.getElementById('password').value;
-        if (this.value && password !== this.value) {
-            this.style.borderColor = '#dc3545';
-        } else {
-            this.style.borderColor = '#e9ecef';
-        }
-    });
-
-    // 폼 제출
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-        if (!document.getElementById('agreeTerms').checked || !document.getElementById('agreePrivacy').checked) {
-            e.preventDefault();
-            alert('필수 약관에 동의해주세요.');
-        }
-    });
-</script>
+<!-- 외부 JavaScript 파일 로드 -->
+<script src="<c:url value='/js/register.js'/>"></script>

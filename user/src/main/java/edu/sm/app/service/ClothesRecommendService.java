@@ -25,7 +25,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -207,14 +206,18 @@ public class ClothesRecommendService {
         // [핵심 수정 6]: 불필요한 UI/데이터 시각화 요소 제거 (컬러 블록, 측정값 방지)
         String noUiElementsInstruction = "이미지 내에 **컬러 팔레트, 색상 블록, 측정값, 치수, UI 인터페이스 요소, 프레임, 캔버스 배경**을 넣지 마십시오. 오직 반려동물의 가상 피팅 결과만 중앙에 위치해야 합니다.";
 
+        // [최종 수정]: 전신 구도 확보
+        String fullBodyInstruction = "이미지 구도는 반려동물의 **전신**이 머리부터 꼬리(발)까지 명확하게 보이도록 **풀샷(Full Shot)**으로 구성하십시오. 상체만 보이거나 잘린 부분이 없어야 합니다.";
+
 
         return identityInstruction + " "
                 + safeAnimal + "에게 " + safeClothing + "를 " + safeSize + " 사이즈로 자연스럽게 입힌 가상 피팅 이미지를 실사 톤으로 렌더링하세요. "
                 + fittingActionInstruction + " "
-                + styleInstruction + " " // 수정된 스타일 지침 적용
+                + styleInstruction + " "
                 + backgroundInstruction + " "
                 + noTextInImageInstruction + " "
-                + noUiElementsInstruction
+                + noUiElementsInstruction + " "
+                + fullBodyInstruction // <-- 전신 구도 지침 추가
                 + " 의류 색상은 추천 팔레트(" + paletteText + ") 중 잘 어울리는 조합을 사용합니다.";
     }
 

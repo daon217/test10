@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.sm.app.repository.PetRepository">
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="petMap" type="Pet">
+        <id column="pet_id" property="petId"/>
+        <result column="user_id" property="userId"/>
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+        <result column="custom_type" property="customType"/>
+        <result column="breed" property="breed"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="weight" property="weight"/>
+        <result column="photo" property="photo"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 반려동물 등록 -->
+    <insert id="insert" parameterType="Pet" useGeneratedKeys="true" keyProperty="petId">
+        INSERT INTO pets (user_id, name, type, custom_type, breed, gender, age, weight, photo)
+        VALUES (#{userId}, #{name}, #{type}, #{customType}, #{breed}, #{gender}, #{age}, #{weight}, #{photo})
+    </insert>
+
+    <!-- 반려동물 조회 (ID) -->
+    <select id="select" parameterType="Integer" resultMap="petMap">
+        SELECT * FROM pets WHERE pet_id = #{petId}
+    </select>
+
+    <!-- 전체 반려동물 조회 -->
+    <select id="selectAll" resultMap="petMap">
+        SELECT * FROM pets ORDER BY created_at DESC
+    </select>
+
+    <!-- 사용자별 반려동물 조회 -->
+    <select id="selectByUserId" parameterType="Integer" resultMap="petMap">
+        SELECT * FROM pets WHERE user_id = #{userId} ORDER BY created_at ASC
+    </select>
+
+    <!-- 반려동물 정보 수정 -->
+    <update id="update" parameterType="Pet">
+        UPDATE pets
+        SET name = #{name},
+            type = #{type},
+            custom_type = #{customType},
+            breed = #{breed},
+            gender = #{gender},
+            age = #{age},
+            weight = #{weight},
+            photo = #{photo},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE pet_id = #{petId}
+    </update>
+
+    <!-- 반려동물 삭제 -->
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM pets WHERE pet_id = #{petId}
+    </delete>
+
+    <!-- 사용자의 반려동물 수 조회 -->
+    <select id="countByUserId" parameterType="Integer" resultType="int">
+        SELECT COUNT(*) FROM pets WHERE user_id = #{userId}
+    </select>
+
+</mapper>
