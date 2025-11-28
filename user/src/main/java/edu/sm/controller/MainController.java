@@ -41,9 +41,4 @@ public class MainController {
         model.addAttribute("center", "clothes-recommend");
         return "index";
     }
-    @RequestMapping("/pet-figurine")
-    public String petFigurine(Model model) {
-        model.addAttribute("center", "pet-figurine");
-        return "index";
-    }
 }
