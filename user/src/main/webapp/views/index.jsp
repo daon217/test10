@@ -126,7 +126,7 @@
                             <a class="dropdown-item" href="<c:url value='/clothes-recommend'/>">
                                 <i class="fas fa-tshirt"></i> 옷 사이즈 추천
                             </a>
-                            <a class="dropdown-item" href="<c:url value='/pet-figurine'/>">
+                            <a class="dropdown-item" href="<c:url value='/pet-figure'/>">
                                 <i class="fas fa-palette"></i> 피규어 만들기
                             </a>
                         </div>

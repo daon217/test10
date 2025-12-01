@@ -25,69 +25,28 @@
                                             placeholder="예: 소형견 산책 도와주실 분 구합니다" required>
                                     </div>
 
-                                    <!-- 반려동물 정보 -->
+                                    <!-- 반려동물 선택 -->
                                     <div class="card mb-4">
                                         <div class="card-header bg-light">
-                                            <h5 class="mb-0"><i class="fas fa-paw"></i> 반려동물 정보</h5>
+                                            <h5 class="mb-0"><i class="fas fa-paw"></i> 함께할 반려동물 선택</h5>
                                         </div>
                                         <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="petName">이름 <span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="petName"
-                                                            name="petName" placeholder="예: 몽이" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="petType">종류 <span
-                                                                class="text-danger">*</span></label>
-                                                        <select class="form-control" id="petType" name="petType"
-                                                            required>
-                                                            <option value="">선택하세요</option>
-                                                            <option value="dog">강아지</option>
-                                                            <option value="cat">고양이</option>
-                                                            <option value="other">기타</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="petSize">크기 <span
-                                                                class="text-danger">*</span></label>
-                                                        <select class="form-control" id="petSize" name="petSize"
-                                                            required>
-                                                            <option value="">선택하세요</option>
-                                                            <option value="small">소형 (5kg 이하)</option>
-                                                            <option value="medium">중형 (5-15kg)</option>
-                                                            <option value="large">대형 (15kg 이상)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="petAge">나이</label>
-                                                        <input type="number" class="form-control" id="petAge"
-                                                            name="petAge" placeholder="예: 3" min="0" max="30">
-                                                    </div>
-                                                </div>
-                                            </div>
                                             <div class="form-group">
-                                                <label for="petImage">사진 업로드</label>
-                                                <div class="custom-file">
-                                                    <input type="file" class="custom-file-input" id="petImage"
-                                                        name="petImage" accept="image/*">
-                                                    <label class="custom-file-label" for="petImage">파일 선택...</label>
-                                                </div>
-                                                <small class="form-text text-muted">반려동물 사진을 업로드하면 매칭률이 높아집니다</small>
-                                                <div id="imagePreview" class="mt-2" style="display: none;">
-                                                    <img id="previewImg" src="" alt="미리보기"
-                                                        style="max-width: 200px; border-radius: 8px;">
-                                                </div>
+                                                <label for="petId">반려동물 <span class="text-danger">*</span></label>
+                                                <select class="form-control" id="petId" name="petId" required>
+                                                    <option value="">선택하세요</option>
+                                                    <c:forEach items="${pets}" var="pet">
+                                                        <option value="${pet.petId}">${pet.name} (${pet.breed},
+                                                            ${pet.age}살)</option>
+                                                    </c:forEach>
+                                                </select>
+                                                <c:if test="${empty pets}">
+                                                    <small class="form-text text-danger">
+                                                        등록된 반려동물이 없습니다. <a
+                                                            href="<c:url value='/mypage/pet/register'/>">반려동물 등록하러
+                                                            가기</a>
+                                                    </small>
+                                                </c:if>
                                             </div>
                                         </div>
                                     </div>
@@ -133,7 +92,7 @@
                                             <div class="form-group">
                                                 <label for="payment">희망 보수 (원) <span
                                                         class="text-danger">*</span></label>
-                                                <input type="number" class="form-control" id="payment" name="payment"
+                                                <input type="number" class="form-control" id="payment" name="payAmount"
                                                     placeholder="예: 15000" min="0" step="1000" required>
                                                 <small class="form-text text-muted">시급 기준으로 입력해주세요</small>
                                             </div>
@@ -148,7 +107,7 @@
                                         <div class="card-body">
                                             <div class="form-group">
                                                 <label for="notes">반려동물 성격 및 주의사항</label>
-                                                <textarea class="form-control" id="notes" name="notes" rows="5"
+                                                <textarea class="form-control" id="notes" name="content" rows="5"
                                                     placeholder="예: 낯을 많이 가려서 처음엔 조금 경계할 수 있어요. 다른 강아지를 보면 짖을 수 있으니 주의해주세요."></textarea>
                                             </div>
                                         </div>
@@ -172,34 +131,10 @@
         </div>
 
         <script>
-            // 파일 선택 시 라벨 업데이트
-            document.getElementById('petImage').addEventListener('change', function (e) {
-                const fileName = e.target.files[0] ? e.target.files[0].name : '파일 선택...';
-                const label = e.target.nextElementSibling;
-                label.textContent = fileName;
-
-                // 이미지 미리보기
-                if (e.target.files && e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        document.getElementById('previewImg').src = e.target.result;
-                        document.getElementById('imagePreview').style.display = 'block';
-                    };
-                    reader.readAsDataURL(e.target.files[0]);
-                }
-            });
-
             // 폼 제출 시
             document.getElementById('postWriteForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                // 실제로는 서버에 전송
-                // 여기서는 데모용 알림
-                if (confirm('구인 글을 등록하시겠습니까?')) {
-                    showToast('구인 글이 등록되었습니다!', 'success');
-                    setTimeout(function () {
-                        window.location.href = '<c:url value="/walkpt/owner/post-list"/>';
-                    }, 1500);
+                if (!confirm('구인 글을 등록하시겠습니까?')) {
+                    e.preventDefault();
                 }
             });
 

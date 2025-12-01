@@ -91,4 +91,10 @@ public class MainController {
         return "index";
     }
 
+    @RequestMapping("/pet-figure")
+    public String petFigure(Model model) {
+        model.addAttribute("center", "pet-figure");
+        return "index";
+    }
+
 }

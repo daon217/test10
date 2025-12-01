@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration  // springboot가 뜰때 메모리에 올라기가 전에 올라간다 먼저 컨피규레이션으로 할게 올라감
+@Configuration // springboot가 뜰때 메모리에 올라기가 전에 올라간다 먼저 컨피규레이션으로 할게 올라감
 @EnableEncryptableProperties
 public class JasyptConfig {
 
     @Value("${app.key.skey}")
     private String skey;
-    private static final String ALGORITHM =  "PBEWithMD5AndDES";
+    private static final String ALGORITHM = "PBEWithMD5AndDES";
 
     @Bean("jasyptStringEncryptor")
     public StringEncryptor stringEncryptor() {
