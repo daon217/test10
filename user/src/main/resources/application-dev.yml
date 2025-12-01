@@ -38,15 +38,22 @@ spring:
           model: gpt-4o
           temperature: 0.1
           max-tokens: 1000
+    nanobanana:
+      api-key: ENC(i2ATVr8UdD/WRvCwlLqnu+XYd+nR6hzsbM51Vnn/gFB7mnNxrClsSmcLOQis9Ozy)
+      base-url: https://generativelanguage.googleapis.com
+      model: gemini-2.5-flash-image
+
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: ENC(Y6NgbbcggJp06p9ZnpSSAQ==)
+
 mybatis:
   type-aliases-package: edu.sm.app.dto
   mapper-locations: classpath:/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+
 logging:
   level:
     root: info

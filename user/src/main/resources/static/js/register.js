@@ -302,31 +302,31 @@ function checkUsername() {
     fetch(`/register/check-username?username=${encodeURIComponent(username)}`, {
         method: 'GET'
     })
-            .then(response => response.json())
-            .then(data => {
-                if (data.available) {
-                    alert(data.message || '사용 가능한 아이디입니다.');
-                    usernameInput.style.borderColor = '#28a745';
-                    isUsernameChecked = true;
-                    checkedUsername = username;
-                } else {
-                    alert(data.message || '이미 사용 중인 아이디입니다.');
-                    usernameInput.style.borderColor = '#dc3545';
-                    isUsernameChecked = false;
-                    checkedUsername = '';
-                }
-            })
-            .catch(error => {
-                console.error('아이디 중복 확인 오류:', error);
-                alert('중복 확인 중 오류가 발생했습니다.');
-            });
+        .then(response => response.json())
+        .then(data => {
+            if (data.available) {
+                alert(data.message || '사용 가능한 아이디입니다.');
+                usernameInput.style.borderColor = '#28a745';
+                isUsernameChecked = true;
+                checkedUsername = username;
+            } else {
+                alert(data.message || '이미 사용 중인 아이디입니다.');
+                usernameInput.style.borderColor = '#dc3545';
+                isUsernameChecked = false;
+                checkedUsername = '';
+            }
+        })
+        .catch(error => {
+            console.error('아이디 중복 확인 오류:', error);
+            alert('중복 확인 중 오류가 발생했습니다.');
+        });
 }
 
 // 아이디 입력 시 중복 확인 상태 초기화
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const usernameInput = document.getElementById('username');
     if (usernameInput) {
-        usernameInput.addEventListener('input', function() {
+        usernameInput.addEventListener('input', function () {
             const currentUsername = this.value;
             // 확인된 아이디와 다르면 중복 확인 상태 초기화
             if (currentUsername !== checkedUsername) {
@@ -345,71 +345,87 @@ function addPetForm() {
     const displayNumber = newIndex + 1;
 
     const newForm = `
-        <div class="pet-form-container" data-pet-index="${newIndex}">
-            <div class="pet-form-header">
-                <div class="pet-form-title">
-                    <i class="fas fa-paw"></i> 반려동물 #${displayNumber}
-                </div>
-                <button type="button" class="pet-remove-btn" onclick="removePetForm(${newIndex})">
-                    <i class="fas fa-trash-alt mr-1"></i> 삭제
+        <div class="pet-form-card" data-pet-index="${newIndex}">
+            <div class="pet-card-header">
+                <h5 class="pet-card-title">
+                    <span class="pet-number-badge">${displayNumber}</span>
+                    반려동물 정보
+                </h5>
+                <button type="button" class="btn-remove-pet" onclick="removePetForm(${newIndex})">
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
-            <div class="pet-photo-upload">
-                <div class="pet-photo-preview" id="pet-photo-preview-${newIndex}">
-                    <i class="fas fa-camera"></i>
+
+            <div class="pet-card-body">
+                <!-- 사진 업로드 -->
+                <div class="pet-photo-section">
+                    <div class="pet-photo-wrapper">
+                        <div class="pet-photo-preview" id="pet-photo-preview-${newIndex}">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <label for="petPhoto_${newIndex}" class="pet-photo-btn">
+                            <i class="fas fa-plus"></i>
+                        </label>
+                        <input type="file" id="petPhoto_${newIndex}" name="petPhoto_${newIndex}" accept="image/*" onchange="previewPetPhoto(${newIndex}, this)" hidden>
+                    </div>
+                    <p class="pet-photo-guide">프로필 사진을 등록해주세요</p>
                 </div>
-                <label class="photo-upload-label">
-                    <i class="fas fa-upload mr-2"></i> 사진 업로드
-                    <input type="file" name="petPhoto_${newIndex}" accept="image/*" onchange="previewPetPhoto(${newIndex}, this)">
-                </label>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>이름</label>
-                    <input type="text" class="form-control" name="petName_${newIndex}" placeholder="이름"
-                           style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;">
+
+                <!-- 2열 레이아웃 -->
+                <div class="form-row-group">
+                    <!-- 이름 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-font mr-1"></i> 이름 <span class="required">*</span></label>
+                        <input type="text" class="form-control-auth" name="petName_${newIndex}" placeholder="반려동물 이름" required>
+                    </div>
+
+                    <!-- 종류 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-paw mr-1"></i> 종류 <span class="required">*</span></label>
+                        <select class="form-control-auth" name="petType_${newIndex}" id="petType_${newIndex}" onchange="toggleCustomPetType(${newIndex})" required>
+                            <option value="">선택하세요</option>
+                            <option value="DOG">강아지</option>
+                            <option value="CAT">고양이</option>
+                            <option value="ETC">기타 (직접 입력)</option>
+                        </select>
+                        <!-- 기타 선택 시 직접 입력 필드 -->
+                        <input type="text" class="form-control-auth mt-2" name="customPetType_${newIndex}" id="customPetType_${newIndex}"
+                               placeholder="어떤 동물을 키우시나요?"
+                               style="display: none;"
+                               maxlength="20">
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>종류</label>
-                    <select class="form-control" name="petType_${newIndex}" id="petType_${newIndex}" onchange="toggleCustomPetType(${newIndex})"
-                            style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;">
-                        <option value="">선택하세요</option>
-                        <option value="DOG">강아지</option>
-                        <option value="CAT">고양이</option>
-                        <option value="ETC">기타 (직접 입력)</option>
-                    </select>
-                    <input type="text" class="form-control mt-2" name="customPetType_${newIndex}" id="customPetType_${newIndex}"
-                           placeholder="어떤 동물을 키우시나요?"
-                           style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef; display: none;"
-                           maxlength="20">
+
+                <div class="form-row-group">
+                    <!-- 품종 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-dna mr-1"></i> 품종</label>
+                        <input type="text" class="form-control-auth" name="petBreed_${newIndex}" placeholder="예: 골든 리트리버">
+                    </div>
+
+                    <!-- 성별 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-venus-mars mr-1"></i> 성별 <span class="required">*</span></label>
+                        <select class="form-control-auth" name="petGender_${newIndex}" required>
+                            <option value="">선택하세요</option>
+                            <option value="MALE">수컷</option>
+                            <option value="FEMALE">암컷</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>품종</label>
-                    <input type="text" class="form-control" name="petBreed_${newIndex}" placeholder="예: 골든 리트리버"
-                           style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>성별</label>
-                    <select class="form-control" name="petGender_${newIndex}"
-                            style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;">
-                        <option value="">선택하세요</option>
-                        <option value="MALE">수컷</option>
-                        <option value="FEMALE">암컷</option>
-                    </select>
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>나이</label>
-                    <input type="number" class="form-control" name="petAge_${newIndex}" placeholder="나이 (년)" min="0" max="30"
-                           style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>몸무게</label>
-                    <input type="number" class="form-control" name="petWeight_${newIndex}" placeholder="몸무게 (kg)" step="0.1" min="0"
-                           style="height: 2.75rem; border-radius: 0.75rem; border: 2px solid #e9ecef;">
+
+                <div class="form-row-group">
+                    <!-- 나이 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-birthday-cake mr-1"></i> 나이 <span class="required">*</span></label>
+                        <input type="number" class="form-control-auth" name="petAge_${newIndex}" placeholder="나이 (년)" min="0" max="30" required>
+                    </div>
+
+                    <!-- 몸무게 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-weight mr-1"></i> 몸무게 <span class="required">*</span></label>
+                        <input type="number" class="form-control-auth" name="petWeight_${newIndex}" placeholder="몸무게 (kg)" step="0.1" min="0" required>
+                    </div>
                 </div>
             </div>
         </div>
@@ -428,7 +444,7 @@ function previewPetPhoto(index, input) {
     const preview = document.getElementById(`pet-photo-preview-${index}`);
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             preview.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
         };
         reader.readAsDataURL(input.files[0]);
@@ -437,12 +453,12 @@ function previewPetPhoto(index, input) {
 
 // ==================== 초기화 ====================
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('🐾 회원가입 페이지 로드 완료');
 
     // 역할 카드 클릭 시 라디오 버튼 체크
     document.querySelectorAll('.role-card').forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function () {
             document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
             const radio = this.querySelector('input[type="radio"]');
@@ -463,9 +479,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 약관 동의 개별 체크박스 이벤트
     document.querySelectorAll('.term-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             const allChecked = Array.from(document.querySelectorAll('.term-checkbox'))
-                    .every(cb => cb.checked);
+                .every(cb => cb.checked);
             document.getElementById('agreeAll').checked = allChecked;
         });
     });

@@ -28,6 +28,11 @@
                                 <i class="fas fa-user-check"></i> 구직 글 보기
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#togetherWalk" role="tab">
+                                <i class="fas fa-users"></i> 함께 산책하기
+                            </a>
+                        </li>
                     </ul>
                     <div class="action-buttons">
                         <c:choose>
@@ -35,16 +40,22 @@
                                 <a href="<c:url value='/walkpt/owner/post-write'/>" class="btn btn-pet-primary mr-2">
                                     <i class="fas fa-plus"></i> 구인 글 작성
                                 </a>
-                                <a href="<c:url value='/walkpt/worker/job-post-write'/>" class="btn btn-pet-secondary">
+                                <a href="<c:url value='/walkpt/worker/job-post-write'/>" class="btn btn-pet-secondary mr-2">
                                     <i class="fas fa-plus"></i> 구직 글 작성
+                                </a>
+                                <a href="<c:url value='/walkpt/togetherwalk/write'/>" class="btn btn-pet-info">
+                                    <i class="fas fa-plus"></i> 함께 산책하기
                                 </a>
                             </c:when>
                             <c:otherwise>
                                 <button class="btn btn-pet-primary mr-2" onclick="showLoginRequired()">
                                     <i class="fas fa-plus"></i> 구인 글 작성
                                 </button>
-                                <button class="btn btn-pet-secondary" onclick="showLoginRequired()">
+                                <button class="btn btn-pet-secondary mr-2" onclick="showLoginRequired()">
                                     <i class="fas fa-plus"></i> 구직 글 작성
+                                </button>
+                                <button class="btn btn-pet-info" onclick="showLoginRequired()">
+                                    <i class="fas fa-plus"></i> 함께 산책하기
                                 </button>
                             </c:otherwise>
                         </c:choose>
@@ -204,15 +215,130 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="text-center mt-4">
                             <button class="btn btn-pet-primary">
                                 <i class="fas fa-plus-circle"></i> 더 많은 구직 글 보기
                             </button>
                         </div>
+                    </div> <!-- 여기 추가: 구직 글 탭 닫기 -->
+                    <!-- 함께 산책하기 목록 -->
+                    <div class="tab-pane fade" id="togetherWalk" role="tabpanel">
+                        <!-- 함께 산책하기 목록 -->
+                            <h4 class="mb-4"><i class="fas fa-users"></i> 함께 산책하기</h4>
+                            <div class="row">
+                                <!-- 함께 산책하기 카드 1 -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="walkpt-card">
+                                        <div class="walkpt-card-header">
+                                            <h5 class="walkpt-card-title">한강공원에서 함께 산책해요!</h5>
+                                            <span class="walkpt-badge badge-recruiting">모집 중</span>
+                                        </div>
+                                        <div class="walkpt-card-body">
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-user"></i> 홍길동
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-map-marker-alt"></i> 서울 강남구 삼성동
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-calendar-alt"></i> 2025-12-05 오후 3:00
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-dog"></i> 말티즈 (소형, 2살)
+                                            </p>
+                                            <div class="walkpt-tags">
+                                                <span class="walkpt-tag">소형견</span>
+                                                <span class="walkpt-tag">한강공원</span>
+                                                <span class="walkpt-tag">평일</span>
+                                            </div>
+                                        </div>
+                                        <div class="walkpt-card-footer">
+                                            <button class="btn btn-pet-outline btn-sm btn-block"
+                                                    onclick="showTogetherWalkDetail(1)">
+                                                <i class="fas fa-eye"></i> 상세보기
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 함께 산책하기 카드 2 -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="walkpt-card">
+                                        <div class="walkpt-card-header">
+                                            <h5 class="walkpt-card-title">주말 아침 산책 메이트 구해요</h5>
+                                            <span class="walkpt-badge badge-recruiting">모집 중</span>
+                                        </div>
+                                        <div class="walkpt-card-body">
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-user"></i> 김산책
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-map-marker-alt"></i> 서울 송파구 잠실동
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-calendar-alt"></i> 2025-12-07 오전 9:00
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-dog"></i> 웰시코기 (중형, 3살)
+                                            </p>
+                                            <div class="walkpt-tags">
+                                                <span class="walkpt-tag">중형견</span>
+                                                <span class="walkpt-tag">주말</span>
+                                                <span class="walkpt-tag">아침</span>
+                                            </div>
+                                        </div>
+                                        <div class="walkpt-card-footer">
+                                            <button class="btn btn-pet-outline btn-sm btn-block"
+                                                    onclick="showTogetherWalkDetail(2)">
+                                                <i class="fas fa-eye"></i> 상세보기
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 함께 산책하기 카드 3 -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="walkpt-card">
+                                        <div class="walkpt-card-header">
+                                            <h5 class="walkpt-card-title">올림픽공원 산책 같이해요</h5>
+                                            <span class="walkpt-badge badge-recruiting">모집 중</span>
+                                        </div>
+                                        <div class="walkpt-card-body">
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-user"></i> 박반려
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-map-marker-alt"></i> 서울 강동구 천호동
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-calendar-alt"></i> 2025-12-03 오후 5:00
+                                            </p>
+                                            <p class="walkpt-card-info">
+                                                <i class="fas fa-dog"></i> 골든리트리버 (대형, 5살)
+                                            </p>
+                                            <div class="walkpt-tags">
+                                                <span class="walkpt-tag">대형견</span>
+                                                <span class="walkpt-tag">올림픽공원</span>
+                                                <span class="walkpt-tag">평일</span>
+                                            </div>
+                                        </div>
+                                        <div class="walkpt-card-footer">
+                                            <button class="btn btn-pet-outline btn-sm btn-block"
+                                                    onclick="showTogetherWalkDetail(3)">
+                                                <i class="fas fa-eye"></i> 상세보기
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <a href="<c:url value='/walkpt/togetherwalk/list'/>" class="btn btn-pet-primary">
+                                    <i class="fas fa-plus-circle"></i> 더 많은 글 보기
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
 
         <!-- 구인 글 상세 모달 -->
@@ -306,6 +432,10 @@
                         }
                     }, 300);
                 }
+            }
+            // 함께 산책하기 상세보기
+            function showTogetherWalkDetail(postId) {
+                window.location.href = '<c:url value="/walkpt/togetherwalk/detail"/>?id=' + postId;
             }
 
             function applyToJobFromModal() {

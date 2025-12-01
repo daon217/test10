@@ -21,8 +21,8 @@
                         <span class="highlight">스마트한 일상</span>
                     </h1>
                     <p>
-                        AI 기술로 더 안전하고 건강한<br>
-                        반려동물 케어 서비스를 제공합니다
+                        반려동물과의 스마트한 일상을 제공합니다<br>
+
                     </p>
                     <div class="hero-buttons">
                         <button class="btn btn-pet-primary btn-lg" onclick="location.href='<c:url value='/map'/>'">
@@ -36,42 +36,42 @@
                     </div>
 
                     <!-- 통계 박스 -->
-                    <div class="hero-stats-box">
-                        <div class="hero-stats-title">
-                            <i class="fas fa-star"></i>
-                            <span>왜 PetCare AI를 선택해야 할까요?</span>
-                        </div>
-                        <div class="hero-stats-grid">
-                            <div class="hero-stat-item">
-                                <div class="hero-stat-icon">
-                                    <i class="fas fa-brain"></i>
-                                </div>
-                                <div class="hero-stat-number" data-target="5000">0</div>
-                                <div class="hero-stat-label">AI 기반 분석<br><small class="text-muted">실시간 건강 모니터링</small></div>
-                            </div>
-                            <div class="hero-stat-item">
-                                <div class="hero-stat-icon">
-                                    <i class="fas fa-shield-alt"></i>
-                                </div>
-                                <div class="hero-stat-number" data-target="8000">0</div>
-                                <div class="hero-stat-label">안전한 산책<br><small class="text-muted">최적 경로 추천</small></div>
-                            </div>
-                            <div class="hero-stat-item">
-                                <div class="hero-stat-icon">
-                                    <i class="fas fa-route"></i>
-                                </div>
-                                <div class="hero-stat-number" data-target="15000">0</div>
-                                <div class="hero-stat-label">AI 산책 기록<br><small class="text-muted">데이터 기반 관리</small></div>
-                            </div>
-                            <div class="hero-stat-item">
-                                <div class="hero-stat-icon">
-                                    <i class="fas fa-heart"></i>
-                                </div>
-                                <div class="hero-stat-number" data-target="98">0</div>
-                                <div class="hero-stat-label">24시간 케어<br><small class="text-muted">홈캠 실시간 분석</small></div>
-                            </div>
-                        </div>
-                    </div>
+<%--                    <div class="hero-stats-box">--%>
+<%--                        <div class="hero-stats-title">--%>
+<%--                            <i class="fas fa-star"></i>--%>
+<%--                            <span>왜 PetCare AI를 선택해야 할까요?</span>--%>
+<%--                        </div>--%>
+<%--                        <div class="hero-stats-grid">--%>
+<%--                            <div class="hero-stat-item">--%>
+<%--                                <div class="hero-stat-icon">--%>
+<%--                                    <i class="fas fa-brain"></i>--%>
+<%--                                </div>--%>
+<%--                                <div class="hero-stat-number" data-target="5000">0</div>--%>
+<%--                                <div class="hero-stat-label">AI 기반 분석<br><small class="text-muted">실시간 건강 모니터링</small></div>--%>
+<%--                            </div>--%>
+<%--                            <div class="hero-stat-item">--%>
+<%--                                <div class="hero-stat-icon">--%>
+<%--                                    <i class="fas fa-shield-alt"></i>--%>
+<%--                                </div>--%>
+<%--                                <div class="hero-stat-number" data-target="8000">0</div>--%>
+<%--                                <div class="hero-stat-label">안전한 산책<br><small class="text-muted">최적 경로 추천</small></div>--%>
+<%--                            </div>--%>
+<%--                            <div class="hero-stat-item">--%>
+<%--                                <div class="hero-stat-icon">--%>
+<%--                                    <i class="fas fa-route"></i>--%>
+<%--                                </div>--%>
+<%--                                <div class="hero-stat-number" data-target="15000">0</div>--%>
+<%--                                <div class="hero-stat-label">AI 산책 기록<br><small class="text-muted">데이터 기반 관리</small></div>--%>
+<%--                            </div>--%>
+<%--                            <div class="hero-stat-item">--%>
+<%--                                <div class="hero-stat-icon">--%>
+<%--                                    <i class="fas fa-heart"></i>--%>
+<%--                                </div>--%>
+<%--                                <div class="hero-stat-number" data-target="98">0</div>--%>
+<%--                                <div class="hero-stat-label">24시간 <br><small class="text-muted">홈캠 실시간 분석</small></div>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
                 </div>
             </div>
         </div>

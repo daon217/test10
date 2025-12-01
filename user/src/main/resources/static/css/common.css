@@ -25,7 +25,12 @@ body {
 }
 
 /* ========== 타이포그래피 ========== */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: var(--font-display);
     font-weight: var(--font-bold);
     line-height: 1.3;
@@ -33,12 +38,29 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: var(--space-4);
 }
 
-h1 { font-size: var(--font-5xl); }
-h2 { font-size: var(--font-4xl); }
-h3 { font-size: var(--font-3xl); }
-h4 { font-size: var(--font-2xl); }
-h5 { font-size: var(--font-xl); }
-h6 { font-size: var(--font-lg); }
+h1 {
+    font-size: var(--font-5xl);
+}
+
+h2 {
+    font-size: var(--font-4xl);
+}
+
+h3 {
+    font-size: var(--font-3xl);
+}
+
+h4 {
+    font-size: var(--font-2xl);
+}
+
+h5 {
+    font-size: var(--font-xl);
+}
+
+h6 {
+    font-size: var(--font-lg);
+}
 
 p {
     margin-bottom: var(--space-4);
@@ -227,8 +249,15 @@ p {
 
 /* ========== 펫 아이콘 애니메이션 ========== */
 @keyframes paw-bounce {
-    0%, 100% { transform: rotate(-10deg); }
-    50% { transform: rotate(10deg); }
+
+    0%,
+    100% {
+        transform: rotate(-10deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
 }
 
 .paw-icon {
@@ -237,10 +266,21 @@ p {
 }
 
 /* ========== 유틸리티 클래스 ========== */
-.text-primary { color: var(--primary-color) !important; }
-.text-secondary { color: var(--secondary-color) !important; }
-.bg-primary-light { background-color: var(--primary-bg) !important; }
-.bg-secondary-light { background-color: var(--secondary-bg) !important; }
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-secondary {
+    color: var(--secondary-color) !important;
+}
+
+.bg-primary-light {
+    background-color: var(--primary-bg) !important;
+}
+
+.bg-secondary-light {
+    background-color: var(--secondary-bg) !important;
+}
 
 /* 반응형 */
 @media (max-width: 768px) {
@@ -248,16 +288,47 @@ p {
         padding: var(--space-12) 0;
     }
 
-    h1 { font-size: var(--font-4xl); }
-    h2 { font-size: var(--font-3xl); }
-    h3 { font-size: var(--font-2xl); }
+    h1 {
+        font-size: var(--font-4xl);
+    }
+
+    h2 {
+        font-size: var(--font-3xl);
+    }
+
+    h3 {
+        font-size: var(--font-2xl);
+    }
 }
 
 @media (max-width: 576px) {
-    h1 { font-size: var(--font-3xl); }
-    h2 { font-size: var(--font-2xl); }
+    h1 {
+        font-size: var(--font-3xl);
+    }
+
+    h2 {
+        font-size: var(--font-2xl);
+    }
 
     .service-card {
         padding: var(--space-6);
     }
+}
+/* 함께 산책하기 전용 버튼 */
+.btn-pet-info {
+    background: #74C0FC;
+    color: var(--text-white);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: var(--space-3) var(--space-6);
+    font-weight: var(--font-semibold);
+    transition: all var(--transition-base);
+}
+
+.btn-pet-info:hover {
+    background: #5BA3E0;
+    color: var(--text-white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(116, 192, 252, 0.3);
+    text-decoration: none;
 }
