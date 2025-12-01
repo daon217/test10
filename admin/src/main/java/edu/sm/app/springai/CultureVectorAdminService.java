@@ -1,1 +1,0 @@
-package edu.sm.app.springai;
