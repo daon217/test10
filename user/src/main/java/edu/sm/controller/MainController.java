@@ -90,5 +90,4 @@ public class MainController {
         model.addAttribute("center", "clothes-recommend");
         return "index";
     }
-
 }
