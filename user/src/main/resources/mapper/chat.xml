@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.sm.app.repository.ChatMapper">
+
+    <!-- 채팅방 찾기 -->
+    <select id="findRoom" resultType="edu.sm.app.dto.ChatRoom">
+        SELECT * FROM chat_room
+        WHERE (user_id = #{userId} AND target_id = #{targetId})
+           OR (user_id = #{targetId} AND target_id = #{userId})
+            LIMIT 1
+    </select>
+
+    <!-- 채팅방 생성 -->
+    <insert id="createRoom" parameterType="edu.sm.app.dto.ChatRoom" useGeneratedKeys="true" keyProperty="roomId" keyColumn="room_id">
+        INSERT INTO chat_room (user_id, target_id, last_msg, last_date)
+        VALUES (#{userId}, #{targetId}, '', NOW())
+    </insert>
+
+    <!-- 내 채팅방 목록 -->
+    <select id="getRoomList" resultType="edu.sm.app.dto.ChatRoom">
+        SELECT r.*,
+               CASE WHEN r.user_id = #{userId} THEN r.target_id ELSE r.user_id END AS targetName,
+               TO_CHAR(r.last_date, 'YYYY-MM-DD HH:MI') as lastDate
+        FROM chat_room r
+        WHERE r.user_id = #{userId} OR r.target_id = #{userId}
+        ORDER BY r.last_date DESC
+    </select>
+
+    <!-- 메시지 저장 -->
+    <insert id="insertMsg" parameterType="edu.sm.app.dto.ChatMsg">
+        INSERT INTO chat_msg (room_id, sender_id, content, reg_date)
+        VALUES (#{roomId}, #{senderId}, #{content}, NOW())
+    </insert>
+
+    <!-- 메시지 내역 조회 -->
+    <select id="getMsgList" resultType="edu.sm.app.dto.ChatMsg">
+        SELECT msg_id, room_id, sender_id, content,
+               TO_CHAR(reg_date, 'YYYY-MM-DD HH24:MI') as regDate
+        FROM chat_msg
+        WHERE room_id = #{roomId}
+        ORDER BY msg_id ASC
+    </select>
+
+    <!-- 마지막 메시지 업데이트 -->
+    <update id="updateLastMsg">
+        UPDATE chat_room
+        SET last_msg = #{lastMsg}, last_date = NOW()
+        WHERE room_id = #{roomId}
+    </update>
+
+</mapper>

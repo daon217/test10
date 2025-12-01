@@ -38,7 +38,7 @@ dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
     // Properties Encryption
-    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
