@@ -145,6 +145,14 @@
                             <i class="fas fa-bell"></i> 공지사항
                         </a>
                     </li>
+
+                    <c:if test="${not empty sessionScope.user}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<c:url value='/chat'/>">
+                                <i class="fas fa-comments"></i> 채팅
+                            </a>
+                        </li>
+                    </c:if>
                 </ul>
 
                 <!-- ✅ 헤더 액션 버튼 (로그인 상태별) -->

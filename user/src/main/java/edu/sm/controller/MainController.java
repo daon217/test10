@@ -102,4 +102,15 @@ public class MainController {
         return "index";
     }
 
+    @RequestMapping("/chat")
+    public String chatList(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("center", "chat/list");
+        return "index";
+    }
+
 }
