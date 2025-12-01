@@ -1,0 +1,608 @@
+:root {
+    /* 🌈 전체 톤을 초록+블루 계열로 통일 */
+    --map-hero-gradient: linear-gradient(
+            135deg,
+            rgba(34, 197, 94, 0.16) 0%,
+            rgba(45, 212, 191, 0.14) 45%,
+            rgba(59, 130, 246, 0.18) 100%
+    );
+
+    --map-panel-bg: var(--bg-card, #ffffff);
+    --map-panel-border: var(--border-light, #e5e7eb);
+    --map-panel-shadow: var(--shadow-lg, 0 18px 40px rgba(15, 23, 42, 0.12));
+
+    --map-muted: var(--text-secondary, #6b7280);
+    --map-safe: #22c55e;                /* 실제 걸은 경로(초록색) */
+    --map-relaxed: #3b82f6;             /* 보조 블루 */
+    --map-warm-layer: rgba(248, 250, 252, 0.8);
+
+    --map-zone-soft: rgba(15, 23, 42, 0.04);
+    --map-zone-relaxed: rgba(34, 197, 94, 0.12);
+    --map-zone-safe: rgba(59, 130, 246, 0.12);
+
+    --primary-dark: #0f172a;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f3f4f6;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* ===== HERO ===== */
+.map-hero,
+.map-layout {
+    width: min(1180px, 92vw);
+    margin: 0 auto 48px auto;
+}
+
+.map-hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    padding-top: 80px;
+    align-items: center;
+}
+
+.map-hero__eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--map-muted);
+    margin-bottom: 10px;
+}
+
+.map-hero__title {
+    font-size: clamp(2rem, 5vw, 3.0rem);
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--primary-dark);
+}
+
+.map-hero__desc {
+    color: var(--map-muted);
+    line-height: 1.7;
+}
+
+.map-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.map-hero__actions .btn {
+    min-width: 180px;
+}
+
+.map-hero__illustration {
+    position: relative;
+    min-height: 260px;
+    border-radius: 32px;
+    background: var(--map-hero-gradient);
+    border: 1px solid var(--map-panel-border);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+}
+
+.pulse,
+.pulse.delay {
+    position: absolute;
+    border: 2px solid rgba(34, 197, 94, 0.28);
+    border-radius: 50%;
+    width: 220px;
+    height: 220px;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 5s infinite;
+}
+
+.pulse.delay {
+    animation-delay: 1.5s;
+    border-color: rgba(59, 130, 246, 0.28);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(0.6);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.7);
+    }
+}
+
+.hero-card {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 20px;
+    min-width: 190px;
+    border: 1px solid var(--map-panel-border);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.hero-card__title {
+    color: var(--map-muted);
+    font-size: 0.85rem;
+}
+
+.hero-card__value {
+    font-size: 2.0rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin: 6px 0;
+}
+
+/* ===== LAYOUT ===== */
+.map-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
+    gap: 24px;
+    margin-bottom: 80px;
+}
+
+.map-panel,
+.panel-card {
+    background: var(--map-panel-bg);
+    border: 1px solid var(--map-panel-border);
+    border-radius: 28px;
+    padding: 24px 24px 22px;
+    box-shadow: var(--map-panel-shadow);
+}
+
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.map-panel__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+}
+
+.map-panel__eyebrow,
+.panel-card__eyebrow {
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--map-muted);
+    margin-bottom: 6px;
+}
+
+.map-panel__sub {
+    color: var(--map-muted);
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.map-panel__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.toolbar-left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.toolbar-left label {
+    font-size: 0.9rem;
+    color: var(--primary-dark);
+}
+
+.distance-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #111827;
+}
+
+.distance-label-text {
+    font-weight: 500;
+}
+
+.control-box input[type="number"] {
+    width: 72px;
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 999px;
+    border: 1px solid #d0d4e4;
+    background: #ffffff;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+    text-align: center;
+}
+
+.control-box input[type="number"]:focus {
+    outline: none;
+    border-color: #22c55e;
+    box-shadow:
+            0 0 0 1px rgba(34, 197, 94, 0.18),
+            inset 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.control-box input[type="number"]::-webkit-outer-spin-button,
+.control-box input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.control-box input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.toolbar-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.toolbar-hint {
+    color: var(--map-muted);
+    font-size: 0.8rem;
+}
+
+.map-panel__body {
+    margin: 18px 0;
+}
+
+.map-canvas {
+    position: relative;
+    border-radius: 24px;
+    min-height: 420px;
+    border: 1px solid var(--map-panel-border);
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+/* ✅ 도형 코스 지도 + 일반 산책 지도 둘 다 높이/폭 잡기 */
+#map,
+#basicMap,
+#mapFree {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.map-canvas__badge,
+.map-legend {
+    position: absolute;
+    font-size: 0.85rem;
+    color: var(--primary-dark);
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 999px;
+    padding: 8px 16px;
+    border: 1px solid var(--map-panel-border);
+    z-index: 10;
+}
+
+.map-canvas__badge {
+    top: 16px;
+    right: 16px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15);
+}
+
+/* ✅ JSP에서 사용하는 .map-legend / .legend-line 스타일 */
+.map-legend {
+    bottom: 16px;
+    left: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-line {
+    display: inline-block;
+    width: 28px;
+    height: 3px;
+    border-radius: 999px;
+    margin-right: 4px;
+}
+
+.legend-line--red {
+    background: #e11d48;  /* 설계된 도형 코스 */
+}
+
+.legend-line--green {
+    background: var(--map-safe); /* 실제 걸은 경로 */
+}
+
+.map-panel__footer {
+    margin-top: 8px;
+}
+
+.map-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+.map-stats__label {
+    color: var(--map-muted);
+    font-size: 0.8rem;
+}
+
+.map-stats__value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.panel-card__desc {
+    color: var(--map-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ===== 버튼류 ===== */
+.btn {
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: #ffffff;
+    color: #111827;
+    font-weight: 500;
+    transition: transform 0.05s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* ✅ 메인 포인트 컬러: 산책 알바 초록 계열 */
+.btn-primary {
+    background: #22c55e;
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: #16a34a;
+    border-color: #15803d;
+    box-shadow: 0 10px 22px rgba(22, 163, 74, 0.28);
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: #d1d5db;
+}
+
+.btn-danger {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* ===== 컨트롤 pill ===== */
+.control-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.control-pill {
+    border-radius: 999px;
+    padding: 8px 16px;
+    border: 1px solid #d0d4e4;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1f2933;
+    transition:
+            background 0.15s ease,
+            border-color 0.15s ease,
+            color 0.15s ease,
+            box-shadow 0.15s ease,
+            transform 0.05s ease;
+}
+
+.control-pill:hover,
+.control-pill:focus {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.06);
+    color: #0f172a;
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18);
+}
+
+.control-pill:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+/* "코스 다시 생성 / 네비게이션 시작" 같은 메인 pill */
+.control-pill.primary {
+    background: #22c55e;
+    border-color: #16a34a;
+    color: #fff;
+    box-shadow: 0 10px 20px rgba(22, 163, 74, 0.25);
+}
+
+.control-pill.primary:hover,
+.control-pill.primary:focus {
+    background: #16a34a;
+    border-color: #15803d;
+}
+
+.control-pill.is-active {
+    background: #3b82f6;
+    border-color: #2563eb;
+    color: #fff;
+}
+
+/* ===== 반려동물 추천 박스 ===== */
+.pet-box {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    font-size: 14px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.pet-box-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.pet-box small {
+    color: #666;
+}
+
+.pet-box span.pet-highlight {
+    font-weight: 700;
+    color: #22c55e;
+}
+
+.pet-box .pet-row {
+    margin-top: 4px;
+}
+
+.pet-box button {
+    margin-top: 8px;
+}
+
+#voiceRouteAudio {
+    display: none;
+}
+
+/* ===== 모달 ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px 26px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
+}
+
+.modal-content h3 {
+    margin: 0 0 8px;
+    font-size: 1.4rem;
+}
+
+.modal-content p {
+    margin: 4px 0;
+    font-size: 0.95rem;
+}
+
+.modal-actions {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ===== 일반 산책 코스 기록 (basic walk) ===== */
+
+.basic-walk-layout {
+    width: min(1180px, 92vw);
+    margin: 0 auto 80px auto;
+}
+
+.basic-walk-panel {
+    box-shadow: var(--map-panel-shadow);
+}
+
+.basic-walk-header {
+    align-items: flex-start;
+}
+
+.basic-walk-actions-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 960px) {
+    .map-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .map-hero {
+        padding-top: 60px;
+    }
+
+    .map-hero__actions {
+        flex-direction: column;
+    }
+
+    .map-hero__actions .btn {
+        width: 100%;
+    }
+
+    .map-panel,
+    .panel-card {
+        border-radius: 22px;
+        padding: 20px;
+    }
+
+    .map-canvas {
+        min-height: 320px;
+    }
+}

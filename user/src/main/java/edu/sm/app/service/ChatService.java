@@ -21,6 +21,9 @@ public class ChatService {
      */
     @Transactional
     public int createOrGetRoom(String userId, String targetId) {
+        if (userId.equals(targetId)) {
+            throw new IllegalArgumentException("자기 자신과는 채팅을 시작할 수 없습니다.");
+        }
         ChatRoom room = chatMapper.findRoom(userId, targetId);
         if (room == null) {
             room = ChatRoom.builder()
@@ -34,6 +37,10 @@ public class ChatService {
 
     public List<ChatRoom> getRoomList(String userId) {
         return chatMapper.getRoomList(userId);
+    }
+
+    public ChatRoom getRoom(int roomId) {
+        return chatMapper.getRoom(roomId);
     }
 
     public List<ChatMsg> getMsgList(int roomId) {

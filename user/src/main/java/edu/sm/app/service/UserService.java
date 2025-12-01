@@ -1,6 +1,8 @@
 package edu.sm.app.service;
 
+import edu.sm.app.dto.Pet;
 import edu.sm.app.dto.User;
+import edu.sm.app.repository.PetRepository;
 import edu.sm.app.repository.UserRepository;
 import edu.sm.common.frame.SmService;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +19,31 @@ import java.util.List;
 public class UserService implements SmService<User, Integer> {
 
     private final UserRepository userRepository;
+    private final PetRepository petRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     /**
-     * 사용자 등록
+     * 사용자 등록 (반려동물 정보 포함)
      */
     @Override
     @Transactional
     public void register(User user) throws Exception {
+        register(user, null);
+    }
+
+    @Transactional
+    public void register(User user, Pet pet) throws Exception {
         log.info("회원가입 시도 - username: {}", user.getUsername());
 
-        // 아이디 중복 체크
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+        // 아이디 중복 체크 및 탈퇴한 사용자 처리
+        User existingUser = userRepository.selectByUsernameAll(user.getUsername());
+        if (existingUser != null) {
+            if ("DELETED".equals(existingUser.getStatus())) {
+                log.info("탈퇴한 사용자 재가입 시도 - 기존 계정 영구 삭제: {}", existingUser.getUserId());
+                userRepository.deletePermanently(existingUser.getUserId());
+            } else {
+                throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+            }
         }
 
         // 이메일 중복 체크
@@ -43,6 +57,13 @@ public class UserService implements SmService<User, Integer> {
 
         userRepository.insert(user);
         log.info("회원가입 성공 - userId: {}", user.getUserId());
+
+        // 반려동물 등록
+        if (pet != null) {
+            pet.setUserId(user.getUserId());
+            petRepository.insert(pet);
+            log.info("반려동물 등록 성공 - petName: {}", pet.getName());
+        }
     }
 
     /**

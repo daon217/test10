@@ -1,6 +1,6 @@
+// edu.sm.app.dto.WalkLogSaveRequest
 package edu.sm.app.dto;
 
-import edu.sm.app.service.MapRouteService;
 import lombok.Data;
 
 import java.util.List;
@@ -8,11 +8,24 @@ import java.util.List;
 @Data
 public class WalkLogSaveRequest {
 
-    // JS에서 보내는 값
-    private double distanceKm;      // 실제 걸은 거리(km)
-    private String startTimeIso;    // ISO 문자열 (new Date().toISOString())
+    private String shapeType;   // heart / circle / square / triangle
+    private Double targetKm;
+
+    private RouteDto plannedRoute;   // 도형 코스
+    private RouteDto walkedRoute;    // 실제 걸은 코스
+
+    private String startTimeIso;
     private String endTimeIso;
 
-    // 코스 좌표 (lat, lon)
-    private List<MapRouteService.GeoPoint> points;
+    @Data
+    public static class RouteDto {
+        private Double distanceKm;
+        private List<PointDto> points;
+    }
+
+    @Data
+    public static class PointDto {
+        private double lat;
+        private double lon;
+    }
 }

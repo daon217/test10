@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.sm.app.repository.WalkLogMapper">
+
+    <resultMap id="WalkLogResultMap" type="edu.sm.app.dto.WalkLogDto">
+        <id     column="walking_recode_id" property="walkingRecodeId"/>
+        <result column="user_id"           property="userId"/>
+        <result column="start_time"        property="startTime"   jdbcType="TIMESTAMP"/>
+        <result column="end_time"          property="endTime"     jdbcType="TIMESTAMP"/>
+
+        <!-- 기존 -->
+        <result column="distance"          property="distanceKm"/>
+        <result column="route_data"        property="routeData"/>
+
+        <!-- 신규 -->
+        <result column="planned_distance"      property="plannedDistanceKm"/>
+        <result column="walked_distance"       property="walkedDistanceKm"/>
+        <result column="planned_route_data"    property="plannedRouteData"/>
+        <result column="walked_route_data"     property="walkedRouteData"/>
+        <result column="shape_type"            property="shapeType"/>
+        <result column="target_km"             property="targetKm"/>
+    </resultMap>
+
+
+    <insert id="insert"
+            parameterType="edu.sm.app.dto.WalkLogDto"
+            useGeneratedKeys="true"
+            keyProperty="walkingRecodeId"
+            keyColumn="walking_recode_id">
+
+        INSERT INTO walk_log
+        (user_id,
+         start_time,
+         end_time,
+         distance,            -- 대표값: walkedDistance
+         route_data,          -- 대표값: walkedRouteData
+         planned_distance,
+         walked_distance,
+         planned_route_data,
+         walked_route_data,
+         shape_type,
+         target_km)
+        VALUES
+            (#{userId},
+             #{startTime},
+             #{endTime},
+             #{distanceKm},
+             #{routeData},
+             #{plannedDistanceKm},
+             #{walkedDistanceKm},
+             #{plannedRouteData},
+             #{walkedRouteData},
+             #{shapeType},
+             #{targetKm})
+    </insert>
+
+    <!-- 2) 사용자별 전체 코스 목록 -->
+    <select id="findByUserId"
+            parameterType="int"
+            resultMap="WalkLogResultMap">
+        SELECT
+            walking_recode_id,
+            user_id,
+            start_time,
+            end_time,
+            distance,
+            route_data
+        FROM walk_log
+        WHERE user_id = #{userId}
+        ORDER BY start_time DESC
+    </select>
+
+    <!-- 3) 사용자 + 코스 id 로 1개 조회 -->
+    <select id="findByIdAndUserId"
+            parameterType="map"
+            resultMap="WalkLogResultMap">
+        SELECT
+            walking_recode_id,
+            user_id,
+            start_time,
+            end_time,
+            distance,
+            route_data
+        FROM walk_log
+        WHERE walking_recode_id = #{id}
+          AND user_id = #{userId}
+    </select>
+
+</mapper>

@@ -34,6 +34,16 @@ public interface UserRepository extends SmRepository<User, Integer> {
     boolean existsByEmail(@Param("email") String email);
 
     /**
+     * 사용자명으로 사용자 조회 (삭제된 사용자 포함)
+     */
+    User selectByUsernameAll(@Param("username") String username);
+
+    /**
+     * 사용자 영구 삭제 (하드 삭제)
+     */
+    void deletePermanently(@Param("userId") Integer userId);
+
+    /**
      * 역할별 사용자 수 조회
      */
     int countByRole(@Param("role") String role);

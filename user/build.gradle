@@ -56,6 +56,7 @@ dependencies {
     // GraphHopper Embedded
 //    implementation 'com.graphhopper:graphhopper-web:8.0'
     implementation 'com.graphhopper:graphhopper-core:8.0'
+    implementation 'com.graphhopper:graphhopper-map-matching:8.0'
 
     //SpringAi Lib
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

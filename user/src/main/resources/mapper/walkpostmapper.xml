@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.sm.app.repository.WalkPostMapper">
+
+    <!-- ResultMap: DB 컬럼과 DTO 필드 매핑 -->
+    <resultMap id="WalkPostResultMap" type="edu.sm.app.dto.WalkPostDTO">
+        <id property="postId" column="post_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="petId" column="pet_id"/>
+        <result property="category" column="category"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="location" column="location"/>
+        <result property="walkDate" column="walk_date"/>
+        <result property="walkTime" column="walk_time"/>
+        <result property="payAmount" column="pay_amount"/>
+        <result property="status" column="status"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        
+        <!-- 조인된 정보 -->
+        <result property="userName" column="user_name"/>
+        <result property="userProfileImage" column="user_profile_image"/>
+        <result property="petName" column="pet_name"/>
+        <result property="petType" column="pet_type"/>
+        <result property="petBreed" column="pet_breed"/>
+        <result property="petAge" column="pet_age"/>
+        <result property="petWeight" column="pet_weight"/>
+        <result property="petPhoto" column="pet_photo"/>
+        <result property="petGender" column="pet_gender"/>
+    </resultMap>
+
+    <!-- 글 작성 -->
+    <insert id="insert" parameterType="edu.sm.app.dto.WalkPostDTO" useGeneratedKeys="true" keyProperty="postId">
+        INSERT INTO walk_posts (
+            user_id, pet_id, category, title, content, 
+            location, walk_date, walk_time, pay_amount, status
+        ) VALUES (
+            #{userId}, #{petId}, #{category}, #{title}, #{content},
+            #{location}, #{walkDate}::DATE, #{walkTime}, #{payAmount}, #{status}
+        )
+    </insert>
+
+    <!-- 글 상세 조회 -->
+    <select id="selectById" parameterType="int" resultMap="WalkPostResultMap">
+        SELECT 
+            wp.post_id, wp.user_id, wp.pet_id, wp.category, wp.title, wp.content,
+            wp.location, TO_CHAR(wp.walk_date, 'YYYY-MM-DD') as walk_date, wp.walk_time,
+            wp.pay_amount, wp.status, wp.view_count, wp.created_at, wp.updated_at,
+            u.name AS user_name,
+            u.profile_image AS user_profile_image,
+            p.name AS pet_name,
+            p.type AS pet_type,
+            p.breed AS pet_breed,
+            p.age AS pet_age,
+            p.weight AS pet_weight,
+            p.photo AS pet_photo,
+            p.gender AS pet_gender
+        FROM walk_posts wp
+        JOIN users u ON wp.user_id = u.user_id
+        LEFT JOIN pets p ON wp.pet_id = p.pet_id
+        WHERE wp.post_id = #{postId}
+    </select>
+
+    <!-- 글 목록 조회 -->
+    <select id="selectList" parameterType="edu.sm.app.dto.WalkPostDTO" resultMap="WalkPostResultMap">
+        SELECT 
+            wp.post_id, wp.user_id, wp.pet_id, wp.category, wp.title, wp.content,
+            wp.location, TO_CHAR(wp.walk_date, 'YYYY-MM-DD') as walk_date, wp.walk_time,
+            wp.pay_amount, wp.status, wp.view_count, wp.created_at, wp.updated_at,
+            u.name AS user_name,
+            u.profile_image AS user_profile_image,
+            p.name AS pet_name,
+            p.type AS pet_type,
+            p.breed AS pet_breed,
+            p.age AS pet_age,
+            p.weight AS pet_weight,
+            p.photo AS pet_photo,
+            p.gender AS pet_gender
+        FROM walk_posts wp
+        JOIN users u ON wp.user_id = u.user_id
+        LEFT JOIN pets p ON wp.pet_id = p.pet_id
+        <where>
+            <if test="category != null and category != ''">
+                AND wp.category = #{category}
+            </if>
+            <if test="location != null and location != ''">
+                AND wp.location LIKE CONCAT('%', #{location}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                AND (wp.title LIKE CONCAT('%', #{title}, '%') OR wp.content LIKE CONCAT('%', #{title}, '%'))
+            </if>
+        </where>
+        ORDER BY wp.created_at DESC
+    </select>
+
+    <!-- 글 수정 -->
+    <update id="update" parameterType="edu.sm.app.dto.WalkPostDTO">
+        UPDATE walk_posts
+        SET 
+            title = #{title},
+            content = #{content},
+            location = #{location},
+            walk_date = #{walkDate}::DATE,
+            walk_time = #{walkTime},
+            pay_amount = #{payAmount},
+            status = #{status},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE post_id = #{postId}
+    </update>
+
+    <!-- 글 삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM walk_posts WHERE post_id = #{postId}
+    </delete>
+    
+    <!-- 조회수 증가 -->
+    <update id="updateViewCount" parameterType="int">
+        UPDATE walk_posts 
+        SET view_count = view_count + 1 
+        WHERE post_id = #{postId}
+    </update>
+
+</mapper>

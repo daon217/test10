@@ -513,10 +513,10 @@
     }
 
     // 테스트용
-    window.openChatWithUser = function(targetId) {
+    window.openChatWithUser = function(targetId, targetName) {
         if(targetId === myId) { alert('본인과는 대화 불가'); return; }
         $.post(contextPath + '/api/chat/room', { targetId: targetId }, function(roomId) {
-            if(roomId > 0) openChatRoom(roomId, targetId);
+            if(roomId > 0) openChatRoom(roomId, targetName || targetId);
         });
     }
 
@@ -524,7 +524,7 @@
         currentRoomId = roomId;
         $('#chat-list-view').hide();
         $('#chat-room-view').css('display', 'flex');
-        $('#current-chat-name').text(targetName);
+        $('#current-chat-name').text(targetName || '상대방');
         $('#chat-messages').empty();
 
         $.get(contextPath + '/api/chat/messages?roomId=' + roomId, function(msgs) {

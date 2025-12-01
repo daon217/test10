@@ -234,7 +234,7 @@ function validatePetInfo() {
     }
 
     // 반려인: 첫 번째 반려동물 폼의 필수값 체크
-    const container = document.querySelector('.pet-form-container[data-pet-index="0"]');
+    const container = document.querySelector('.pet-form-card[data-pet-index="0"]');
     if (!container) {
         alert('반려동물 정보를 입력해주세요.');
         return false;

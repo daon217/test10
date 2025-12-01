@@ -166,14 +166,11 @@ public class AuthController {
                     .role(userRole)
                     .build();
 
-            userService.register(user);
-            log.info("회원가입 성공 - username: {}, role: {}", username, userRole);
-
-            // 반려인이고 반려동물 정보가 실제로 입력된 경우에만 반려동물 등록
-            // 중요: petName이 null이 아니고, 빈 문자열도 아니어야 함
+            Pet pet = null;
+            // 반려인이고 반려동물 정보가 실제로 입력된 경우에만 반려동물 객체 생성
             if ("OWNER".equals(userRole) && petName != null && !petName.trim().isEmpty()) {
-                Pet pet = Pet.builder()
-                        .userId(user.getUserId())
+                pet = Pet.builder()
+                        .userId(null) // userId는 UserService에서 설정됨
                         .name(petName.trim())
                         .type(petType)
                         .customType("ETC".equals(petType) ? customPetType : null)
@@ -188,13 +185,18 @@ public class AuthController {
                 //     String photoUrl = uploadPetPhoto(petPhoto);
                 //     pet.setPhoto(photoUrl);
                 // }
+            }
 
-                petService.register(pet);
-                log.info("반려동물 정보 등록 완료 - petName: {}, userId: {}", petName, user.getUserId());
+            // 사용자 및 반려동물 등록 (트랜잭션 처리)
+            userService.register(user, pet);
+            
+            log.info("회원가입 성공 - username: {}, role: {}", username, userRole);
+            if (pet != null) {
+                log.info("반려동물 정보 등록 완료 - petName: {}", pet.getName());
             } else if ("OWNER".equals(userRole)) {
-                log.info("반려인이지만 반려동물 정보가 입력되지 않음 - userId: {}", user.getUserId());
+                log.info("반려인이지만 반려동물 정보가 입력되지 않음");
             } else {
-                log.info("일반 사용자 가입 완료 - userId: {}", user.getUserId());
+                log.info("일반 사용자 가입 완료");
             }
 
             // 로그인 페이지로 리다이렉트

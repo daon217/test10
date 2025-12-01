@@ -92,4 +92,14 @@
         SELECT COUNT(*) FROM users WHERE role = #{role} AND status = 'ACTIVE'
     </select>
 
+    <!-- 사용자 조회 (삭제된 사용자 포함) -->
+    <select id="selectByUsernameAll" parameterType="String" resultMap="userMap">
+        SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <!-- 사용자 영구 삭제 -->
+    <delete id="deletePermanently" parameterType="Integer">
+        DELETE FROM users WHERE user_id = #{userId}
+    </delete>
+
 </mapper>

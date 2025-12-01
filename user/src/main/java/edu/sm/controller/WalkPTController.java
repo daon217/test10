@@ -3,6 +3,7 @@ package edu.sm.controller;
 import edu.sm.app.dto.User;
 import edu.sm.app.dto.WalkPostDTO;
 import edu.sm.app.service.WalkPostService;
+import edu.sm.app.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class WalkPTController {
 
     private final WalkPostService walkPostService;
     private final edu.sm.app.service.PetService petService;
+    private final UserService userService;
 
     @RequestMapping("")
     public String main(Model model) {
@@ -46,7 +48,6 @@ public class WalkPTController {
             com.github.pagehelper.PageHelper.startPage(1, 3);
             List<WalkPostDTO> togetherPosts = walkPostService.getList(togetherSearch);
             model.addAttribute("togetherPosts", togetherPosts);
-
         } catch (Exception e) {
             log.error("메인 페이지 데이터 조회 실패", e);
         }
@@ -192,6 +193,16 @@ public class WalkPTController {
                 throw new Exception("게시글이 존재하지 않습니다.");
             }
             model.addAttribute("post", post);
+
+            try {
+                User owner = userService.get(post.getUserId());
+                if (owner != null) {
+                    model.addAttribute("postOwnerUsername", owner.getUsername());
+                    model.addAttribute("postOwnerName", owner.getName());
+                }
+            } catch (Exception ex) {
+                log.warn("게시글 작성자 정보를 불러오지 못했습니다: {}", ex.getMessage());
+            }
         } catch (Exception e) {
             log.error("구인 글 상세 조회 실패", e);
             return "redirect:/walkpt";

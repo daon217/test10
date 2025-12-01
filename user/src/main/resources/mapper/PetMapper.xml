@@ -7,8 +7,8 @@
 
     <resultMap id="PetResultMap" type="edu.sm.app.dto.PetDto">
         <id     column="pet_id"    property="petId"/>
-        <result column="pet_name"  property="petName"/>
-        <result column="species"   property="species"/>
+        <result column="name"      property="petName"/>
+        <result column="type"      property="species"/>
         <result column="weight"    property="weight"/>
         <result column="age"       property="age"/>
         <result column="gender"    property="gender"/>
@@ -21,13 +21,13 @@
             resultMap="PetResultMap">
         SELECT
             pet_id,
-            pet_name,
-            species,
+            name,
+            type,
             weight,
             age,
             gender,
             user_id
-        FROM pet
+        FROM pets
         WHERE user_id = #{userId}
         ORDER BY pet_id
             LIMIT 1

@@ -13,560 +13,47 @@
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossorigin=""/>
 
-    <style>
-        :root {
-            --map-hero-gradient: linear-gradient(135deg, rgba(15, 173, 176, 0.18) 0%, rgba(34, 199, 201, 0.12) 42%, rgba(207, 166, 74, 0.18) 100%);
-            --map-panel-bg: var(--bg-card, #ffffff);
-            --map-panel-border: var(--border-light, #e5e7eb);
-            --map-panel-shadow: var(--shadow-lg, 0 18px 40px rgba(15, 23, 42, 0.12));
-            --map-muted: var(--text-secondary, #6b7280);
-            --map-safe: var(--primary-teal, #0ea5e9);
-            --map-relaxed: var(--accent-dancheong-green, #16a34a);
-            --map-warm-layer: rgba(253, 243, 227, 0.7);
-            --map-zone-soft: rgba(45, 53, 83, 0.05);
-            --map-zone-relaxed: rgba(74, 222, 128, 0.12);
-            --map-zone-safe: rgba(56, 189, 248, 0.12);
-            --primary-dark: #111827;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f3f4f6;
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
-
-        /* ===== HERO ===== */
-        .map-hero,
-        .map-layout {
-            width: min(1180px, 92vw);
-            margin: 0 auto 48px auto;
-        }
-
-        .map-hero {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 32px;
-            padding-top: 80px;
-            align-items: center;
-        }
-
-        .map-hero__eyebrow {
-            font-size: 0.85rem;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: var(--map-muted);
-            margin-bottom: 10px;
-        }
-
-        .map-hero__title {
-            font-size: clamp(2rem, 5vw, 3.0rem);
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--primary-dark);
-        }
-
-        .map-hero__desc {
-            color: var(--map-muted);
-            line-height: 1.7;
-        }
-
-        .map-hero__actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 28px;
-        }
-
-        .map-hero__actions .btn {
-            min-width: 180px;
-        }
-
-        .map-hero__illustration {
-            position: relative;
-            min-height: 260px;
-            border-radius: 32px;
-            background: var(--map-hero-gradient);
-            border: 1px solid var(--map-panel-border);
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-            overflow: hidden;
-        }
-
-        .pulse,
-        .pulse.delay {
-            position: absolute;
-            border: 2px solid rgba(15, 173, 176, 0.25);
-            border-radius: 50%;
-            width: 220px;
-            height: 220px;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation: pulse 5s infinite;
-        }
-
-        .pulse.delay {
-            animation-delay: 1.5s;
-            border-color: rgba(207, 166, 74, 0.25);
-        }
-
-        @keyframes pulse {
-            0% {
-                opacity: 0.7;
-                transform: translate(-50%, -50%) scale(0.6);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(1.7);
-            }
-        }
-
-        .hero-card {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 20px;
-            min-width: 190px;
-            border: 1px solid var(--map-panel-border);
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
-        }
-
-        .hero-card__title {
-            color: var(--map-muted);
-            font-size: 0.85rem;
-        }
-
-        .hero-card__value {
-            font-size: 2.0rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            margin: 6px 0;
-        }
-
-        /* ===== LAYOUT ===== */
-        .map-layout {
-            display: grid;
-            grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
-            gap: 24px;
-            margin-bottom: 80px;
-        }
-
-        .map-panel,
-        .panel-card {
-            background: var(--map-panel-bg);
-            border: 1px solid var(--map-panel-border);
-            border-radius: 28px;
-            padding: 24px 24px 22px;
-            box-shadow: var(--map-panel-shadow);
-        }
-
-        .side-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .map-panel__header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .map-panel__eyebrow,
-        .panel-card__eyebrow {
-            font-size: 0.8rem;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--map-muted);
-            margin-bottom: 6px;
-        }
-
-        .map-panel__sub {
-            color: var(--map-muted);
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        .map-panel__toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .toolbar-left {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .toolbar-left label {
-            font-size: 0.9rem;
-            color: var(--primary-dark);
-        }
-
-        .distance-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: #111827;
-        }
-
-        .distance-label-text {
-            font-weight: 500;
-        }
-
-        .control-box input[type="number"] {
-            width: 72px;
-            padding: 6px 10px;
-            font-size: 14px;
-            border-radius: 999px;
-            border: 1px solid #d0d4e4;
-            background: #ffffff;
-            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
-            text-align: center;
-        }
-
-        .control-box input[type="number"]:focus {
-            outline: none;
-            border-color: #1a73e8;
-            box-shadow:
-                    0 0 0 1px rgba(26, 115, 232, 0.15),
-                    inset 0 1px 2px rgba(15, 23, 42, 0.08);
-        }
-
-        .control-box input[type="number"]::-webkit-outer-spin-button,
-        .control-box input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .control-box input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        .toolbar-right {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-            justify-content: flex-end;
-        }
-
-        .toolbar-hint {
-            color: var(--map-muted);
-            font-size: 0.8rem;
-        }
-
-        .map-panel__body {
-            margin: 18px 0;
-        }
-
-        .map-canvas {
-            position: relative;
-            border-radius: 24px;
-            min-height: 420px;
-            border: 1px solid var(--map-panel-border);
-            background: #e5e7eb;
-            overflow: hidden;
-        }
-
-        #map {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-        }
-
-        .map-canvas__badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            color: var(--primary-dark);
-            border: 1px solid var(--map-panel-border);
-            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15);
-            z-index: 10;
-        }
-
-        .map-canvas__legend {
-            position: absolute;
-            bottom: 16px;
-            left: 16px;
-            font-size: 0.85rem;
-            color: var(--primary-dark);
-            background: rgba(255, 255, 255, 0.94);
-            border-radius: 999px;
-            padding: 8px 16px;
-            border: 1px solid var(--map-panel-border);
-            z-index: 10;
-        }
-
-        .map-canvas__legend span {
-            color: var(--map-safe);
-        }
-
-        .map-panel__footer {
-            margin-top: 8px;
-        }
-
-        .map-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 14px;
-        }
-
-        .map-stats__label {
-            color: var(--map-muted);
-            font-size: 0.8rem;
-        }
-
-        .map-stats__value {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
-
-        .panel-card__desc {
-            color: var(--map-muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .btn {
-            border-radius: 999px;
-            border: 1px solid #e5e7eb;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            background: #ffffff;
-            color: #111827;
-            font-weight: 500;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-        }
-
-        .btn-primary {
-            background: #1d4ed8;
-            border-color: #1d4ed8;
-            color: #ffffff;
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            border-color: #d1d5db;
-            color: #111827;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border-color: #d1d5db;
-        }
-
-        .btn-danger {
-            background: #fee2e2;
-            border-color: #fecaca;
-            color: #b91c1c;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: default;
-        }
-
-        .control-box {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .control-pill {
-            border-radius: 999px;
-            padding: 8px 16px;
-            border: 1px solid #d0d4e4;
-            background: rgba(255,255,255,0.9);
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: #1f2933;
-            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
-            box-shadow 0.15s ease, transform 0.05s ease;
-        }
-
-        .control-pill:hover,
-        .control-pill:focus {
-            border-color: #1a73e8;
-            background: rgba(26,115,232,0.06);
-            color: #0f172a;
-            box-shadow: 0 0 0 1px rgba(26,115,232,0.15);
-        }
-
-        .control-pill:active {
-            transform: translateY(1px);
-            box-shadow: none;
-        }
-
-        .control-pill.primary {
-            background: #1a73e8;
-            border-color: #1a73e8;
-            color: #fff;
-            box-shadow: 0 10px 20px rgba(26,115,232,0.25);
-        }
-
-        .control-pill.primary:hover,
-        .control-pill.primary:focus {
-            background: #1557b0;
-            border-color: #1557b0;
-        }
-
-        .control-pill.is-active {
-            background: #1a73e8;
-            border-color: #1a73e8;
-            color: #fff;
-        }
-
-        .pet-box {
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(15,23,42,0.08);
-            font-size: 14px;
-            box-shadow: 0 10px 24px rgba(15,23,42,0.12);
-        }
-
-        .pet-box-title {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .pet-box small {
-            color: #666;
-        }
-
-        .pet-box span.pet-highlight {
-            font-weight: 700;
-            color: #ff7a00;
-        }
-
-        .pet-box .pet-row {
-            margin-top: 4px;
-        }
-
-        .pet-box button {
-            margin-top: 8px;
-        }
-
-        #voiceRouteAudio {
-            display: none;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.45);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .modal-content {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 24px 26px;
-            max-width: 420px;
-            width: 90%;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
-        }
-
-        .modal-content h3 {
-            margin: 0 0 8px;
-            font-size: 1.4rem;
-        }
-
-        .modal-content p {
-            margin: 4px 0;
-            font-size: 0.95rem;
-        }
-
-        .modal-actions {
-            margin-top: 18px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        @media (max-width: 960px) {
-            .map-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .map-hero {
-                padding-top: 60px;
-            }
-
-            .map-hero__actions {
-                flex-direction: column;
-            }
-
-            .map-hero__actions .btn {
-                width: 100%;
-            }
-
-            .map-panel,
-            .panel-card {
-                border-radius: 22px;
-                padding: 20px;
-            }
-
-            .map-canvas {
-                min-height: 320px;
-            }
-        }
-    </style>
+    <!-- 분리한 CSS -->
+    <link rel="stylesheet" href="<c:url value='/css/mapheart.css'/>">
 </head>
+
 <body>
 
+<!-- 반려인/알바생 진입 버튼 -->
+<section style="margin-top:40px; text-align:center;">
+    <h2>산책 알바</h2>
+
+    <button type="button"
+            onclick="location.href='<c:url value="/walkjob/owner"/>'"
+            style="padding:10px 20px; margin:8px; border-radius:999px; border:1px solid #ddd; background:#1d4ed8; color:white;">
+        반려인 화면 열기 (id01)
+    </button>
+
+    <button type="button"
+            onclick="location.href='<c:url value="/walkjob/worker"/>'"
+            style="padding:10px 20px; margin:8px; border-radius:999px; border:1px solid #ddd; background:#10b981; color:white;">
+        알바생 화면 열기 (id02)
+    </button>
+
+    <p style="font-size:0.85rem; color:#6b7280; margin-top:8px;">
+        실제 테스트 시에는 한 브라우저(또는 PC/모바일)에서 반려인, 다른 브라우저에서 알바생으로 접속하세요.
+    </p>
+</section>
+
+<!-- HERO -->
 <section class="map-hero">
     <div class="map-hero__content">
-        <p class="map-hero__eyebrow">Pet Walking Experience</p>
+        <p class="map-hero__eyebrow">PET WALKING EXPERIENCE</p>
         <h1 class="map-hero__title">내 주변 모양별 산책 코스</h1>
         <p class="map-hero__desc">
-            현재 위치를 기준으로 예쁜 도형 모양 산책 코스를 자동으로 만들어줘요.
-            반려동물 정보 기반 AI 제시 거리, 음성으로 코스 요청, 저장된 코스 네비게이션까지
-            한 화면에서 이용해 보세요.
+            현재 위치를 기준으로 예쁜 도형 산책 코스와 일반 산책 코스를 기록할 수 있어요.<br>
+            반려동물 정보 기반 AI 제시 거리, 음성으로 코스 요청, 저장된 코스 네비게이션까지 한 화면에서 이용해 보세요.
         </p>
         <div class="map-hero__actions">
-            <button type="button" class="btn btn-primary btn-lg" id="mockMapClick">
+            <button type="button" class="btn btn-primary btn-lg" id="heroGeneralBtn">
+                일반 산책 시작
+            </button>
+            <button type="button" class="btn btn-primary btn-lg" id="heroShapeBtn">
                 내 주변 도형 코스 보기
             </button>
         </div>
@@ -584,153 +71,55 @@
     </div>
 </section>
 
-<section class="map-layout" id="mapLayout">
+<!-- 상단 2열: 왼쪽 일반 산책, 오른쪽 반려동물 추천 -->
+<section class="map-layout" id="generalLayout">
+    <!-- 일반 산책 코스 카드 -->
     <div class="map-panel">
-        <div id="setupHeader" class="map-panel__header">
+        <div class="map-panel__header">
             <div>
-                <p class="map-panel__eyebrow">AI Assisted Walk</p>
-                <h2>모양별 산책 코스 설정</h2>
-                <p class="map-panel__sub">목표 거리를 정하고, 내 위치 기준으로 도형 코스를 생성해 보세요.<br>
-                도로가 많은 위치에서 목표거리를 5~10km로 설정 후 도형 생성시 제일 예쁜 모양이 나와요.</p>
-            </div>
-        </div>
-
-        <div id="navHeader" class="map-panel__header" style="display:none;">
-            <div>
-                <p class="map-panel__eyebrow">Live Navigation</p>
-                <h2>실시간 산책 네비게이션</h2>
-                <p class="map-panel__sub">현재 위치를 따라가며 도형 코스를 얼마나 채웠는지 확인할 수 있어요.</p>
-            </div>
-            <div class="map-panel__header-actions">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="enterSetupMode()">
-                    ← 코스 설정으로 돌아가기
-                </button>
-                <button type="button" class="btn btn-danger btn-sm" onclick="openFinishModal()">
-                    코스 완수
-                </button>
-            </div>
-        </div>
-
-        <div id="setupToolbar" class="map-panel__toolbar">
-            <div class="control-box">
-                <label>
-                    목표 거리(km):
-                    <input id="targetKmInput" type="number" step="0.1" value="8.0">
-                </label>
-
-                <!-- 모양 선택 -->
-                <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                    <button type="button"
-                            class="control-pill shape-pill is-active"
-                            data-shape="heart"
-                            onclick="setShapeType('heart')">
-                        하트
-                    </button>
-                    <button type="button"
-                            class="control-pill shape-pill"
-                            data-shape="circle"
-                            onclick="setShapeType('circle')">
-                        원
-                    </button>
-                    <button type="button"
-                            class="control-pill shape-pill"
-                            data-shape="square"
-                            onclick="setShapeType('square')">
-                        네모
-                    </button>
-                    <button type="button"
-                            class="control-pill shape-pill"
-                            data-shape="triangle"
-                            onclick="setShapeType('triangle')">
-                        세모
-                    </button>
-                </div>
-
-                <button type="button" class="control-pill primary"
-                        onclick="reloadRoute()">코스 다시 생성</button>
-
-                <button type="button" class="control-pill"
-                        onclick="openSavedCourseModal()">저장된 코스 불러오기</button>
-
-                <button type="button" class="control-pill"
-                        id="voiceBtn">음성으로 요청</button>
-                <span id="voiceSpinner" style="visibility:hidden;">녹음/처리중...</span>
-
-                <button type="button" class="control-pill primary"
-                        onclick="goNavigation()">네비게이션 시작</button>
-            </div>
-        </div>
-
-        <div id="navToolbar" class="map-panel__toolbar" style="display:none;">
-            <div class="toolbar-left">
-                <div>
-                    <p class="map-stats__label">총 거리</p>
-                    <p class="map-stats__value" id="navTotalDist">-</p>
-                </div>
-                <div>
-                    <p class="map-stats__label">예상 시간</p>
-                    <p class="map-stats__value" id="navTotalTime">-</p>
-                </div>
-                <div>
-                    <p class="map-stats__label">진행률</p>
-                    <p class="map-stats__value" id="navProgress">0%</p>
-                </div>
-            </div>
-            <div class="toolbar-right">
-                <p class="toolbar-hint">
-                    현재 상태: <span id="navStatus" style="font-weight:600; color:#111827;">위치 확인 중...</span>
+                <p class="map-panel__eyebrow">LIVE WALK LOG</p>
+                <h2>일반 산책 코스 기록</h2>
+                <p class="map-panel__sub">
+                    별도 도형 없이, 실제로 걸은 경로를 그대로 기록합니다.<br>
+                    네비게이션 시작 후 산책을 마친 뒤 저장하면, 다이어리에서 다시 볼 수 있어요.
                 </p>
             </div>
         </div>
 
         <div class="map-panel__body">
             <div class="map-canvas">
-                <div id="map" aria-label="산책 지도"></div>
-                <div class="map-canvas__badge" id="mapSelectionBadge">
-                    내 위치 기준 도형 코스 준비 중...
-                </div>
-<%--                <div class="map-canvas__legend">--%>
-<%--                    <span>●</span> 코스 전체 &nbsp;|&nbsp; <span>●</span> 진행한 구간(초록색)--%>
-<%--                </div>--%>
+                <div id="mapFree" aria-label="일반 산책 지도"></div>
             </div>
         </div>
 
-        <div id="setupFooter" class="map-panel__footer">
-            <div class="map-stats" id="summarySection">
-                <div>
-                    <p class="map-stats__label">오늘 코스 총 거리</p>
-                    <p class="map-stats__value" id="distanceLabel">-</p>
-                </div>
-                <div>
-                    <p class="map-stats__label">예상 소요시간</p>
-                    <p class="map-stats__value" id="timeLabel">-</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="navFooter" class="map-panel__footer" style="display:none;">
+        <div class="map-panel__footer">
             <div class="map-stats">
                 <div>
-                    <p class="map-stats__label">실제 걸은 거리(추정)</p>
-                    <p class="map-stats__value" id="navWalkedKm">-</p>
+                    <p class="map-stats__label">오늘 산책 거리(일반)</p>
+                    <p class="map-stats__value" id="generalDistanceLabel">-</p>
                 </div>
                 <div>
-                    <p class="map-stats__label">산책 시작 시간</p>
-                    <p class="map-stats__value" id="navStartTime">-</p>
+                    <p class="map-stats__label">실제 소요 시간</p>
+                    <p class="map-stats__value" id="generalTimeLabel">-</p>
                 </div>
-                <div>
-                    <p class="map-stats__label">실제 경과 시간</p>
-                    <p class="map-stats__value" id="navElapsedMin">-</p>
-                </div>
+            </div>
+            <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="startGeneralWalk()">
+                    네비게이션 시작
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="finishGeneralWalk()">
+                    산책 종료 &amp; 저장
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- 오른쪽: 반려동물 정보 기반 산책 거리 제시 -->
     <div class="side-panel">
         <div id="setupSidePanels">
             <article class="panel-card">
                 <header>
-                    <p class="panel-card__eyebrow">Pet Recommendation</p>
+                    <p class="panel-card__eyebrow">PET RECOMMENDATION</p>
                     <h3>반려동물 정보 기반 산책 거리 제시</h3>
                     <p class="panel-card__desc">
                         등록된 반려동물의 나이, 체중, 종, 성별 정보를 바탕으로
@@ -762,11 +151,155 @@
                 </div>
             </article>
         </div>
+    </div>
+</section>
 
+<!-- 하단: 모양별 산책 코스 설정(기존 기능) -->
+<section class="map-layout" id="shapeLayout">
+    <div class="map-panel">
+        <!-- 설정 모드 헤더 -->
+        <div id="setupHeader" class="map-panel__header">
+            <div>
+                <p class="map-panel__eyebrow">AI ASSISTED WALK</p>
+                <h2>모양별 산책 코스 설정</h2>
+                <p class="map-panel__sub">
+                    목표 거리를 정하고, 내 위치 기준으로 도형 코스를 생성해 보세요.<br>
+                    도로가 많은 위치에서 목표거리를 5~10km로 설정 후 도형 생성시 제일 예쁜 모양이 나와요.
+                </p>
+            </div>
+        </div>
+
+        <!-- 네비 모드 헤더 -->
+        <div id="navHeader" class="map-panel__header" style="display:none;">
+            <div>
+                <p class="map-panel__eyebrow">LIVE NAVIGATION</p>
+                <h2>실시간 산책 네비게이션</h2>
+                <p class="map-panel__sub">현재 위치를 따라가며 도형 코스를 얼마나 채웠는지 확인할 수 있어요.</p>
+            </div>
+            <div class="map-panel__header-actions">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="enterSetupMode()">
+                    ← 코스 설정으로 돌아가기
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="openFinishModal()">
+                    코스 완수
+                </button>
+            </div>
+        </div>
+
+        <!-- 설정 모드 툴바 -->
+        <div id="setupToolbar" class="map-panel__toolbar">
+            <div class="control-box">
+                <label>
+                    목표 거리(km):
+                    <input id="targetKmInput" type="number" step="0.1" value="8.0">
+                </label>
+
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button type="button" class="control-pill shape-pill is-active" data-shape="heart"
+                            onclick="setShapeType('heart')">
+                        하트
+                    </button>
+                    <button type="button" class="control-pill shape-pill" data-shape="circle"
+                            onclick="setShapeType('circle')">
+                        원
+                    </button>
+                    <button type="button" class="control-pill shape-pill" data-shape="square"
+                            onclick="setShapeType('square')">
+                        네모
+                    </button>
+                    <button type="button" class="control-pill shape-pill" data-shape="triangle"
+                            onclick="setShapeType('triangle')">
+                        세모
+                    </button>
+                </div>
+
+                <button type="button" class="control-pill primary" onclick="reloadRoute()">코스 다시 생성</button>
+
+                <button type="button" class="control-pill" onclick="openSavedCourseModal()">저장된 코스 불러오기</button>
+
+                <button type="button" class="control-pill" id="voiceBtn">음성으로 요청</button>
+                <span id="voiceSpinner" style="visibility:hidden;">녹음/처리중...</span>
+
+                <button type="button" class="control-pill primary" onclick="goNavigation()">네비게이션 시작</button>
+            </div>
+        </div>
+
+        <!-- 네비 모드 툴바 -->
+        <div id="navToolbar" class="map-panel__toolbar" style="display:none;">
+            <div class="toolbar-left">
+                <div>
+                    <p class="map-stats__label">총 거리</p>
+                    <p class="map-stats__value" id="navTotalDist">-</p>
+                </div>
+                <div>
+                    <p class="map-stats__label">예상 시간</p>
+                    <p class="map-stats__value" id="navTotalTime">-</p>
+                </div>
+                <div>
+                    <p class="map-stats__label">진행률</p>
+                    <p class="map-stats__value" id="navProgress">0%</p>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <p class="toolbar-hint">
+                    현재 상태: <span id="navStatus" style="font-weight:600; color:#111827;">위치 확인 중...</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- 지도 -->
+        <div class="map-panel__body">
+            <div class="map-canvas">
+                <div id="map" aria-label="도형 산책 지도"></div>
+                <div class="map-canvas__badge" id="mapSelectionBadge">
+                    내 위치 기준 도형 코스 준비 중...
+                </div>
+                <div class="map-legend">
+                    <span class="legend-line legend-line--red"></span> 설계된 도형 코스
+                    <span class="legend-line legend-line--green" style="margin-left:12px;"></span> 실제 걸은 경로
+                </div>
+            </div>
+        </div>
+
+        <!-- 설정 모드 푸터 -->
+        <div id="setupFooter" class="map-panel__footer">
+            <div class="map-stats" id="summarySection">
+                <div>
+                    <p class="map-stats__label">오늘 코스 총 거리</p>
+                    <p class="map-stats__value" id="distanceLabel">-</p>
+                </div>
+                <div>
+                    <p class="map-stats__label">예상 소요시간</p>
+                    <p class="map-stats__value" id="timeLabel">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비 모드 푸터 -->
+        <div id="navFooter" class="map-panel__footer" style="display:none;">
+            <div class="map-stats">
+                <div>
+                    <p class="map-stats__label">실제 걸은 거리(추정)</p>
+                    <p class="map-stats__value" id="navWalkedKm">-</p>
+                </div>
+                <div>
+                    <p class="map-stats__label">산책 시작 시간</p>
+                    <p class="map-stats__value" id="navStartTime">-</p>
+                </div>
+                <div>
+                    <p class="map-stats__label">실제 경과 시간</p>
+                    <p class="map-stats__value" id="navElapsedMin">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 도형 네비 모드 전용 사이드 패널 -->
+    <div class="side-panel" id="shapeSidePanel">
         <div id="navSidePanels" style="display:none;">
             <article class="panel-card">
                 <header>
-                    <p class="panel-card__eyebrow">Walk Status</p>
+                    <p class="panel-card__eyebrow">WALK STATUS</p>
                     <h3>오늘 산책 진행 현황</h3>
                     <p class="panel-card__desc">
                         도형 코스를 얼마나 채웠는지, 얼마나 걸었는지 실시간으로 확인할 수 있어요.
@@ -791,6 +324,7 @@
 
 <audio id="voiceRouteAudio"></audio>
 
+<!-- 저장된 코스 모달 -->
 <div id="savedCourseModal" class="modal-overlay">
     <div class="modal-content">
         <h3>저장된 코스 불러오기</h3>
@@ -798,23 +332,27 @@
              style="max-height:300px; overflow-y:auto; text-align:left; font-size:14px; margin-top:8px;">
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="closeSavedCourseModal()">닫기</button>
+            <button type="button" class="btn btn-secondary btn-sm"
+                    onclick="closeSavedCourseModal()">닫기</button>
         </div>
     </div>
 </div>
 
+<!-- 산책 완료 모달 -->
 <div id="finishModal" class="modal-overlay">
     <div class="modal-content">
         <h3>오늘 산책 완료!</h3>
         <p id="finishMessageMain">수고하셨어요 🎉</p>
         <p id="finishMessageSub" style="font-size: 14px; color:#555;"></p>
         <div class="modal-actions">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="closeFinishModal()">확인</button>
+            <button type="button" class="btn btn-secondary btn-sm"
+                    onclick="closeFinishModal()">확인</button>
             <button type="button" class="btn btn-primary btn-sm" onclick="saveCourse()">코스 저장하기</button>
         </div>
     </div>
 </div>
 
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
@@ -823,12 +361,10 @@
     const DEFAULT_CENTER_LAT = 36.777381;
     const DEFAULT_CENTER_LON = 127.001764;
 
-    let centerLat = DEFAULT_CENTER_LAT;
-    let centerLon = DEFAULT_CENTER_LON;
-
-    let map;
-    let currentPolyline = null;
-    let progressPolyline = null;
+    /* ===== 공통 / 도형 산책용 전역 ===== */
+    let map;                    // 도형 코스 지도
+    let currentPolyline = null; // 전체 도형 코스(빨간색)
+    let progressPolyline = null;// 실제 이동 경로(초록색)
     let userMarker = null;
 
     let lastDistanceKm = null;
@@ -837,14 +373,15 @@
 
     let selectedSavedLogId = null;
 
-    // heart / circle / square / triangle
     let currentShapeType = 'heart';
 
     let routeLatLngs = [];
     let cumulativeMeters = [];
     let totalMeters = 0;
+
     let walkingStartedAt = null;
     let walkedMeters = 0;
+    let userTrackLatLngs = [];
 
     const userIcon = L.icon({
         iconUrl: '<c:url value="/images/pno.png"/>',
@@ -857,12 +394,19 @@
         document.getElementById('setupHeader').style.display = '';
         document.getElementById('setupToolbar').style.display = '';
         document.getElementById('setupFooter').style.display = '';
-        document.getElementById('setupSidePanels').style.display = '';
+
+        const setupSide = document.getElementById('setupSidePanels');
+        if (setupSide) setupSide.style.display = '';
 
         document.getElementById('navHeader').style.display = 'none';
         document.getElementById('navToolbar').style.display = 'none';
         document.getElementById('navFooter').style.display = 'none';
-        document.getElementById('navSidePanels').style.display = 'none';
+
+        const navSide = document.getElementById('navSidePanels');
+        if (navSide) navSide.style.display = 'none';
+
+        const shapeSide = document.getElementById('shapeSidePanel');
+        if (shapeSide) shapeSide.style.display = 'none';
 
         document.getElementById('mapSelectionBadge').textContent = '내 위치 기준 코스 준비 중...';
     }
@@ -871,74 +415,30 @@
         document.getElementById('setupHeader').style.display = 'none';
         document.getElementById('setupToolbar').style.display = 'none';
         document.getElementById('setupFooter').style.display = 'none';
-        document.getElementById('setupSidePanels').style.display = 'none';
+
+        const setupSide = document.getElementById('setupSidePanels');
+        if (setupSide) setupSide.style.display = 'none';
 
         document.getElementById('navHeader').style.display = '';
         document.getElementById('navToolbar').style.display = '';
         document.getElementById('navFooter').style.display = '';
-        document.getElementById('navSidePanels').style.display = '';
+
+        const navSide = document.getElementById('navSidePanels');
+        if (navSide) navSide.style.display = '';
+
+        const shapeSide = document.getElementById('shapeSidePanel');
+        if (shapeSide) shapeSide.style.display = '';
 
         document.getElementById('mapSelectionBadge').textContent = '코스를 따라가며 산책 중...';
     }
 
     function initMap() {
-        map = L.map('map').setView([centerLat, centerLon], 14);
+        map = L.map('map').setView([DEFAULT_CENTER_LAT, DEFAULT_CENTER_LON], 14);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
-    }
-
-    function initUserLocation() {
-        if (!navigator.geolocation) {
-            console.warn('이 브라우저는 Geolocation을 지원하지 않습니다.');
-            reloadRoute();
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                centerLat = pos.coords.latitude;
-                centerLon = pos.coords.longitude;
-
-                map.setView([centerLat, centerLon], 15);
-
-                userMarker = L.marker([centerLat, centerLon], {
-                    title: '내 현재 위치',
-                    icon: userIcon
-                }).addTo(map);
-
-                navigator.geolocation.watchPosition(
-                    (p) => {
-                        const lat = p.coords.latitude;
-                        const lon = p.coords.longitude;
-                        if (userMarker) {
-                            userMarker.setLatLng([lat, lon]);
-                        }
-                    },
-                    (err) => {
-                        console.warn('현재 위치를 가져오지 못했습니다.', err);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        maximumAge: 2000,
-                        timeout: 10000
-                    }
-                );
-
-                reloadRoute();
-            },
-            (err) => {
-                console.warn('초기 위치를 가져오지 못했습니다. 기본 위치로 코스 생성.', err);
-                reloadRoute();
-            },
-            {
-                enableHighAccuracy: true,
-                maximumAge: 0,
-                timeout: 15000
-            }
-        );
     }
 
     function applyRouteData(data) {
@@ -947,6 +447,8 @@
         lastRouteData = data;
 
         const latlngs = data.points.map(p => [p.lat, p.lon]);
+
+        routeLatLngs = latlngs.slice();
 
         if (currentPolyline) {
             map.removeLayer(currentPolyline);
@@ -993,8 +495,8 @@
 
         const url =
             '/api/map/shape-route?type=' + encodeURIComponent(currentShapeType) +
-            '&centerLat=' + centerLat +
-            '&centerLon=' + centerLon +
+            '&centerLat=' + DEFAULT_CENTER_LAT +
+            '&centerLon=' + DEFAULT_CENTER_LON +
             '&targetKm=' + targetKm;
 
         fetch(url)
@@ -1003,15 +505,21 @@
             .catch(err => console.error('경로 로딩 실패', err));
     }
 
+    // 하버사인 거리 (m 단위)
     function distanceMeters(lat1, lon1, lat2, lon2) {
         const R = 6371000;
-        const toRad = Math.PI / 180;
-        const dLat = (lat2 - lat1) * toRad;
-        const dLon = (lon2 - lon1) * toRad;
+        const toRad = x => x * Math.PI / 180;
+
+        const φ1 = toRad(lat1);
+        const φ2 = toRad(lat2);
+        const Δφ = toRad(lat2 - lat1);
+        const Δλ = toRad(lon2 - lon1);
+
         const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * toRad) * Math.cos(lat2 * toRad) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
@@ -1023,6 +531,7 @@
         totalMeters = 0;
         walkingStartedAt = null;
         walkedMeters = 0;
+        userTrackLatLngs = [];
 
         for (let i = 1; i < routeLatLngs.length; i++) {
             const [lat1, lon1] = routeLatLngs[i - 1];
@@ -1053,48 +562,50 @@
     }
 
     function updateNavigation(lat, lon) {
-        if (!routeLatLngs || routeLatLngs.length === 0) return;
+        if (userTrackLatLngs.length === 0) {
+            userTrackLatLngs.push([lat, lon]);
+        } else {
+            const [prevLat, prevLon] = userTrackLatLngs[userTrackLatLngs.length - 1];
+            const move = distanceMeters(prevLat, prevLon, lat, lon);
 
-        let bestIdx = 0;
-        let bestDist = Infinity;
+            if (move < 2) {
+                return;
+            }
 
-        for (let i = 0; i < routeLatLngs.length; i++) {
-            const [rlat, rlon] = routeLatLngs[i];
-            const d = distanceMeters(lat, lon, rlat, rlon);
-            if (d < bestDist) {
-                bestDist = d;
-                bestIdx = i;
+            userTrackLatLngs.push([lat, lon]);
+            walkedMeters += move;
+        }
+
+        if (userTrackLatLngs.length >= 2) {
+            if (progressPolyline) {
+                progressPolyline.setLatLngs(userTrackLatLngs);
+            } else {
+                progressPolyline = L.polyline(userTrackLatLngs, {
+                    weight: 6,
+                    color: '#4caf50'
+                }).addTo(map);
             }
         }
 
-        const onRoute = bestDist < 25;
+        let targetMeters = totalMeters;
 
-        const progress = (totalMeters > 0)
-            ? (cumulativeMeters[bestIdx] / totalMeters)
-            : 0.0;
+        if (!targetMeters || !isFinite(targetMeters) || targetMeters <= 0) {
+            const inputKm = parseFloat(document.getElementById('targetKmInput').value) || 0;
+            if (inputKm > 0) {
+                targetMeters = inputKm * 1000;
+            } else if (lastDistanceKm) {
+                targetMeters = lastDistanceKm * 1000;
+            }
+        }
 
-        walkedMeters = cumulativeMeters[bestIdx];
+        let progress = 0;
+        if (targetMeters > 0 && walkedMeters > 0) {
+            progress = Math.min(1, walkedMeters / targetMeters);
+        }
 
-        const progressPercent = (progress * 100);
+        const progressPercent = progress * 100;
         document.getElementById('navProgress').textContent = progressPercent.toFixed(1) + '%';
         document.getElementById('sideNavProgress').textContent = progressPercent.toFixed(1) + '%';
-
-        const statusText = onRoute
-            ? '코스 위에서 걷는 중 (오차 ~' + bestDist.toFixed(0) + 'm)'
-            : '코스에서 약 ' + bestDist.toFixed(0) + 'm 벗어났어요';
-
-        document.getElementById('navStatus').textContent = statusText;
-        document.getElementById('sideNavStatus').textContent = statusText;
-
-        if (progressPolyline) {
-            map.removeLayer(progressPolyline);
-        }
-        if (bestIdx > 0) {
-            const walked = routeLatLngs.slice(0, bestIdx + 1);
-            progressPolyline = L.polyline(walked, {weight: 6, color: '#4caf50'}).addTo(map);
-        }
-
-        map.setView([lat, lon], 16);
 
         const walkedKm = walkedMeters / 1000;
         document.getElementById('navWalkedKm').textContent = walkedKm.toFixed(2) + ' km';
@@ -1104,6 +615,11 @@
             const minutes = Math.max(1, Math.round((now - walkingStartedAt) / 60000));
             document.getElementById('navElapsedMin').textContent = minutes + ' 분';
         }
+
+        document.getElementById('navStatus').textContent = '실제 걸은 경로를 기록하고 있어요';
+        document.getElementById('sideNavStatus').textContent = '실제 걸은 경로를 기록하고 있어요';
+
+        map.setView([lat, lon], 16);
     }
 
     function startTracking() {
@@ -1169,8 +685,8 @@
                 const targetKm = parseFloat(document.getElementById('targetKmInput').value) || 8.0;
                 const url =
                     '/api/map/shape-route?type=' + encodeURIComponent(currentShapeType) +
-                    '&centerLat=' + centerLat +
-                    '&centerLon=' + centerLon +
+                    '&centerLat=' + DEFAULT_CENTER_LAT +
+                    '&centerLon=' + DEFAULT_CENTER_LON +
                     '&targetKm=' + targetKm;
                 const res = await fetch(url);
                 data = await res.json();
@@ -1184,26 +700,30 @@
             enterSetupMode();
         }
     }
+</script>
 
+<!-- HERO 버튼 스크롤, 반려동물 추천 연동 -->
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-        const mapLayout = document.getElementById('mapLayout');
-        const summarySection = document.getElementById('summarySection');
-        const mockBtn = document.getElementById('mockMapClick');
-        const scrollSummaryBtn = document.getElementById('scrollToSummary');
+        const generalLayout = document.getElementById('generalLayout');
+        const shapeLayout = document.getElementById('shapeLayout');
+        const heroGeneralBtn = document.getElementById('heroGeneralBtn');
+        const heroShapeBtn = document.getElementById('heroShapeBtn');
 
-        if (mockBtn && mapLayout) {
-            mockBtn.addEventListener('click', () => {
-                mapLayout.scrollIntoView({behavior: 'smooth'});
+        if (heroGeneralBtn && generalLayout) {
+            heroGeneralBtn.addEventListener('click', () => {
+                generalLayout.scrollIntoView({behavior: 'smooth'});
             });
         }
-        if (scrollSummaryBtn && summarySection) {
-            scrollSummaryBtn.addEventListener('click', () => {
-                summarySection.scrollIntoView({behavior: 'smooth'});
+        if (heroShapeBtn && shapeLayout) {
+            heroShapeBtn.addEventListener('click', () => {
+                shapeLayout.scrollIntoView({behavior: 'smooth'});
             });
         }
     });
 </script>
 
+<!-- 음성으로 도형 코스 요청 -->
 <script>
     const voiceBtn = document.getElementById('voiceBtn');
     const voiceSpinner = document.getElementById('voiceSpinner');
@@ -1251,8 +771,8 @@
         try {
             const formData = new FormData();
             formData.append('speech', blob, 'speech.webm');
-            formData.append('centerLat', centerLat);
-            formData.append('centerLon', centerLon);
+            formData.append('centerLat', DEFAULT_CENTER_LAT);
+            formData.append('centerLon', DEFAULT_CENTER_LON);
 
             const res = await fetch('/api/map/voice-route', {
                 method: 'POST',
@@ -1284,6 +804,7 @@
     }
 </script>
 
+<!-- 저장된 코스 모달 관련 -->
 <script>
     async function openSavedCourseModal() {
         const modal = document.getElementById('savedCourseModal');
@@ -1321,7 +842,7 @@
                 });
 
                 listDiv.innerHTML = '';
-                listDiv.appendChild(ul);
+                ul && listDiv.appendChild(ul);
             }
         } catch (e) {
             console.error(e);
@@ -1361,20 +882,21 @@
     });
 </script>
 
+<!-- 반려동물 산책 거리 추천 -->
 <script>
     async function loadPetWalkRecommendation() {
-        const loadingText      = document.getElementById('petLoadingText');
-        const contentBox       = document.getElementById('petContent');
-        const errorText        = document.getElementById('petErrorText');
-        const infoText         = document.getElementById('petInfoText');
-        const reasonText       = document.getElementById('petReasonText');
-        const recommendKmSpan  = document.getElementById('petRecommendKm');
-        const applyBtn         = document.getElementById('petApplyBtn');
+        const loadingText = document.getElementById('petLoadingText');
+        const contentBox = document.getElementById('petContent');
+        const errorText = document.getElementById('petErrorText');
+        const infoText = document.getElementById('petInfoText');
+        const reasonText = document.getElementById('petReasonText');
+        const recommendKmSpan = document.getElementById('petRecommendKm');
+        const applyBtn = document.getElementById('petApplyBtn');
 
         loadingText.style.display = 'block';
-        contentBox.style.display  = 'none';
-        errorText.style.display   = 'none';
-        applyBtn.disabled         = true;
+        contentBox.style.display = 'none';
+        errorText.style.display = 'none';
+        applyBtn.disabled = true;
 
         try {
             const res = await fetch('/api/pet/walk-recommend');
@@ -1383,13 +905,18 @@
             }
 
             const data = await res.json();
-
             const pet = data.pet || {};
 
-            const name    = pet.petName || '이름 미등록';
-            const species = pet.species || '종 미등록';
-            const age     = (pet.age !== null && pet.age !== undefined) ? pet.age : '?';
-            const gender  = pet.gender || '성별 미등록';
+            const name = pet.name || '이름 미등록';
+
+            let speciesParts = [];
+            if (pet.type) speciesParts.push(pet.type);
+            if (pet.customType) speciesParts.push(pet.customType);
+            if (pet.breed) speciesParts.push(pet.breed);
+            const speciesText = speciesParts.length > 0 ? speciesParts.join(' / ') : '종 미등록';
+
+            const ageText = (pet.age !== null && pet.age !== undefined) ? pet.age + '살' : '나이 미등록';
+            const genderText = pet.gender || '성별 미등록';
 
             let weightText;
             if (typeof pet.weight === 'number') {
@@ -1401,7 +928,7 @@
             }
 
             infoText.textContent =
-                `${name} (${species}, ${age}살, ${gender}, 약 ${weightText})`;
+                `${name} (${speciesText}, ${ageText}, ${genderText}, 약 ${weightText})`;
 
             let km = 2.5;
             if (typeof data.recommendedKm === 'number' && !isNaN(data.recommendedKm)) {
@@ -1421,11 +948,11 @@
             applyBtn.disabled = false;
 
             loadingText.style.display = 'none';
-            contentBox.style.display  = 'block';
+            contentBox.style.display = 'block';
         } catch (e) {
             console.error(e);
             loadingText.style.display = 'none';
-            errorText.style.display   = 'block';
+            errorText.style.display = 'block';
         }
     }
 
@@ -1443,6 +970,7 @@
     });
 </script>
 
+<!-- 도형 코스 + 실제 코스 저장 -->
 <script>
     function openFinishModal() {
         const modal = document.getElementById('finishModal');
@@ -1478,37 +1006,90 @@
     }
 
     async function saveCourse() {
-        if (!routeLatLngs || routeLatLngs.length === 0) {
+        const hasPlanned = routeLatLngs && routeLatLngs.length >= 2;
+        const hasWalked = userTrackLatLngs && userTrackLatLngs.length >= 2;
+
+        if (!hasPlanned && !hasWalked) {
             alert('저장할 코스가 없습니다.');
             return;
         }
 
-        const distanceKm = window._finishDistanceKm || (totalMeters / 1000.0);
         const now = new Date();
-        const startIso = (walkingStartedAt || now).toISOString();
-        const endIso = now.toISOString();
+        const startTime = walkingStartedAt || now;
+        const endTime = now;
+
+        let plannedDistanceKm = 0;
+        if (hasPlanned) {
+            if (totalMeters && totalMeters > 0) {
+                plannedDistanceKm = totalMeters / 1000.0;
+            } else if (lastDistanceKm && lastDistanceKm > 0) {
+                plannedDistanceKm = lastDistanceKm;
+            }
+        }
+
+        let walkedDistanceKm = 0;
+        if (walkedMeters && walkedMeters > 0) {
+            walkedDistanceKm = walkedMeters / 1000.0;
+        } else if (window._finishDistanceKm && window._finishDistanceKm > 0) {
+            walkedDistanceKm = window._finishDistanceKm;
+        }
+
+        let targetKm = null;
+        const targetInput = document.getElementById('targetKmInput');
+        if (targetInput) {
+            const v = parseFloat(targetInput.value);
+            if (!isNaN(v) && v > 0) {
+                targetKm = v;
+            }
+        }
+
+        let plannedRoute = null;
+        if (hasPlanned) {
+            plannedRoute = {
+                distanceKm: plannedDistanceKm,
+                points: routeLatLngs.map(ll => ({
+                    lat: ll[0],
+                    lon: ll[1]
+                }))
+            };
+        }
+
+        let walkedRoute = null;
+        if (hasWalked) {
+            walkedRoute = {
+                distanceKm: walkedDistanceKm,
+                points: userTrackLatLngs.map(ll => ({
+                    lat: ll[0],
+                    lon: ll[1]
+                }))
+            };
+        }
 
         const body = {
-            distanceKm: distanceKm,
-            startTimeIso: startIso,
-            endTimeIso: endIso,
-            points: routeLatLngs.map(ll => ({ lat: ll[0], lon: ll[1] }))
+            shapeType: currentShapeType,
+            targetKm: targetKm,
+            plannedRoute: plannedRoute,
+            walkedRoute: walkedRoute,
+            startTimeIso: startTime.toISOString(),
+            endTimeIso: endTime.toISOString()
         };
 
         try {
             const res = await fetch('/api/walk/logs', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(body)
             });
 
             if (!res.ok) {
-                throw new Error('save error');
+                console.error('saveCourse 응답 에러:', res.status);
+                alert('코스 저장 중 오류가 발생했습니다.');
+                return;
             }
 
             const data = await res.json();
             console.log('saveCourse result', data);
-            alert('코스를 저장했습니다.');
+            alert('코스를 저장했습니다. (도형 + 실제 경로 기준)');
             closeFinishModal();
         } catch (e) {
             console.error(e);
@@ -1528,11 +1109,164 @@
     });
 </script>
 
+<!-- 일반 산책(위 카드) 전용 네비/저장 -->
+<script>
+    let freeMap;
+    let freeUserMarker = null;
+    let freePolyline = null;
+    let freeTrackLatLngs = [];
+    let freeWalkedMeters = 0;
+    let freeWalkingStartedAt = null;
+    let freeWatchId = null;
+
+    function initFreeMap() {
+        const el = document.getElementById('mapFree');
+        if (!el) return;
+
+        freeMap = L.map('mapFree').setView([DEFAULT_CENTER_LAT, DEFAULT_CENTER_LON], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(freeMap);
+    }
+
+    function updateFreeNavigation(lat, lon) {
+        if (freeTrackLatLngs.length === 0) {
+            freeTrackLatLngs.push([lat, lon]);
+        } else {
+            const [prevLat, prevLon] = freeTrackLatLngs[freeTrackLatLngs.length - 1];
+            const move = distanceMeters(prevLat, prevLon, lat, lon);
+            if (move < 2) return;
+            freeTrackLatLngs.push([lat, lon]);
+            freeWalkedMeters += move;
+        }
+
+        if (!freeUserMarker) {
+            freeUserMarker = L.marker([lat, lon], {
+                title: '현재 위치',
+                icon: userIcon
+            }).addTo(freeMap);
+        } else {
+            freeUserMarker.setLatLng([lat, lon]);
+        }
+
+        if (freeTrackLatLngs.length >= 2) {
+            if (freePolyline) {
+                freePolyline.setLatLngs(freeTrackLatLngs);
+            } else {
+                freePolyline = L.polyline(freeTrackLatLngs, {
+                    weight: 5,
+                    color: '#22c55e'
+                }).addTo(freeMap);
+            }
+        }
+
+        freeMap.setView([lat, lon], 16);
+
+        const km = freeWalkedMeters / 1000;
+        document.getElementById('generalDistanceLabel').textContent = km.toFixed(2) + ' km';
+
+        if (freeWalkingStartedAt) {
+            const now = new Date();
+            const minutes = Math.max(1, Math.round((now - freeWalkingStartedAt) / 60000));
+            document.getElementById('generalTimeLabel').textContent = minutes + ' 분';
+        }
+    }
+
+    function startGeneralWalk() {
+        if (!navigator.geolocation) {
+            alert('이 브라우저는 위치 추적을 지원하지 않습니다.');
+            return;
+        }
+        if (freeWatchId !== null) {
+            alert('이미 일반 산책 네비게이션이 진행 중입니다.');
+            return;
+        }
+
+        freeTrackLatLngs = [];
+        freeWalkedMeters = 0;
+        freeWalkingStartedAt = null;
+
+        freeWatchId = navigator.geolocation.watchPosition(
+            (pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                if (!freeWalkingStartedAt) {
+                    freeWalkingStartedAt = new Date();
+                }
+                updateFreeNavigation(lat, lon);
+            },
+            (err) => {
+                console.warn('일반 산책 위치 추적 실패', err);
+                alert('일반 산책 위치 정보를 가져올 수 없습니다.');
+            },
+            {
+                enableHighAccuracy: false,
+                maximumAge: 10000,
+                timeout: 30000
+            }
+        );
+    }
+
+    async function finishGeneralWalk() {
+        if (!freeWalkingStartedAt || freeTrackLatLngs.length < 2) {
+            alert('아직 저장할 일반 산책 기록이 없습니다. 먼저 네비게이션을 시작해서 걸어주세요.');
+            return;
+        }
+        if (freeWatchId !== null) {
+            navigator.geolocation.clearWatch(freeWatchId);
+            freeWatchId = null;
+        }
+
+        const startTime = freeWalkingStartedAt;
+        const endTime = new Date();
+        const distanceKm = freeWalkedMeters / 1000;
+
+        const body = {
+            shapeType: null,
+            targetKm: null,
+            plannedRoute: null,
+            walkedRoute: {
+                distanceKm: distanceKm,
+                points: freeTrackLatLngs.map(ll => ({
+                    lat: ll[0],
+                    lon: ll[1]
+                }))
+            },
+            startTimeIso: startTime.toISOString(),
+            endTimeIso: endTime.toISOString()
+        };
+
+        try {
+            const res = await fetch('/api/walk/logs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                console.error('일반 산책 저장 에러:', res.status);
+                alert('일반 산책 기록 저장 중 오류가 발생했습니다.');
+                return;
+            }
+
+            const data = await res.json();
+            console.log('free walk saved', data);
+            alert('일반 산책 기록을 저장했습니다.');
+        } catch (e) {
+            console.error(e);
+            alert('일반 산책 기록 저장 중 오류가 발생했습니다.');
+        }
+    }
+</script>
+
+<!-- 초기화 -->
 <script>
     window.addEventListener('load', () => {
-        initMap();
-        // initUserLocation();      // 실제 geolocation으로 하는ㄱ
-        reloadRoute();              // test용
+        initFreeMap();          // 일반 산책 지도
+        initMap();              // 도형 산책 지도
+        reloadRoute();          // 기본 도형 코스 생성
         loadPetWalkRecommendation();
         enterSetupMode();
     });

@@ -16,6 +16,14 @@
                     <p style="color: #6c757d; margin-bottom: 0;">빠르고 간편한 가입으로 시작하세요</p>
                 </div>
 
+                <!-- 에러 메시지 표시 -->
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger" role="alert"
+                        style="margin-bottom: 1.5rem; border-radius: 0.75rem; background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; padding: 1rem;">
+                        <i class="fas fa-exclamation-circle mr-2"></i> ${error}
+                    </div>
+                </c:if>
+
                 <!-- 진행 단계 표시 -->
                 <div class="register-steps">
                     <div class="step active" id="step-indicator-1">

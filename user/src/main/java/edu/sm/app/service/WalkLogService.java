@@ -19,59 +19,151 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WalkLogService {
 
-    // ⬇⬇⬇ 여기만 변경됨
     private final WalkLogMapper walkLogMapper;
     private final ObjectMapper objectMapper;
+    private final CurrentUserService currentUserService;  // ★ 세션 기반
 
-    // 로그인 전까지는 하드코딩
-    private static final int FIXED_USER_ID = 1;
-    private static final double WALK_SPEED_KMH = 4.0; // 평균 보행속도
+    private static final double WALK_SPEED_KMH = 4.0;
 
-    /** ISO 문자열(…Z) → LocalDateTime(서버 타임존) */
     private LocalDateTime parseIsoToLocal(String iso) {
-        Instant inst = Instant.parse(iso); // "2025-11-26T02:13:58.926Z" 이런 형식
+        Instant inst = Instant.parse(iso);
         return LocalDateTime.ofInstant(inst, ZoneId.systemDefault());
     }
 
-    /** 산책 코스 저장 */
-    public WalkLogSaveResponse save(WalkLogSaveRequest req) throws Exception {
+    /**
+     * 공통 저장 로직
+     *  - userId를 파라미터로 받아서, 호출하는 쪽에서 "누구 기준으로 저장할지"를 결정
+     *  - 여기서 "일반 산책 / 모양 산책" 로직을 나눈다.
+     *
+     *  규칙:
+     *    1) 모양 산책 (shapeType != null/blank)
+     *       - plannedRoute: 모양(도형) 경로
+     *       - walkedRoute : 실제 이동 경로
+     *       - distance/route_data (레거시 컬럼)는 "모양(계획) 경로" 기준으로 저장
+     *
+     *    2) 일반 산책 (shapeType == null/blank)
+     *       - plannedRoute: 보통 null
+     *       - walkedRoute : 실제 이동 경로
+     *       - distance/route_data 는 "walked(실제)" 기준으로 저장
+     */
+    private WalkLogSaveResponse saveInternal(WalkLogSaveRequest req, int userId) throws Exception {
 
         LocalDateTime start = parseIsoToLocal(req.getStartTimeIso());
         LocalDateTime end   = parseIsoToLocal(req.getEndTimeIso());
 
+        // ---- 1) 도형/실제 경로 분리 ----
+        Double plannedDistanceKm = null;
+        Double walkedDistanceKm  = null;
+        String plannedRouteJson  = null;
+        String walkedRouteJson   = null;
+
+        if (req.getPlannedRoute() != null) {
+            plannedDistanceKm = req.getPlannedRoute().getDistanceKm();
+            if (req.getPlannedRoute().getPoints() != null) {
+                plannedRouteJson =
+                        objectMapper.writeValueAsString(req.getPlannedRoute().getPoints());
+            }
+        }
+
+        if (req.getWalkedRoute() != null) {
+            walkedDistanceKm = req.getWalkedRoute().getDistanceKm();
+            if (req.getWalkedRoute().getPoints() != null) {
+                walkedRouteJson =
+                        objectMapper.writeValueAsString(req.getWalkedRoute().getPoints());
+            }
+        }
+
+        // ---- 2) 일반 산책 vs 모양 산책 분기 ----
+        boolean isShapeWalk = req.getShapeType() != null && !req.getShapeType().isBlank();
+
+        Double distanceKmLegacy;
+        String routeDataLegacy;
+
+        if (isShapeWalk) {
+            // 모양 산책:
+            //  - 네비 / 요약에서 "모양 경로"를 기준으로 보이게 유지 (기존 로직 유지)
+            distanceKmLegacy = (plannedDistanceKm != null) ? plannedDistanceKm : walkedDistanceKm;
+            routeDataLegacy  = (plannedRouteJson != null) ? plannedRouteJson : walkedRouteJson;
+        } else {
+            // 일반 산책:
+            //  - 사용자가 실제로 걸은 경로 기준으로 distance/route_data를 저장
+            distanceKmLegacy = (walkedDistanceKm != null) ? walkedDistanceKm : plannedDistanceKm;
+            routeDataLegacy  = (walkedRouteJson != null) ? walkedRouteJson : plannedRouteJson;
+        }
+
+        // 혹시라도 둘 다 null이면 최소 안전값으로
+        if (distanceKmLegacy == null) {
+            distanceKmLegacy = 0.0;
+        }
+        if (routeDataLegacy == null) {
+            routeDataLegacy = "[]";
+        }
+
+        // ---- 3) DTO 구성 ----
         WalkLogDto log = new WalkLogDto();
-        log.setUserId(FIXED_USER_ID);
+        log.setUserId(userId);
         log.setStartTime(start);
         log.setEndTime(end);
-        log.setDistanceKm(req.getDistanceKm());
 
-        // 코스 좌표를 JSON으로 직렬화
-        String json = objectMapper.writeValueAsString(req.getPoints());
-        log.setRouteData(json);
+        // 레거시 컬럼
+        log.setDistanceKm(distanceKmLegacy);
+        log.setRouteData(routeDataLegacy);
 
-        // ⬇⬇⬇ Repository 대신 Mapper 직접 호출
-        walkLogMapper.insert(log);  // useGeneratedKeys 로 PK 세팅됨
+        // 신규 컬럼
+        log.setPlannedDistanceKm(plannedDistanceKm);
+        log.setWalkedDistanceKm(walkedDistanceKm);
+        log.setPlannedRouteData(plannedRouteJson);
+        log.setWalkedRouteData(walkedRouteJson);
+        log.setShapeType(req.getShapeType());
+        log.setTargetKm(req.getTargetKm());
 
-        long minutes = calcMinutesByDistance(req.getDistanceKm());
+        // ---- 4) INSERT ----
+        walkLogMapper.insert(log);
+
+        double d = distanceKmLegacy;
+        long minutes = calcMinutesByDistance(d);
         return new WalkLogSaveResponse(
                 log.getWalkingRecodeId(),
-                req.getDistanceKm(),
+                d,
                 minutes
         );
     }
 
-    /** 현재(하드코딩) 유저의 코스 목록 */
+    /**
+     * 산책 코스 저장 (기존 방식 + 확장)
+     *  - 현재 로그인된 사용자 기준
+     *  - 프론트에서
+     *      * 모양 산책: shapeType + plannedRoute + walkedRoute
+     *      * 일반 산책: shapeType = null, plannedRoute = null, walkedRoute 만 채움
+     */
+    public WalkLogSaveResponse save(WalkLogSaveRequest req) throws Exception {
+
+        int userId = currentUserService.getCurrentUserIdOrThrow();
+        return saveInternal(req, userId);
+    }
+
+    /**
+     * 산책 코스 저장 (특정 userId 기준)
+     *  - 산책알바 종료 시, 반려인(owner)의 userId를 넘겨서 사용
+     */
+    public WalkLogSaveResponse saveForUser(WalkLogSaveRequest req, int userId) throws Exception {
+        return saveInternal(req, userId);
+    }
+
+    /** 현재 로그인 유저의 코스 목록 */
     public List<WalkLogSummaryResponse> getListForCurrentUser() {
 
-        List<WalkLogDto> list = walkLogMapper.findByUserId(FIXED_USER_ID);
+        int userId = currentUserService.getCurrentUserIdOrThrow();
+        List<WalkLogDto> list = walkLogMapper.findByUserId(userId);
 
         return list.stream()
                 .map(l -> {
-                    long minutes = calcMinutesByDistance(l.getDistanceKm());
+                    double dist = (l.getDistanceKm() != null ? l.getDistanceKm() : 0.0);
+                    long minutes = calcMinutesByDistance(dist);
                     String date = l.getStartTime().toLocalDate().toString();
                     return new WalkLogSummaryResponse(
                             l.getWalkingRecodeId(),
-                            l.getDistanceKm(),
+                            dist,
                             date,
                             minutes
                     );
@@ -79,12 +171,12 @@ public class WalkLogService {
                 .collect(Collectors.toList());
     }
 
-    /** 특정 id 의 로그 (현재 유저 기준) */
+    /** 특정 코스 한 개 (로그인 유저 기준) */
     public WalkLogDto getOne(long id) {
-        return walkLogMapper.findByIdAndUserId(id, FIXED_USER_ID);
+        int userId = currentUserService.getCurrentUserIdOrThrow();
+        return walkLogMapper.findByIdAndUserId(id, userId);
     }
 
-    /** 거리 기준으로 예상 시간(분) 계산 */
     private long calcMinutesByDistance(double distanceKm) {
         if (distanceKm <= 0) return 1;
         double minutesD = (distanceKm / WALK_SPEED_KMH) * 60.0;

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @Slf4j
-@RequestMapping("/aiwalk")
+@RequestMapping("/ai-walk")
 public class AiWalkController {
 
     String dir = "aiwalk/";

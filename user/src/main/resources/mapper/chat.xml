@@ -18,12 +18,24 @@
         VALUES (#{userId}, #{targetId}, '', NOW())
     </insert>
 
+    <!-- 단일 채팅방 조회 -->
+    <select id="getRoom" resultType="edu.sm.app.dto.ChatRoom">
+        SELECT * FROM chat_room
+        WHERE room_id = #{roomId}
+    </select>
+
     <!-- 내 채팅방 목록 -->
     <select id="getRoomList" resultType="edu.sm.app.dto.ChatRoom">
         SELECT r.*,
-               CASE WHEN r.user_id = #{userId} THEN r.target_id ELSE r.user_id END AS targetName,
-               TO_CHAR(r.last_date, 'YYYY-MM-DD HH:MI') as lastDate
+               CASE
+                   WHEN r.user_id = #{userId} THEN COALESCE(u2.name, u2.username, r.target_id)
+                   ELSE COALESCE(u1.name, u1.username, r.user_id)
+                   END AS targetName,
+               CASE WHEN r.user_id = #{userId} THEN u2.profile_image ELSE u1.profile_image END AS targetImg,
+               TO_CHAR(r.last_date, 'YYYY-MM-DD HH24:MI') as lastDate
         FROM chat_room r
+                 LEFT JOIN users u1 ON r.user_id = u1.username
+                 LEFT JOIN users u2 ON r.target_id = u2.username
         WHERE r.user_id = #{userId} OR r.target_id = #{userId}
         ORDER BY r.last_date DESC
     </select>

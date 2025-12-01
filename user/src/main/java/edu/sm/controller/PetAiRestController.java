@@ -4,6 +4,7 @@ import edu.sm.app.dto.WalkRecommendResponse;
 import edu.sm.app.service.PetWalkRecommendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,12 +16,19 @@ public class PetAiRestController {
     private final PetWalkRecommendService petWalkRecommendService;
 
     /**
-     * GET /api/pet/walk-recommend
-     *  - 현재(임시) 유저의 대표 반려동물 정보를 기반으로
-     *    AI가 추천한 산책 거리와 설명을 반환.
+     * 기존: 로그인한 사용자(반려인) 기준 추천
      */
     @GetMapping("/walk-recommend")
     public WalkRecommendResponse recommendWalk() {
         return petWalkRecommendService.recommendForCurrentUser();
+    }
+
+    /**
+     * 새로 추가: 특정 userId(반려인) 기준 추천
+     * - 알바생 화면에서 '오늘 산책할 반려인의 반려동물' 정보를 보고 싶을 때 사용
+     */
+    @GetMapping("/walk-recommend/for-user/{userId}")
+    public WalkRecommendResponse recommendWalkForUser(@PathVariable Integer userId) {
+        return petWalkRecommendService.recommendForUser(userId);
     }
 }

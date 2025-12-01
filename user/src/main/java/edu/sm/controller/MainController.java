@@ -78,6 +78,11 @@ public class MainController {
         model.addAttribute("center", "health-check");
         return "index";
     }
+    @RequestMapping("/map")
+    public String map(Model model) {
+        model.addAttribute("center", "map");
+        return "index";
+    }
 
     @RequestMapping("/homecam")
     public String homecam(Model model) {

@@ -175,8 +175,11 @@
                                                 </button>
                                             </c:if>
 
+                                            <input type="hidden" id="postOwnerUsername" value="${postOwnerUsername}">
+                                            <input type="hidden" id="postOwnerName" value="${postOwnerName}">
+
                                             <a href="<c:url value='/walkpt/worker/job-list'/>"
-                                                class="btn btn-pet-outline btn-block">
+                                               class="btn btn-pet-outline btn-block">
                                                 <i class="fas fa-list"></i> 목록으로
                                             </a>
                                         </div>
@@ -212,8 +215,28 @@
                 }
 
                 function startChat() {
-                    // TODO: 채팅 기능 구현
-                    alert('채팅 기능은 준비 중입니다.');
+                    const loginId = $('#loginUserId').val();
+                    if (!loginId) {
+                        alert('로그인 후 이용 가능합니다.');
+                        window.location.href = '<c:url value="/login"/>';
+                        return;
+                    }
+
+                    const targetId = $('#postOwnerUsername').val();
+                    const targetName = $('#postOwnerName').val() || targetId;
+
+                    if (!targetId) {
+                        alert('게시글 작성자 정보를 불러오지 못했습니다.');
+                        return;
+                    }
+
+                    $('#chatModal').modal('show');
+                    initChat();
+
+                    // 모달이 열린 뒤 채팅방으로 바로 이동
+                    setTimeout(function () {
+                        openChatWithUser(targetId, targetName);
+                    }, 300);
                 }
 
                 function applyJob() {

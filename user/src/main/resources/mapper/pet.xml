@@ -34,12 +34,12 @@
 
     <!-- 전체 반려동물 조회 -->
     <select id="selectAll" resultMap="petMap">
-        SELECT * FROM pets ORDER BY created_at DESC
+        SELECT * FROM pets ORDER BY pet_id DESC
     </select>
 
     <!-- 사용자별 반려동물 조회 -->
     <select id="selectByUserId" parameterType="Integer" resultMap="petMap">
-        SELECT * FROM pets WHERE user_id = #{userId} ORDER BY created_at ASC
+        SELECT * FROM pets WHERE user_id = #{userId} ORDER BY pet_id ASC
     </select>
 
     <!-- 반려동물 정보 수정 -->

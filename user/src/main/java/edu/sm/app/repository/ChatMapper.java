@@ -14,6 +14,9 @@ public interface ChatMapper {
     // 방 찾기 (나-상대 or 상대-나)
     ChatRoom findRoom(@Param("userId") String userId, @Param("targetId") String targetId);
 
+    // 단일 방 조회
+    ChatRoom getRoom(int roomId);
+
     // 방 생성
     void createRoom(ChatRoom chatRoom);
 

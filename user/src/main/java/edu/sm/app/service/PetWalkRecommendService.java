@@ -1,62 +1,104 @@
 package edu.sm.app.service;
 
 import edu.sm.app.dto.AiWalkRecommendResult;
-import edu.sm.app.dto.PetDto;
+import edu.sm.app.dto.Pet;
 import edu.sm.app.dto.WalkRecommendResponse;
-import edu.sm.app.repository.PetMapper;
+import edu.sm.app.repository.PetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PetWalkRecommendService {
 
-    private final PetMapper petMapper;
+    private final PetRepository petRepository;
     private final ChatClient chatClient;
+    private final CurrentUserService currentUserService;
 
-    // 로그인 전 임시 유저 ID (id01의 user_id = 1이라고 가정)
-    private static final int FIXED_USER_ID = 1;
-
+    /**
+     * 기존 기능: 현재 로그인한 사용자(반려인) 기준 추천
+     */
     public WalkRecommendResponse recommendForCurrentUser() {
+        int userId = currentUserService.getCurrentUserIdOrThrow();
+        return recommendForUserInternal(userId);
+    }
 
-        // 1) DB에서 반려동물 1마리 조회
-        PetDto pet = petMapper.findMainPetByUserId(FIXED_USER_ID);
-        if (pet == null) {
-            throw new IllegalStateException("등록된 반려동물이 없습니다. pet 테이블에 더미 데이터를 하나 넣어주세요.");
+    /**
+     * 새 기능: 특정 userId(반려인) 기준 추천
+     * - 알바생 화면에서 "오늘 산책할 반려인의 반려동물" 정보를 보고 싶을 때 사용
+     */
+    public WalkRecommendResponse recommendForUser(Integer userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("userId는 null일 수 없습니다.");
+        }
+        return recommendForUserInternal(userId);
+    }
+
+    /**
+     * 공통 내부 로직: 주어진 userId의 반려동물 중 대표 1마리 기준으로 추천
+     */
+    private WalkRecommendResponse recommendForUserInternal(int userId) {
+        List<Pet> pets = petRepository.selectByUserId(userId);
+        if (pets == null || pets.isEmpty()) {
+            throw new IllegalStateException("등록된 반려동물이 없습니다. 반려동물을 먼저 등록해 주세요.");
         }
 
-        // 2) 프롬프트 작성
+        // 대표 반려동물: 일단 첫 번째 사용
+        Pet pet = pets.get(0);
+
+        String type = safeString(pet.getType());           // DOG, CAT, ETC
+        String customType = safeString(pet.getCustomType());
+        String breed = safeString(pet.getBreed());
+        String gender = safeString(pet.getGender());       // MALE, FEMALE 등
+        Integer age = pet.getAge();
+        BigDecimal weight = pet.getWeight();
+
+        String speciesDesc = buildSpeciesDesc(type, customType, breed);
+
+        double weightValue = (weight != null) ? weight.doubleValue() : 5.0;
+        int ageValue = (age != null) ? age : 3;
+
         String prompt = """
-                너는 수의사이자 반려동물 운동 코치야.
-                아래 반려동물의 정보를 보고, 오늘 한 번 산책할 때 적절한 산책 거리(킬로미터)를 0.1 단위로 하나만 추천해.
-                
-                반드시 JSON 형식으로만 출력해:
-                {
-                  "recommendedKm": 3.2,
-                  "reason": "간단한 한국어 설명"
-                }
-                
-                기준(대략적인 가이드라인, 꼭 그대로가 아니어도 됨):
-                - 체중 5kg 미만: 1.0 ~ 3.0 km
-                - 5 ~ 10kg: 2.0 ~ 4.0 km
-                - 10 ~ 20kg: 3.0 ~ 5.0 km
-                - 20kg 이상: 4.0 ~ 7.0 km
-                - 나이가 많거나 비만일 것 같으면 거리를 조금 줄이고, 어린 에너지 많은 개는 약간 늘려도 된다.
-                
-                반려동물 정보:
-                - 종: %s
-                - 몸무게(kg): %.1f
-                - 나이(살): %d
+                너는 개·고양이 등 소형 반려동물의 운동 처방을 전문으로 하는 수의사야.
+
+                아래 반려동물 정보를 바탕으로
+                "하루에 몇 km 정도 산책하는 것이 적당한지"를 추천해 줘.
+
+                [반려동물 정보]
+                - 종/유형(type): %s
+                - 커스텀 타입(customType): %s
+                - 품종(breed): %s
+                - 종합 설명: %s
+                - 체중(kg): %s
+                - 나이(살): %s
                 - 성별: %s
+
+                [응답 형식]
+                JSON으로만 답변해.
+                {
+                  "recommendedKm": 숫자,
+                  "reason": "한국어 설명 텍스트"
+                }
+
+                [조건]
+                1) recommendedKm는 0.5 이상, 10.0 이하의 값으로 정해.
+                2) 나이, 체중, 품종(또는 타입), 성별을 고려해서
+                   왜 그 거리로 추천했는지 reason에 한국어로 구체적으로 설명해.
+                3) JSON 이외의 불필요한 텍스트는 절대 쓰지 마.
                 """.formatted(
-                nullToUnknown(pet.getSpecies()),
-                pet.getWeight() == null ? 5.0 : pet.getWeight(),
-                pet.getAge() == null ? 3 : pet.getAge(),
-                nullToUnknown(pet.getGender())
+                type,
+                customType,
+                breed,
+                speciesDesc,
+                weightValue,
+                ageValue,
+                gender
         );
 
-        // 3) Spring AI로 LLM 호출 + JSON -> DTO 매핑
         AiWalkRecommendResult aiResult = chatClient
                 .prompt()
                 .user(prompt)
@@ -64,12 +106,9 @@ public class PetWalkRecommendService {
                 .entity(AiWalkRecommendResult.class);
 
         double km = aiResult.recommendedKm();
-
-        // 안전 범위(0.5~10km) 안으로 클램핑
         if (km < 0.5) km = 0.5;
         if (km > 10.0) km = 10.0;
 
-        // 4) 최종 응답 조립
         WalkRecommendResponse res = new WalkRecommendResponse();
         res.setPet(pet);
         res.setRecommendedKm(km);
@@ -77,7 +116,35 @@ public class PetWalkRecommendService {
         return res;
     }
 
-    private String nullToUnknown(String s) {
+    private String safeString(String s) {
         return (s == null || s.isBlank()) ? "알 수 없음" : s;
+    }
+
+    /**
+     * type/customType/breed 조합해서 "강아지 / 품종: 사모예드" 같은 설명 생성
+     */
+    private String buildSpeciesDesc(String type, String customType, String breed) {
+        String typeKorean;
+        switch (type) {
+            case "DOG" -> typeKorean = "강아지";
+            case "CAT" -> typeKorean = "고양이";
+            case "ETC" -> typeKorean = "기타";
+            default -> typeKorean = type;
+        }
+
+        String ct = safeString(customType);
+        String br = safeString(breed);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(typeKorean);
+
+        if (!"알 수 없음".equals(ct)) {
+            sb.append(" / 커스텀: ").append(ct);
+        }
+        if (!"알 수 없음".equals(br)) {
+            sb.append(" / 품종: ").append(br);
+        }
+
+        return sb.toString();
     }
 }
