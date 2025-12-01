@@ -139,20 +139,21 @@
                         </a>
                     </li>
 
+                    <c:if test="${sessionScope.user != null}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<c:url value='/chat/list'/>">
+                                <i class="fas fa-comments"></i>
+                                <span>채팅 목록</span>
+                            </a>
+                        </li>
+                    </c:if>
+
                     <!-- 공지사항 -->
                     <li class="nav-item">
                         <a class="nav-link" href="<c:url value='/notice'/>">
                             <i class="fas fa-bell"></i> 공지사항
                         </a>
                     </li>
-
-                    <c:if test="${not empty sessionScope.user}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="<c:url value='/chat'/>">
-                                <i class="fas fa-comments"></i> 채팅
-                            </a>
-                        </li>
-                    </c:if>
                 </ul>
 
                 <!-- ✅ 헤더 액션 버튼 (로그인 상태별) -->
