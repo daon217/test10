@@ -15,7 +15,7 @@
   .chat-header-title { font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; }
   .chat-header-title i { color: #ffc107; margin-right: 8px; font-size: 1.2rem; }
 
-  /* [추가] 플러스 버튼 및 메뉴 스타일 */
+  /* 플러스 버튼 및 메뉴 스타일 */
   .chat-input-area { display: flex; align-items: center; gap: 10px; padding-top: 10px; }
   .btn-plus {
     width: 40px; height: 40px; border-radius: 50%; border: none;
@@ -26,7 +26,7 @@
   .btn-plus:hover { background-color: #ddd; }
   .btn-plus.active { background-color: #ccc; transform: rotate(45deg); }
 
-  /* [추가] 확장 메뉴 스타일 */
+  /* 확장 메뉴 스타일 */
   .plus-menu {
     display: none; padding: 20px 10px; background-color: #f8f9fa;
     border-top: 1px solid #ddd; margin-top: 15px; border-radius: 10px;
@@ -42,11 +42,13 @@
   }
   .menu-item:hover .menu-icon-box { transform: scale(1.05); background-color: #e3f2fd; color: #1565c0; }
 
-  /* [추가] 산책 신청 카드 스타일 */
-  .walk-card {
+  /* 카드 공통 스타일 */
+  .walk-card, .video-card {
     width: 240px; background-color: white; border-radius: 12px; overflow: hidden;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #eee; margin-top: 5px;
   }
+
+  /* 산책 카드 스타일 */
   .walk-card-content { padding: 20px; text-align: center; background: #fff; }
   .walk-card-icon { font-size: 40px; color: #ffc107; margin-bottom: 12px; }
   .walk-card-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; color: #333; }
@@ -57,6 +59,26 @@
     font-weight: bold; transition: background 0.2s;
   }
   .btn-start-walk:hover { background-color: #ffe082; }
+  /* [추가] 비활성화된 버튼 스타일 */
+  .btn-start-walk:disabled {
+    background-color: #eee; color: #999; cursor: default;
+  }
+
+  /* 영상통화 카드 스타일 */
+  .video-card-content { padding: 20px; text-align: center; background: #fff; }
+  .video-card-icon { font-size: 40px; color: #007bff; margin-bottom: 12px; }
+  .video-card-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; color: #333; }
+  .video-card-desc { font-size: 13px; color: #888; margin-bottom: 0; }
+  .btn-start-video {
+    width: 100%; border: none; background-color: #f8f9fa; padding: 12px 0;
+    font-size: 14px; color: #333; cursor: pointer; border-top: 1px solid #eee;
+    font-weight: bold; transition: background 0.2s;
+  }
+  .btn-start-video:hover { background-color: #cce5ff; }
+  /* [추가] 비활성화된 버튼 스타일 */
+  .btn-start-video:disabled {
+    background-color: #eee; color: #999; cursor: default;
+  }
 </style>
 
 <div class="chat-wrapper">
@@ -78,9 +100,11 @@
       <div id="chatContainer" class="chat-container">
         <c:forEach var="msg" items="${msgs}">
           <c:choose>
+            <%-- 내가 보낸 메시지 --%>
             <c:when test="${msg.senderId == user.userId}">
               <div class="message-box my-msg">
                 <c:choose>
+                  <%-- 산책 요청 (보낸 사람: 버튼 비활성화) --%>
                   <c:when test="${msg.content eq '[[WALK_REQUEST]]'}">
                     <div class="walk-card">
                       <div class="walk-card-content">
@@ -88,7 +112,18 @@
                         <div class="walk-card-title">산책해요!</div>
                         <p class="walk-card-desc">산책 메이트 신청을 보냈습니다.</p>
                       </div>
-                      <button class="btn-start-walk" onclick="startWalk()">산책 시작하기</button>
+                      <button class="btn-start-walk" disabled>수락 대기중</button>
+                    </div>
+                  </c:when>
+                  <%-- 영상통화 요청 (보낸 사람: 버튼 비활성화) --%>
+                  <c:when test="${msg.content eq '[[VIDEO_REQUEST]]'}">
+                    <div class="video-card">
+                      <div class="video-card-content">
+                        <div class="video-card-icon"><i class="fas fa-video"></i></div>
+                        <div class="video-card-title">영상통화</div>
+                        <p class="video-card-desc">영상통화를 요청했습니다.</p>
+                      </div>
+                      <button class="btn-start-video" disabled>응답 대기중</button>
                     </div>
                   </c:when>
                   <c:otherwise>
@@ -97,9 +132,12 @@
                 </c:choose>
               </div>
             </c:when>
+
+            <%-- 상대방이 보낸 메시지 --%>
             <c:otherwise>
               <div class="message-box other-msg">
                 <c:choose>
+                  <%-- 산책 요청 (받는 사람: 수락 가능) --%>
                   <c:when test="${msg.content eq '[[WALK_REQUEST]]'}">
                     <div class="walk-card">
                       <div class="walk-card-content">
@@ -108,6 +146,17 @@
                         <p class="walk-card-desc">함께 산책하시겠습니까?</p>
                       </div>
                       <button class="btn-start-walk" onclick="startWalk()">산책 시작하기</button>
+                    </div>
+                  </c:when>
+                  <%-- 영상통화 요청 (받는 사람: 수락 가능) --%>
+                  <c:when test="${msg.content eq '[[VIDEO_REQUEST]]'}">
+                    <div class="video-card">
+                      <div class="video-card-content">
+                        <div class="video-card-icon"><i class="fas fa-video"></i></div>
+                        <div class="video-card-title">영상통화</div>
+                        <p class="video-card-desc">영상통화를 시작하시겠습니까?</p>
+                      </div>
+                      <button class="btn-start-video" onclick="startVideoCall()">영상통화 시작하기</button>
                     </div>
                   </c:when>
                   <c:otherwise>
@@ -184,25 +233,47 @@
       if(data.type === "NOTIFICATION" || data.content === "ENTER") return;
 
       var msgDiv = document.createElement("div");
+      var isMine = (data.senderId == myId); // 내가 보낸 메시지인지 확인
 
-      // [수정] 산책 요청 카드 또는 일반 텍스트 렌더링
+      // [수정] 카드 렌더링 로직 (내가 보낸 경우 버튼 비활성화)
       if (data.content === "[[WALK_REQUEST]]") {
+        var btnAttr = isMine ? 'disabled' : 'onclick="startWalk()"';
+        var btnText = isMine ? '수락 대기중' : '산책 시작하기';
+        var descText = isMine ? '산책 메이트 신청을 보냈습니다.' : '산책 요청이 도착했습니다.';
+
         var cardHtml =
                 '<div class="walk-card">' +
                 '<div class="walk-card-content">' +
                 '<div class="walk-card-icon"><i class="fas fa-dog"></i></div>' +
                 '<div class="walk-card-title">산책해요!</div>' +
-                '<p class="walk-card-desc">산책 요청이 도착했습니다.</p>' +
+                '<p class="walk-card-desc">' + descText + '</p>' +
                 '</div>' +
-                '<button class="btn-start-walk" onclick="startWalk()">산책 시작하기</button>' +
+                '<button class="btn-start-walk" ' + btnAttr + '>' + btnText + '</button>' +
                 '</div>';
         msgDiv.innerHTML = cardHtml;
+
+      } else if (data.content === "[[VIDEO_REQUEST]]") {
+        var btnAttr = isMine ? 'disabled' : 'onclick="startVideoCall()"';
+        var btnText = isMine ? '응답 대기중' : '영상통화 시작하기';
+        var descText = isMine ? '영상통화를 요청했습니다.' : '영상통화를 시작하시겠습니까?';
+
+        var cardHtml =
+                '<div class="video-card">' +
+                '<div class="video-card-content">' +
+                '<div class="video-card-icon"><i class="fas fa-video"></i></div>' +
+                '<div class="video-card-title">영상통화</div>' +
+                '<p class="video-card-desc">' + descText + '</p>' +
+                '</div>' +
+                '<button class="btn-start-video" ' + btnAttr + '>' + btnText + '</button>' +
+                '</div>';
+        msgDiv.innerHTML = cardHtml;
+
       } else {
         var content = '<div class="msg-bubble">' + data.content + '</div>';
         msgDiv.innerHTML = content;
       }
 
-      if(data.senderId == myId) {
+      if(isMine) {
         msgDiv.className = "message-box my-msg";
       } else {
         msgDiv.className = "message-box other-msg";
@@ -226,7 +297,6 @@
     input.value = "";
   }
 
-  // [추가] 플러스 메뉴 토글
   function togglePlusMenu() {
     var menu = document.getElementById("plusMenu");
     var btn = document.getElementById("plusBtn");
@@ -241,24 +311,33 @@
     }
   }
 
-  // [추가] 영상통화 요청 (기능 구현 필요)
   function requestVideoCall() {
-    alert("영상통화 요청 기능");
-  }
-
-  // [추가] 산책하기 요청 (카드 전송)
-  function requestWalk() {
-    togglePlusMenu(); // 메뉴 닫기
+    togglePlusMenu();
     var msg = {
       roomId: roomId,
       senderId: myId,
-      content: "[[WALK_REQUEST]]" // 특수 코드 전송
+      content: "[[VIDEO_REQUEST]]"
     };
     ws.send(JSON.stringify(msg));
   }
 
-  // [추가] 산책 시작 버튼 동작
+  function requestWalk() {
+    togglePlusMenu();
+    var msg = {
+      roomId: roomId,
+      senderId: myId,
+      content: "[[WALK_REQUEST]]"
+    };
+    ws.send(JSON.stringify(msg));
+  }
+
   function startWalk() {
     alert("산책 모드를 시작합니다!");
+  }
+
+  function startVideoCall() {
+    if(confirm("영상통화를 연결하시겠습니까?")) {
+      alert("영상통화 연결 중...");
+    }
   }
 </script>
