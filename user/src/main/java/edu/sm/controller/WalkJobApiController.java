@@ -98,4 +98,33 @@ public class WalkJobApiController {
         private double distanceKm;
         private long elapsedSec;
     }
+
+    // 기존 stream, update, finish 는 그대로 유지
+
+    // 🔹 알바생용 SSE
+    @GetMapping(value = "/worker-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter workerStream() {
+        log.info("산책알바 worker SSE 구독");
+        return sessionService.subscribeWorker();
+    }
+
+    // 🔹 반려인 전역 알림용 SSE (index.jsp)
+    @GetMapping(value = "/alerts-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter alertsStream() {
+        log.info("산책알바 alerts SSE 구독");
+        return sessionService.subscribeAlerts();
+    }
+
+    // 🔹 알바생이 산책 종료 버튼을 눌렀을 때 (finish 요청만)
+    @PostMapping("/finish-request")
+    public void finishRequest() {
+        log.info("산책알바 종료 요청 (알바생 → 반려인 승인 대기)");
+        sessionService.requestFinish();
+    }
+
+    // 🔹 현재 세션 상태 조회 (알바생 화면 복구용)
+    @GetMapping("/state")
+    public WalkJobSessionService.WalkSnapshot state() {
+        return sessionService.getSnapshot();
+    }
 }

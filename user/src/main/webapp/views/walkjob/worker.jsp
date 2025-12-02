@@ -325,7 +325,7 @@
     }
   }
 </style>
-
+<br>
 <div class="walkjob-worker-page">
   <header class="walkjob-worker-header">
     <div class="walkjob-worker-header-left">
@@ -340,7 +340,7 @@
     </div>
   </header>
 
-  <!-- 🔹 오늘 산책할 반려동물 정보 섹션 -->
+<%--  <!-- 🔹 오늘 산책할 반려동물 정보 섹션 -->--%>
 <%--  <section class="pet-info-card">--%>
 <%--    <div class="pet-info-title-row">--%>
 <%--      <h2>오늘 산책할 반려동물</h2>--%>
@@ -352,7 +352,7 @@
 <%--      <strong id="petRecommendKm">- km</strong>--%>
 <%--    </p>--%>
 <%--    <p class="note" id="petReasonText"></p>--%>
-<%--  </section>--%>
+  </section>
 
   <div class="map-wrap">
     <div id="map"></div>
@@ -584,50 +584,44 @@
     );
   }
 
+  // 🔴 여기서부터가 “산책 종료 요청만 보내고 실제 종료는 안 하는” 핵심 부분
   async function stopWalk() {
-    if (!isWalking) return;
-
-    isWalking = false;
-
-    if (watchId != null) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
+    if (!isWalking) {
+      // 이미 산책 중이 아니면 아무 것도 안 함
+      return;
     }
 
-    // ★ 타이머 정지
-    stopTickTimer();
-
     const statusEl = document.getElementById('statusText');
-    statusEl.textContent = '산책 종료 요청 중...';
+    statusEl.textContent = '산책 종료 요청 중 (반려인 승인 대기)...';
     statusEl.className = 'status-pill status-end';
 
     try {
-      const res = await fetch('<c:url value="/api/walkjob/finish"/>', {
+      const res = await fetch('<c:url value="/api/walkjob/finish-request"/>', {
         method: 'POST'
       });
-      if (!res.ok) throw new Error('finish error');
-      const data = await res.json();
-      alert('산책이 종료되었고 기록이 저장되었습니다.\n거리: ' +
-              data.distanceKm.toFixed(2) + 'km / 예상시간: ' + data.minutes + '분');
+      if (!res.ok) throw new Error('finish-request error');
+
+      alert('반려인에게 산책 종료 요청을 보냈습니다.\n반려인이 승인하면 산책이 종료됩니다.');
+      // 필요하면 종료 요청 후 stopBtn 잠시 disable 할 수도 있음 (선택 사항)
+      // document.getElementById('stopBtn').disabled = true;
     } catch (e) {
       console.error(e);
-      alert('산책 종료 중 오류가 발생했습니다.');
+      alert('산책 종료 요청 중 오류가 발생했습니다.');
       statusEl.className = 'status-pill status-error';
-      statusEl.textContent = '산책 종료 오류';
-      return;
-    } finally {
-      document.getElementById('startBtn').disabled = false;
-      document.getElementById('stopBtn').disabled = true;
-      statusEl.textContent = '대기 중...';
-      statusEl.className = 'status-pill status-waiting';
+      statusEl.textContent = '종료 요청 실패 (다시 시도해 주세요)';
     }
   }
 
-  // 🔹 알바생 화면 진입 시 반려인의 반려동물 정보 + 추천 거리 불러오기
+  // 🔹 알바생 화면 진입 시 반려인의 반려동물 정보 + 추천 거리 불러오기 (기존 기능 그대로)
   async function loadOwnerPetRecommend() {
     const infoEl = document.getElementById('petInfoText');
     const recommendEl = document.getElementById('petRecommendKm');
     const reasonEl = document.getElementById('petReasonText');
+
+    if (!infoEl || !recommendEl || !reasonEl) {
+      // 해당 섹션이 주석 처리된 경우 그냥 리턴
+      return;
+    }
 
     if (typeof OWNER_USER_ID === 'undefined' || OWNER_USER_ID <= 0) {
       infoEl.textContent = '연결된 반려인 정보가 없어 반려동물 정보를 불러올 수 없습니다.';
@@ -690,12 +684,190 @@
     }
   }
 
+  // 🔹 알바생용 SSE – 반려인이 "예" 눌러서 실제 산책 종료가 확정되면 받는 채널
+  function connectWorkerSse() {
+    const eventSource = new EventSource('<c:url value="/api/walkjob/worker-stream"/>');
+    const statusEl = document.getElementById('statusText');
+
+    eventSource.addEventListener('finish', (e) => {
+      const data = JSON.parse(e.data);
+
+      // 🔸 타이머/위치 추적 정지
+      isWalking = false;
+      stopTickTimer();
+      if (watchId != null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+
+      const distKm = data.distanceKm || 0;
+      const elapsedSec = data.elapsedSec || 0;
+
+      distanceMeters = distKm * 1000;
+      routePoints = (data.points || []).map(p => [p.lat, p.lon]);
+
+      // UI 수치 갱신
+      document.getElementById('distLabel').textContent = distKm.toFixed(2) + ' km';
+      document.getElementById('timeLabel').textContent = elapsedSec + '초';
+      const kcal = calcKcal(distKm, elapsedSec);
+      document.getElementById('kcalLabel').textContent = kcal.toFixed(0) + ' kcal';
+      document.getElementById('paceLabel').textContent = formatPace(distKm, elapsedSec);
+
+      // 지도 그리기
+      if (routePoints.length > 0) {
+        if (!routePolyline) {
+          routePolyline = L.polyline(routePoints, {weight: 5, color: '#10b981'}).addTo(map);
+        } else {
+          routePolyline.setLatLngs(routePoints);
+        }
+        const last = routePoints[routePoints.length - 1];
+        if (!userMarker) {
+          userMarker = L.marker(last).addTo(map);
+        } else {
+          userMarker.setLatLng(last);
+        }
+        map.setView(last, 16);
+      }
+
+      statusEl.textContent = '산책 종료!';
+      statusEl.className = 'status-pill status-end';
+
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+
+      eventSource.close();
+    });
+
+    eventSource.onerror = (e) => {
+      console.error('worker SSE error', e);
+    };
+  }
+
+  // 🔹 페이지 재진입 시 진행 중 산책 복구
+  async function restoreWalkIfExists() {
+    try {
+      const res = await fetch('<c:url value="/api/walkjob/state"/>');
+      if (!res.ok) return;
+      const snap = await res.json();
+
+      if (!snap || !snap.status) return;
+
+      if (snap.status === 'IDLE' || snap.status === 'FINISHED') {
+        return;
+      }
+
+      const distKm = snap.distanceKm || 0;
+      const elapsedSec = snap.elapsedSec || 0;
+      const points = (snap.points || []).map(p => [p.lat, p.lon]);
+
+      if (distKm <= 0 && elapsedSec <= 0 && points.length === 0) {
+        return;
+      }
+
+      isWalking = true; // WALKING / FINISH_REQUESTED 둘 다 "진행 중"으로 본다
+      distanceMeters = distKm * 1000;
+      routePoints = points;
+
+      // startTime 재구성 (현재 시각 - elapsedSec)
+      if (elapsedSec > 0) {
+        const now = new Date();
+        startTime = new Date(now.getTime() - elapsedSec * 1000);
+      } else {
+        startTime = new Date();
+      }
+
+      // 지도 복원
+      if (routePoints.length > 0) {
+        const last = routePoints[routePoints.length - 1];
+        lastLat = last[0];
+        lastLon = last[1];
+
+        if (!routePolyline) {
+          routePolyline = L.polyline(routePoints, {weight: 5, color: '#10b981'}).addTo(map);
+        } else {
+          routePolyline.setLatLngs(routePoints);
+        }
+        if (!userMarker) {
+          userMarker = L.marker(last).addTo(map);
+        } else {
+          userMarker.setLatLng(last);
+        }
+        map.setView(last, 16);
+      }
+
+      // 수치 복원
+      document.getElementById('distLabel').textContent = distKm.toFixed(2) + ' km';
+      document.getElementById('timeLabel').textContent = elapsedSec + '초';
+      const kcal = calcKcal(distKm, elapsedSec);
+      document.getElementById('kcalLabel').textContent = kcal.toFixed(0) + ' kcal';
+      document.getElementById('paceLabel').textContent = formatPace(distKm, elapsedSec);
+
+      const statusEl = document.getElementById('statusText');
+      if (snap.status === 'WALKING') {
+        statusEl.textContent = '산책 중...';
+        statusEl.className = 'status-pill status-active';
+      } else if (snap.status === 'FINISH_REQUESTED') {
+        statusEl.textContent = '산책 종료 요청 중 (반려인 승인 대기)...';
+        statusEl.className = 'status-pill status-end';
+      }
+
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+
+      // 타이머 재시작
+      startTickTimer();
+
+      // 위치 추적 재시작
+      if (navigator.geolocation) {
+        watchId = navigator.geolocation.watchPosition(
+                (pos) => {
+                  const lat = pos.coords.latitude;
+                  const lon = pos.coords.longitude;
+
+                  if (lastLat !== null && lastLon !== null) {
+                    const d = distanceMetersH(lastLat, lastLon, lat, lon);
+                    if (d > 2) {
+                      distanceMeters += d;
+                    }
+                  }
+                  lastLat = lat;
+                  lastLon = lon;
+                  routePoints.push([lat, lon]);
+
+                  if (!userMarker) {
+                    userMarker = L.marker([lat, lon]).addTo(map);
+                  } else {
+                    userMarker.setLatLng([lat, lon]);
+                  }
+                  if (!routePolyline) {
+                    routePolyline = L.polyline(routePoints, {weight: 5, color: '#10b981'}).addTo(map);
+                  } else {
+                    routePolyline.setLatLngs(routePoints);
+                  }
+                  map.setView([lat, lon], 16);
+                },
+                (err) => console.warn('위치 추적 실패(복구)', err),
+                { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+        );
+      }
+    } catch (e) {
+      console.error('restoreWalkIfExists error', e);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initMap();
     document.getElementById('startBtn').addEventListener('click', startWalk);
     document.getElementById('stopBtn').addEventListener('click', stopWalk);
 
-    // 🔹 알바생 화면 진입 시 반려동물 정보 + 추천 거리 로딩
+    // 🔹 알바생 화면 진입 시 반려동물 정보 + 추천 거리 로딩 (기존 기능)
     loadOwnerPetRecommend();
+
+    // 🔹 알바생 SSE 연결 (반려인 승인 후 종료 통지)
+    connectWorkerSse();
+
+    // 🔹 진행 중 산책이 있으면 화면 복구
+    restoreWalkIfExists();
   });
 </script>
+

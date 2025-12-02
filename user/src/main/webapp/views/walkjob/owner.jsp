@@ -224,7 +224,7 @@
     }
   }
 </style>
-
+<br>
 <div class="walkjob-owner-page">
   <header class="walkjob-owner-header">
     <div class="walkjob-owner-header-left">
@@ -357,7 +357,12 @@
 
     eventSource.addEventListener('finish', (e) => {
       const data = JSON.parse(e.data);
-      applyUpdate({distanceKm: data.distanceKm, elapsedSec: 0, points: data.points});
+      // 🔹 서버에서 내려준 elapsedSec 사용
+      applyUpdate({
+        distanceKm: data.distanceKm,
+        elapsedSec: data.elapsedSec,
+        points: data.points
+      });
       statusEl.textContent = '산책 종료!';
       statusEl.className = 'status-chip status-finish';
       eventSource.close();

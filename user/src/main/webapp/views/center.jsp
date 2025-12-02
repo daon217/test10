@@ -299,29 +299,9 @@
                 </p>
             </div>
 
-            <!-- 6. 펫 다이어리 -->
-            <div class="service-card" onclick="location.href='<c:url value='/diary'/>'">
-                <div class="service-icon">
-                    <i class="fas fa-book"></i>
-                </div>
-                <h3 class="service-title">펫 다이어리</h3>
-                <p class="service-desc">
-                    소중한 순간을 기록하고<br>
-                    산책·홈캠 기록이 자동으로 연동됩니다
-                </p>
-            </div>
+            <!-- 6. 펫 다이어리 (제거)-->
 
-            <!-- 7. 행동 리포트 -->
-            <div class="service-card" onclick="location.href='<c:url value='/behavior-report'/>'">
-                <div class="service-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h3 class="service-title">행동 리포트</h3>
-                <p class="service-desc">
-                    AI가 활동량·수면 패턴을 분석해<br>
-                    주간·월간 리포트를 제공합니다
-                </p>
-            </div>
+            <!-- 7. 행동 리포트 (제거)-->
 
             <!-- 8. 함께 산책 -->
             <div class="service-card" onclick="location.href='<c:url value='/walk-together'/>'">

@@ -105,9 +105,6 @@
                             <a class="dropdown-item" href="<c:url value='/health-check'/>">
                                 <i class="fas fa-heartbeat"></i> AI 가상 진단
                             </a>
-                            <a class="dropdown-item" href="<c:url value='/behavior-report'/>">
-                                <i class="fas fa-chart-line"></i> 행동 리포트
-                            </a>
                             <a class="dropdown-item" href="<c:url value='/clothes-recommend'/>">
                                 <i class="fas fa-tshirt"></i> 옷 사이즈 추천
                             </a>
@@ -115,12 +112,6 @@
                                 <i class="fas fa-palette"></i> 피규어 만들기
                             </a>
                         </div>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="<c:url value='/diary'/>">
-                            <i class="fas fa-book"></i> 펫 다이어리
-                        </a>
                     </li>
 
                     <c:if test="${sessionScope.user != null}">

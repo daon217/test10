@@ -9,10 +9,13 @@
                     <!-- 서비스 헤더 -->
                     <div class="text-center mb-5">
                         <h1 class="mb-3">
-                            <i class="fas fa-handshake text-primary"></i> 산책 알바 매칭
+                            <i class="fas fa-handshake text-primary"></i> 산책 알바 & 산책 파트너
                         </h1>
                         <p class="lead text-secondary">
-                            반려인과 산책 알바를 연결해주는 AI 기반 매칭 서비스
+                            산책 알바를 구인/구직하며 때로는 반려동물과 같이 산책할 파트너를 구하는 서비스
+                        </p>
+                        <p class="lead text-secondary">
+                            오른쪽 하단의 파란색 채팅 버튼으로 AI 도우미를 통해 간단하게 조회도 가능
                         </p>
                     </div>
 
@@ -226,6 +229,63 @@
                 </div>
             </div>
 
+            <!-- Chatbot Floating Button -->
+            <button id="walkptChatBtn" class="btn btn-primary rounded-circle shadow-lg"
+                style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; z-index: 1000; font-size: 24px;">
+                <i class="fas fa-comments"></i>
+            </button>
+
+            <!-- Chatbot Modal -->
+            <div class="modal fade" id="walkptChatModal" tabindex="-1" role="dialog"
+                aria-labelledby="walkptChatModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content d-flex flex-column" style="height: 80vh;">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="walkptChatModalLabel">
+                                <i class="fas fa-robot mr-2"></i> AI 도우미
+                            </h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body d-flex flex-column flex-grow-1 p-0" style="overflow: hidden;">
+                            <!-- Chat Messages Area -->
+                            <div id="chatMessages" class="flex-grow-1 p-3"
+                                style="overflow-y: auto; background-color: #f8f9fa;">
+                                <div class="chat-message bot-message mb-3">
+                                    <div class="p-3 bg-white rounded shadow-sm d-inline-block" style="max-width: 80%;">
+                                        안녕하세요! <strong>AI 도우미</strong>입니다.<br>
+                                        산책 알바/알바생을 찾거나, 함께 산책할 파트너를 찾아드릴 수 있어요.<br><br>
+
+
+
+                                        이렇게 물어보세요:
+                                        <ul class="pl-3 mb-0 mt-2" style="font-size: 0.9rem;">
+                                            <li>"강남역 근처에 내가 할 만한 알바 구해줘"</li>
+                                            <li>"주말에 내 강아지 산책 시켜줄 사람"</li>
+                                            <li>"말티즈 같이 산책할 친구 찾아요"</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Input Area -->
+                            <div class="p-3 bg-white border-top">
+                                <div class="input-group">
+                                    <input type="text" id="chatInput" class="form-control"
+                                        placeholder="Type your request..." aria-label="Type your request...">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" id="sendChatBtn">
+                                            <i class="fas fa-paper-plane"></i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 로그인 필요 모달 및 공통 함수 -->
             <jsp:include page="common/modals.jsp" />
 
@@ -234,4 +294,121 @@
                 function showLoginRequired() {
                     $('#loginRequiredModal').modal('show');
                 }
+
+                window.addEventListener('load', function () {
+                    // Base URL for WalkPT
+                    var contextPath = "${pageContext.request.contextPath}";
+
+                    // Open Chat Modal
+                    $('#walkptChatBtn').click(function () {
+                        var isLoggedIn = ${ sessionScope.user != null ? 'true' : 'false'
+                    };
+                    if (!isLoggedIn) {
+                        showLoginRequired();
+                        return false;
+                    }
+                    $('#walkptChatModal').modal('show');
+                });
+
+                // Send Message
+                $('#sendChatBtn').click(sendMessage);
+                $('#chatInput').keypress(function (e) {
+                    if (e.which == 13) {
+                        sendMessage();
+                    }
+                });
+
+                function sendMessage() {
+                    var message = $('#chatInput').val().trim();
+                    if (!message) return;
+
+                    // Add User Message
+                    appendMessage(message, 'user');
+                    $('#chatInput').val('');
+
+                    // Show Loading
+                    var loadingId = appendLoading();
+
+                    // Call API
+                    $.ajax({
+                        url: contextPath + '/walkpt/chat',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ message: message }),
+                        success: function (response) {
+                            removeLoading(loadingId);
+                            if (response.status === 'success') {
+                                appendMessage(response.reply, 'bot');
+                                if (response.posts && response.posts.length > 0) {
+                                    appendPosts(response.posts, response.aiAnalysis.category);
+                                }
+                            } else {
+                                appendMessage('Error: ' + response.message, 'bot');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            removeLoading(loadingId);
+                            appendMessage('Sorry, something went wrong. Please try again.', 'bot');
+                        }
+                    });
+                }
+
+                function appendMessage(text, sender) {
+                    var alignment = sender === 'user' ? 'text-right' : 'text-left';
+                    var bgClass = sender === 'user' ? 'bg-primary text-white' : 'bg-white text-dark';
+
+                    var html = '<div class="chat-message ' + sender + '-message mb-3 ' + alignment + '">';
+                    html += '<div class="p-3 rounded shadow-sm d-inline-block ' + bgClass + '" style="max-width: 80%; text-align: left;">';
+                    html += text;
+                    html += '</div></div>';
+
+                    $('#chatMessages').append(html);
+                    scrollToBottom();
+                }
+
+                function appendLoading() {
+                    var id = 'loading-' + Date.now();
+                    var html = '<div id="' + id + '" class="chat-message bot-message mb-3 text-left">';
+                    html += '<div class="p-3 bg-white rounded shadow-sm d-inline-block">';
+                    html += '<i class="fas fa-spinner fa-spin"></i> Thinking...';
+                    html += '</div></div>';
+
+                    $('#chatMessages').append(html);
+                    scrollToBottom();
+                    return id;
+                }
+
+                function removeLoading(id) {
+                    $('#' + id).remove();
+                }
+
+                function appendPosts(posts, category) {
+                    var html = '<div class="row mb-3">';
+                    posts.forEach(function (post) {
+                        var detailPath = (category === 'TOGETHER') ? 'togetherwalk/detail' : 'owner/post-detail';
+                        var postUrl = contextPath + '/walkpt/' + detailPath + '?id=' + post.postId;
+
+                        html += '<div class="col-md-6 mb-2">';
+                        html += '<div class="card h-100">';
+                        html += '<div class="card-body p-2">';
+                        html += '<h6 class="card-title text-truncate">' + post.title + '</h6>';
+                        html += '<p class="card-text small mb-1"><i class="fas fa-map-marker-alt"></i> ' + (post.location || 'N/A') + '</p>';
+                        html += '<p class="card-text small mb-1"><i class="fas fa-calendar"></i> ' + (post.walkDate || '') + ' ' + (post.walkTime || '') + '</p>';
+                        html += '<a href="' + postUrl + '" class="btn btn-sm btn-outline-primary btn-block mt-2">View</a>';
+                        html += '</div></div></div>';
+                    });
+                    html += '</div>';
+                    $('#chatMessages').append(html);
+                    scrollToBottom();
+                }
+
+                function scrollToBottom() {
+                    var chatMessages = document.getElementById('chatMessages');
+                    setTimeout(function () {
+                        if (chatMessages) {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }, 50);
+                }
+                });
             </script>

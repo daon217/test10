@@ -314,21 +314,3 @@ p {
         padding: var(--space-6);
     }
 }
-/* 함께 산책하기 전용 버튼 */
-.btn-pet-info {
-    background: #74C0FC;
-    color: var(--text-white);
-    border: none;
-    border-radius: var(--radius-full);
-    padding: var(--space-3) var(--space-6);
-    font-weight: var(--font-semibold);
-    transition: all var(--transition-base);
-}
-
-.btn-pet-info:hover {
-    background: #5BA3E0;
-    color: var(--text-white);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(116, 192, 252, 0.3);
-    text-decoration: none;
-}

@@ -4,6 +4,7 @@ import edu.sm.app.dto.ChatMsg;
 import edu.sm.app.dto.ChatRoom;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository

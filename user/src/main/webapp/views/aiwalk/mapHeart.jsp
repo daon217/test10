@@ -19,6 +19,7 @@
 
 <body>
 
+<br>
 <!-- 반려인/알바생 진입 버튼 -->
 <section style="margin-top:40px; text-align:center;">
     <h2>산책 알바</h2>
@@ -26,13 +27,13 @@
     <button type="button"
             onclick="location.href='<c:url value="/walkjob/owner"/>'"
             style="padding:10px 20px; margin:8px; border-radius:999px; border:1px solid #ddd; background:#1d4ed8; color:white;">
-        반려인 화면 열기 (id01)
+        반려인 화면 열기
     </button>
 
     <button type="button"
             onclick="location.href='<c:url value="/walkjob/worker"/>'"
             style="padding:10px 20px; margin:8px; border-radius:999px; border:1px solid #ddd; background:#10b981; color:white;">
-        알바생 화면 열기 (id02)
+        알바생 화면 열기
     </button>
 
     <p style="font-size:0.85rem; color:#6b7280; margin-top:8px;">
@@ -146,7 +147,7 @@
                     </div>
 
                     <div id="petErrorText" style="display:none; color:#d9534f;">
-                        반려동물 정보를 불러오지 못했습니다. 나중에 다시 시도해주세요.
+                        반려동물 정보를 불러오지 못했습니다. 로그인을 하거나 반려동물 정보를 등록 후 다시 시도해주세요.
                     </div>
                 </div>
             </article>
@@ -1083,7 +1084,7 @@
 
             if (!res.ok) {
                 console.error('saveCourse 응답 에러:', res.status);
-                alert('코스 저장 중 오류가 발생했습니다.');
+                alert('코스 저장 중 오류가 발생했습니다. 로그인 후 다시 시도하세요.');
                 return;
             }
 
@@ -1093,7 +1094,7 @@
             closeFinishModal();
         } catch (e) {
             console.error(e);
-            alert('코스 저장 중 오류가 발생했습니다.');
+            alert('코스 저장 중 오류가 발생했습니다. 로그인 후 다시 시도하세요.');
         }
     }
 

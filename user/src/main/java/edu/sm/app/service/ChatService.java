@@ -5,6 +5,7 @@ import edu.sm.app.dto.ChatRoom;
 import edu.sm.app.repository.ChatMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
 
