@@ -123,7 +123,8 @@
 
   /* 기본 아이콘 (산책 - Red) */
   .event-icon-circle {
-    width: 60px; height: 60px;
+    width: 60px;
+    height: 60px;
     background: var(--primary-light);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
@@ -145,7 +146,8 @@
     width: 100%; padding: 15px 0;
     border: none;
     background: #f9f9f9;
-    font-weight: 600; font-size: 14px;
+    font-weight: 600;
+    font-size: 14px;
     color: #333;
     border-top: 1px solid #eee;
     cursor: pointer; transition: 0.2s;
@@ -270,6 +272,45 @@
     transform: scale(1.05);
   }
 
+  /* [NEW] 영상통화 모달 스타일 */
+  #videoModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #remoteVideo {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    background: #222;
+    border-radius: 10px;
+  }
+  #localVideo {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 120px;
+    height: 90px;
+    background: #000;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    object-fit: cover;
+  }
+  .video-controls {
+    margin-top: 20px;
+    display: flex; gap: 20px;
+  }
+  .btn-close-video {
+    background: #ff4b4b; color: white; border: none;
+    padding: 10px 20px; border-radius: 20px; font-weight: bold;
+    cursor: pointer; font-size: 16px;
+  }
+
 </style>
 
 <div class="chat-wrapper">
@@ -346,6 +387,7 @@
                     <div class="event-title">영상통화</div>
                     <p class="event-desc">영상통화를 시작하시겠습니까?</p>
                   </div>
+                    <%-- [중요] 영상통화 수락 버튼 --%>
                   <button class="btn-event-action" onclick="startVideoCall()">영상통화 시작하기</button>
                 </div>
               </c:when>
@@ -384,32 +426,49 @@
   </div>
 </div>
 
+<%-- [NEW] 영상통화 모달 (숨김 상태) --%>
+<div id="videoModal">
+  <video id="remoteVideo" autoplay playsinline></video>
+  <video id="localVideo" autoplay playsinline muted></video>
+  <div class="video-controls">
+    <button class="btn-close-video" onclick="endCall()">통화 종료</button>
+  </div>
+</div>
+
 <script>
-  var ws;
+  var ws; // 채팅 소켓
+  var sigWs; // [NEW] 시그널링 소켓 (WebRTC용)
+
   var roomId = "${room.roomId}";
   var myId = "${user.userId}";
   var chatContainer = document.getElementById("chatContainer");
 
-  // 스크롤 맨 아래로
-  chatContainer.scrollTop = chatContainer.scrollHeight;
-  window.onload = function() {
-    connect();
+  // [NEW] WebRTC 변수
+  var localStream;
+  var peerConnection;
+  var peerConnectionConfig = {
+    'iceServers': [
+      {'urls': 'stun:stun.l.google.com:19302'} // 구글 무료 STUN 서버
+    ]
   };
 
-  function connect() {
+  // 스크롤 맨 아래로
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+
+  window.onload = function() {
+    connectChat();   // 기존 채팅 연결
+    connectSignal(); // [NEW] 시그널링 연결
+  };
+
+  // 1. 채팅 소켓 연결
+  function connectChat() {
     var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
     var wsUrl = protocol + location.host + "/ws/chat";
 
-    console.log("Connecting to: " + wsUrl);
-
     ws = new WebSocket(wsUrl);
     ws.onopen = function() {
-      console.log("Connected!");
-      var msg = {
-        roomId: roomId,
-        senderId: myId,
-        content: "ENTER"
-      };
+      console.log("Chat Connected!");
+      var msg = { roomId: roomId, senderId: myId, content: "ENTER" };
       ws.send(JSON.stringify(msg));
     };
 
@@ -420,14 +479,13 @@
       var msgDiv = document.createElement("div");
       var isMine = (data.senderId == myId);
 
-      // [중요] 자바스크립트 내 카드 HTML도 새로운 디자인 (video-style 클래스 등) 반영
+      // [카드 UI 처리]
       if (data.content === "[[WALK_REQUEST]]") {
         var btnAttr = isMine ? 'disabled' : 'onclick="startWalk()"';
         var btnText = isMine ? '수락 대기중' : '산책 시작하기';
         var descText = isMine ? '산책 메이트 신청을 보냈습니다.' : '산책 요청이 도착했습니다.';
 
-        // 산책은 기본(붉은색)
-        var cardHtml =
+        msgDiv.innerHTML =
                 '<div class="event-card">' +
                 '<div class="event-card-content">' +
                 '<div class="event-icon-circle"><i class="fas fa-dog"></i></div>' +
@@ -436,15 +494,13 @@
                 '</div>' +
                 '<button class="btn-event-action" ' + btnAttr + '>' + btnText + '</button>' +
                 '</div>';
-        msgDiv.innerHTML = cardHtml;
 
       } else if (data.content === "[[VIDEO_REQUEST]]") {
         var btnAttr = isMine ? 'disabled' : 'onclick="startVideoCall()"';
         var btnText = isMine ? '응답 대기중' : '영상통화 시작하기';
         var descText = isMine ? '영상통화를 요청했습니다.' : '영상통화를 시작하시겠습니까?';
 
-        // 영상통화는 video-style(민트색) 추가
-        var cardHtml =
+        msgDiv.innerHTML =
                 '<div class="event-card video-style">' +
                 '<div class="event-card-content">' +
                 '<div class="event-icon-circle"><i class="fas fa-video"></i></div>' +
@@ -453,33 +509,128 @@
                 '</div>' +
                 '<button class="btn-event-action" ' + btnAttr + '>' + btnText + '</button>' +
                 '</div>';
-        msgDiv.innerHTML = cardHtml;
 
       } else {
-        var content = '<div class="msg-bubble">' + data.content + '</div>';
-        msgDiv.innerHTML = content;
+        msgDiv.innerHTML = '<div class="msg-bubble">' + data.content + '</div>';
       }
 
-      if(isMine) {
-        msgDiv.className = "message-box my-msg";
-      } else {
-        msgDiv.className = "message-box other-msg";
-      }
-
+      msgDiv.className = isMine ? "message-box my-msg" : "message-box other-msg";
       chatContainer.appendChild(msgDiv);
       chatContainer.scrollTop = chatContainer.scrollHeight;
     };
   }
 
+  // 2. [NEW] 시그널링 소켓 연결 (영상통화용)
+  function connectSignal() {
+    var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+    // WebSocketConfig에 설정된 /signal 경로
+    var sigUrl = protocol + location.host + "/signal";
+
+    sigWs = new WebSocket(sigUrl);
+    sigWs.onopen = function() {
+      console.log("Signaling Server Connected");
+    };
+
+    sigWs.onmessage = function(event) {
+      var message = JSON.parse(event.data);
+
+      // [중요] 다른 방의 신호는 무시 (간단한 필터링)
+      if(message.roomId && message.roomId !== roomId) return;
+
+      // 내가 보낸 신호가 되돌아온 경우 무시
+      if(message.senderId === myId) return;
+
+      handleSignalMessage(message);
+    };
+  }
+
+  // [NEW] WebRTC 시그널링 처리
+  async function handleSignalMessage(message) {
+    if (message.type === 'offer') {
+      // A(요청자): B가 보낸 Offer를 받음 -> 즉시 화면을 켬 (A는 수동 승인 없이 바로 연결)
+      console.log("Received Offer");
+
+      // 화면 UI 띄우기
+      document.getElementById('videoModal').style.display = 'flex';
+
+      createPeerConnection();
+
+      // 상대방(B)의 Offer 설정
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp));
+
+      // Answer 생성 및 전송
+      var answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+
+      sendSignal({
+        type: 'answer',
+        sdp: answer,
+        roomId: roomId,
+        senderId: myId
+      });
+
+    } else if (message.type === 'answer') {
+      // B(수신자): A의 Answer를 받음 -> 연결 확정
+      console.log("Received Answer");
+      if(peerConnection) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp));
+      }
+
+    } else if (message.type === 'candidate') {
+      // ICE Candidate 교환
+      if(peerConnection) {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(message.candidate));
+      }
+    }
+  }
+
+  // [NEW] WebRTC 연결 객체 생성
+  function createPeerConnection() {
+    if(peerConnection) return;
+
+    peerConnection = new RTCPeerConnection(peerConnectionConfig);
+
+    // ICE Candidate 발생 시 상대에게 전송
+    peerConnection.onicecandidate = function(event) {
+      if (event.candidate) {
+        sendSignal({
+          type: 'candidate',
+          candidate: event.candidate,
+          roomId: roomId,
+          senderId: myId
+        });
+      }
+    };
+
+    // 상대방 영상 스트림 수신 (A가 B의 얼굴을 보는 부분)
+    peerConnection.ontrack = function(event) {
+      var remoteVideo = document.getElementById('remoteVideo');
+      if (remoteVideo.srcObject !== event.streams[0]) {
+        remoteVideo.srcObject = event.streams[0];
+      }
+    };
+
+    // 내 스트림이 있으면 연결에 추가 (B가 A에게 보낼 때)
+    if(localStream) {
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+    }
+  }
+
+  // 시그널 메시지 전송 헬퍼
+  function sendSignal(data) {
+    if(sigWs && sigWs.readyState === WebSocket.OPEN) {
+      sigWs.send(JSON.stringify(data));
+    }
+  }
+
+  // 채팅 메시지 전송
   function sendMessage() {
     var input = document.getElementById("msgInput");
     var text = input.value;
     if(!text.trim()) return;
-    var msg = {
-      roomId: roomId,
-      senderId: myId,
-      content: text
-    };
+    var msg = { roomId: roomId, senderId: myId, content: text };
     ws.send(JSON.stringify(msg));
     input.value = "";
   }
@@ -497,23 +648,16 @@
     }
   }
 
+  // [Step 1] A가 영상통화 요청 (채팅 메시지 전송)
   function requestVideoCall() {
     togglePlusMenu();
-    var msg = {
-      roomId: roomId,
-      senderId: myId,
-      content: "[[VIDEO_REQUEST]]"
-    };
+    var msg = { roomId: roomId, senderId: myId, content: "[[VIDEO_REQUEST]]" };
     ws.send(JSON.stringify(msg));
   }
 
   function requestWalk() {
     togglePlusMenu();
-    var msg = {
-      roomId: roomId,
-      senderId: myId,
-      content: "[[WALK_REQUEST]]"
-    };
+    var msg = { roomId: roomId, senderId: myId, content: "[[WALK_REQUEST]]" };
     ws.send(JSON.stringify(msg));
   }
 
@@ -521,9 +665,50 @@
     alert("산책 모드를 시작합니다!");
   }
 
-  function startVideoCall() {
-    if(confirm("영상통화를 연결하시겠습니까?")) {
-      alert("영상통화 연결 중...");
+  // [Step 2] B가 영상통화 수락 버튼 클릭
+  async function startVideoCall() {
+    if(!confirm("영상통화를 연결하시겠습니까?")) return;
+
+    // UI 표시
+    document.getElementById('videoModal').style.display = 'flex';
+
+    try {
+      // 카메라 권한 요청
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      document.getElementById('localVideo').srcObject = localStream;
+
+      // PeerConnection 생성
+      createPeerConnection();
+
+      // Offer(연결 요청서) 생성 및 전송
+      var offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      sendSignal({
+        type: 'offer',
+        sdp: offer,
+        roomId: roomId,
+        senderId: myId
+      });
+
+    } catch(e) {
+      console.error("Camera Error:", e);
+      alert("카메라 권한이 필요합니다.");
+      document.getElementById('videoModal').style.display = 'none';
     }
+  }
+
+  // 통화 종료
+  function endCall() {
+    document.getElementById('videoModal').style.display = 'none';
+    if(peerConnection) {
+      peerConnection.close();
+      peerConnection = null;
+    }
+    if(localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      localStream = null;
+    }
+    // 선택사항: 종료 메시지 전송 등
   }
 </script>
