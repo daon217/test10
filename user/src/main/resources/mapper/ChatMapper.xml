@@ -4,21 +4,27 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.sm.app.repository.ChatMapper">
 
-    <select id="findRoomByPostAndWorker" resultType="edu.sm.app.dto.ChatRoom">
-        SELECT * FROM chat_room
-        WHERE post_id = #{postId} AND worker_id = #{workerId}
-    </select>
-
     <insert id="insertRoom" parameterType="edu.sm.app.dto.ChatRoom">
         INSERT INTO chat_room (room_id, post_id, owner_id, worker_id, created_at)
         VALUES (#{roomId}, #{postId}, #{ownerId}, #{workerId}, NOW())
     </insert>
 
     <select id="findRoomById" resultType="edu.sm.app.dto.ChatRoom">
-        SELECT r.*, p.title as postTitle
+        SELECT
+            r.*,
+            p.title as postTitle,
+            u_owner.name as ownerName,
+            u_worker.name as workerName
         FROM chat_room r
-                 JOIN walk_posts p ON r.post_id = p.post_id
+                 LEFT JOIN walk_posts p ON r.post_id = p.post_id
+                 LEFT JOIN users u_owner ON r.owner_id = u_owner.user_id
+                 LEFT JOIN users u_worker ON r.worker_id = u_worker.user_id
         WHERE r.room_id = #{roomId}
+    </select>
+
+    <select id="findRoomByPostAndWorker" resultType="edu.sm.app.dto.ChatRoom">
+        SELECT * FROM chat_room
+        WHERE post_id = #{postId} AND worker_id = #{workerId}
     </select>
 
     <insert id="insertMsg" parameterType="edu.sm.app.dto.ChatMsg">
@@ -27,7 +33,9 @@
     </insert>
 
     <select id="selectMsgsByRoomId" resultType="edu.sm.app.dto.ChatMsg">
-        SELECT * FROM chat_msg WHERE room_id = #{roomId} ORDER BY sent_at ASC
+        SELECT * FROM chat_msg
+        WHERE room_id = #{roomId}
+        ORDER BY sent_at ASC
     </select>
 
     <select id="selectMyRooms" parameterType="int" resultType="edu.sm.app.dto.ChatRoom">
@@ -35,14 +43,17 @@
             r.*,
             p.title AS postTitle,
             CASE
-                WHEN r.owner_id = #{userId} THEN (SELECT username FROM users WHERE user_id = r.worker_id)
-                ELSE (SELECT username FROM users WHERE user_id = r.owner_id)
+                WHEN r.owner_id = #{userId} THEN u_worker.name
+                ELSE u_owner.name
                 END AS otherPersonName,
             (SELECT content FROM chat_msg WHERE room_id = r.room_id ORDER BY sent_at DESC LIMIT 1) AS lastMessage,
             (SELECT sent_at FROM chat_msg WHERE room_id = r.room_id ORDER BY sent_at DESC LIMIT 1) AS lastDate
         FROM chat_room r
-            JOIN walk_posts p ON r.post_id = p.post_id
+            LEFT JOIN users u_owner ON r.owner_id = u_owner.user_id
+            LEFT JOIN users u_worker ON r.worker_id = u_worker.user_id
+            LEFT JOIN walk_posts p ON r.post_id = p.post_id
         WHERE r.owner_id = #{userId} OR r.worker_id = #{userId}
         ORDER BY lastDate DESC NULLS LAST
     </select>
+
 </mapper>

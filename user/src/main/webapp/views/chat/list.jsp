@@ -5,121 +5,141 @@
 <style>
   .chat-list-container {
     max-width: 800px;
-    margin: 30px auto;
-    padding: 20px;
-    background-color: #fff;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  .chat-card {
+    background: #fff;
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+    transition: transform 0.2s;
+    border: 1px solid #eee;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
   }
-  .chat-item {
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
-  }
-  .chat-item:hover {
-    background-color: #f8f9fa;
+  .chat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     text-decoration: none;
     color: inherit;
   }
-  .chat-item:last-child {
-    border-bottom: none;
+  .chat-card-body {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-  .chat-avatar {
-    width: 50px;
-    height: 50px;
-    background-color: #e9ecef;
-    border-radius: 50%;
+  .chat-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* 상대방 이름 강조 */
+  .chat-partner-name {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #333;
+    margin-bottom: 6px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    color: #adb5bd;
-    margin-right: 15px;
   }
-  .badge-unread {
-    background-color: #ff5c5c;
-    color: white;
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 10px;
+  .chat-partner-name i {
+    margin-right: 8px;
+    color: #ffc107;
+    font-size: 1.1rem;
+  }
+
+  /* 마지막 메시지 스타일 */
+  .last-message {
+    font-size: 0.95rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 95%;
+  }
+
+  .chat-meta {
+    text-align: right;
+    min-width: 80px;
+    margin-left: 15px;
+  }
+  .last-date {
+    font-size: 0.8rem;
+    color: #aaa;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .empty-chat {
+    text-align: center;
+    padding: 80px 0;
+    color: #999;
+  }
+  .empty-chat i {
+    color: #ddd;
+    margin-bottom: 15px;
   }
 </style>
 
 <div class="chat-list-container">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="font-weight-bold"><i class="fas fa-comments text-warning"></i> 내 채팅 목록</h3>
-  </div>
+  <h3 class="mb-4 font-weight-bold"><i class="fas fa-comments text-warning"></i> 내 채팅 목록</h3>
 
-  <div class="list-group list-group-flush">
-    <c:choose>
-      <%-- 채팅방이 없는 경우 --%>
-      <c:when test="${empty chatRooms}">
-        <div class="text-center py-5">
-          <i class="far fa-comment-dots fa-4x text-muted mb-3"></i>
-          <p class="text-muted">참여 중인 채팅방이 없습니다.</p>
-          <a href="<c:url value='/walkpt'/>" class="btn btn-warning btn-sm text-white">
-            산책 알바 구하러 가기
-          </a>
-        </div>
-      </c:when>
-
-      <%-- 채팅방이 있는 경우 --%>
-      <c:otherwise>
-        <c:forEach var="room" items="${chatRooms}">
-          <a href="<c:url value='/chat/room?roomId=${room.roomId}'/>" class="list-group-item chat-item py-3">
-            <div class="d-flex w-100 justify-content-between align-items-center">
-              <div class="d-flex align-items-center">
-                <div class="chat-avatar">
-                  <i class="fas fa-user"></i>
-                </div>
-
-                <div>
-                  <h5 class="mb-1 text-dark" style="font-size: 1.1rem;">
-                    <c:out value="${room.postTitle}" default="제목 없음" />
-                  </h5>
-
-                  <p class="mb-1 text-muted small text-truncate" style="max-width: 300px;">
-                    <c:choose>
-                      <c:when test="${not empty room.lastMessage}">
-                        <c:out value="${room.lastMessage}" />
-                      </c:when>
-                      <c:otherwise>
-                        <span class="text-info">새로운 채팅방이 개설되었습니다.</span>
-                      </c:otherwise>
-                    </c:choose>
-                  </p>
-
-                  <small class="text-secondary">
-                    <i class="fas fa-user-friends"></i> ${room.otherPersonName}님과 대화 중
-                  </small>
-                </div>
+  <c:choose>
+    <c:when test="${empty chatRooms}">
+      <div class="empty-chat">
+        <i class="far fa-comment-dots fa-4x"></i>
+        <p class="mt-3">진행 중인 대화가 없습니다.</p>
+      </div>
+    </c:when>
+    <c:otherwise>
+      <c:forEach var="room" items="${chatRooms}">
+        <a href="<c:url value='/chat/room?roomId=${room.roomId}'/>" class="chat-card">
+          <div class="chat-card-body">
+            <div class="chat-content">
+              <div class="chat-partner-name">
+                <i class="fas fa-user-circle"></i>
+                  ${room.otherPersonName != null ? room.otherPersonName : '알 수 없음'}
               </div>
 
-              <div class="text-right">
-                <small class="text-muted d-block mb-1">
-                  <c:if test="${not empty room.lastDate}">
-                    <fmt:parseDate value="${room.lastDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedDate" type="both" />
-
-                    <%-- 오늘 날짜인지 확인 --%>
-                    <jsp:useBean id="now" class="java.util.Date" />
-                    <fmt:formatDate value="${now}" pattern="yyyyMMdd" var="today" />
-                    <fmt:formatDate value="${parsedDate}" pattern="yyyyMMdd" var="msgDate" />
-
-                    <c:choose>
-                      <c:when test="${today == msgDate}">
-                        <fmt:formatDate value="${parsedDate}" pattern="a h:mm" />
-                      </c:when>
-                      <c:otherwise>
-                        <fmt:formatDate value="${parsedDate}" pattern="MM월 dd일" />
-                      </c:otherwise>
-                    </c:choose>
-                  </c:if>
-                </small>
-                <i class="fas fa-chevron-right text-muted"></i>
+              <div class="last-message">
+                <c:choose>
+                  <c:when test="${not empty room.lastMessage}">
+                    ${room.lastMessage}
+                  </c:when>
+                  <c:otherwise>
+                    <span style="color: #ccc;">(대화 내용 없음)</span>
+                  </c:otherwise>
+                </c:choose>
               </div>
             </div>
-          </a>
-        </c:forEach>
-      </c:otherwise>
-    </c:choose>
-  </div>
+
+            <div class="chat-meta">
+                            <span class="last-date">
+                                <c:if test="${not empty room.lastDate}">
+                                  <fmt:parseDate value="${room.lastDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedDate" type="both" />
+                                  <jsp:useBean id="now" class="java.util.Date" />
+                                  <fmt:formatDate value="${now}" pattern="yyyyMMdd" var="today" />
+                                  <fmt:formatDate value="${parsedDate}" pattern="yyyyMMdd" var="msgDate" />
+
+                                  <c:choose>
+                                    <c:when test="${today eq msgDate}">
+                                      <fmt:formatDate value="${parsedDate}" pattern="a h:mm"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                      <fmt:formatDate value="${parsedDate}" pattern="MM-dd"/>
+                                    </c:otherwise>
+                                  </c:choose>
+                                </c:if>
+                            </span>
+
+              <i class="fas fa-chevron-right" style="color: #ddd;"></i>
+            </div>
+          </div>
+        </a>
+      </c:forEach>
+    </c:otherwise>
+  </c:choose>
 </div>

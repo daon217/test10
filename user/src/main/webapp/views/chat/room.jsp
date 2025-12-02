@@ -12,12 +12,24 @@
   .my-msg .msg-bubble { background-color: #ffe082; border-top-right-radius: 0; }
   .other-msg .msg-bubble { background-color: white; border: 1px solid #eee; border-top-left-radius: 0; }
   .msg-info { font-size: 12px; color: #888; margin-top: 5px; }
+  .chat-header-title { font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; }
+  .chat-header-title i { color: #ffc107; margin-right: 8px; font-size: 1.2rem; }
 </style>
 
 <div class="chat-wrapper">
   <div class="card">
     <div class="card-header bg-white">
-      <h5 class="mb-0"><i class="fas fa-comments"></i> ${room.postTitle}</h5>
+      <div class="chat-header-title">
+        <i class="fas fa-user-circle"></i>
+        <c:choose>
+          <c:when test="${room.ownerId == user.userId}">
+            ${room.workerName}
+          </c:when>
+          <c:otherwise>
+            ${room.ownerName}
+          </c:otherwise>
+        </c:choose>
+      </div>
     </div>
     <div class="card-body">
       <div id="chatContainer" class="chat-container">
@@ -39,7 +51,9 @@
 
       <div class="input-group">
         <input type="text" id="msgInput" class="form-control" placeholder="메시지 입력..." onkeypress="if(event.keyCode==13) sendMessage();">
-        <button class="btn btn-warning" onclick="sendMessage()">전송</button>
+        <div class="input-group-append">
+          <button class="btn btn-warning" onclick="sendMessage()">전송</button>
+        </div>
       </div>
     </div>
   </div>
@@ -53,20 +67,17 @@
 
   // 스크롤 맨 아래로
   chatContainer.scrollTop = chatContainer.scrollHeight;
-
   window.onload = function() {
     connect();
   };
 
   function connect() {
-    // [핵심] SSL(https)이면 wss, 아니면 ws 자동 선택
     var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
     var wsUrl = protocol + location.host + "/ws/chat";
 
     console.log("Connecting to: " + wsUrl);
 
     ws = new WebSocket(wsUrl);
-
     ws.onopen = function() {
       console.log("Connected!");
       var msg = {
@@ -79,11 +90,12 @@
 
     ws.onmessage = function(event) {
       var data = JSON.parse(event.data);
-      if(data.content === "ENTER") return;
+
+      // 알림 메시지나 입장 메시지는 무시 (화면에만 안 그림)
+      if(data.type === "NOTIFICATION" || data.content === "ENTER") return;
 
       var msgDiv = document.createElement("div");
       var content = '<div class="msg-bubble">' + data.content + '</div>';
-
       if(data.senderId == myId) {
         msgDiv.className = "message-box my-msg";
       } else {
@@ -100,13 +112,11 @@
     var input = document.getElementById("msgInput");
     var text = input.value;
     if(!text.trim()) return;
-
     var msg = {
       roomId: roomId,
       senderId: myId,
       content: text
     };
-
     ws.send(JSON.stringify(msg));
     input.value = "";
   }
