@@ -14,6 +14,49 @@
   .msg-info { font-size: 12px; color: #888; margin-top: 5px; }
   .chat-header-title { font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; }
   .chat-header-title i { color: #ffc107; margin-right: 8px; font-size: 1.2rem; }
+
+  /* [추가] 플러스 버튼 및 메뉴 스타일 */
+  .chat-input-area { display: flex; align-items: center; gap: 10px; padding-top: 10px; }
+  .btn-plus {
+    width: 40px; height: 40px; border-radius: 50%; border: none;
+    background-color: #eee; color: #555; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .btn-plus:hover { background-color: #ddd; }
+  .btn-plus.active { background-color: #ccc; transform: rotate(45deg); }
+
+  /* [추가] 확장 메뉴 스타일 */
+  .plus-menu {
+    display: none; padding: 20px 10px; background-color: #f8f9fa;
+    border-top: 1px solid #ddd; margin-top: 15px; border-radius: 10px;
+  }
+  .plus-menu-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center;
+  }
+  .menu-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; color: #333; font-size: 13px; }
+  .menu-icon-box {
+    width: 50px; height: 50px; background-color: white; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s; color: #555;
+  }
+  .menu-item:hover .menu-icon-box { transform: scale(1.05); background-color: #e3f2fd; color: #1565c0; }
+
+  /* [추가] 산책 신청 카드 스타일 */
+  .walk-card {
+    width: 240px; background-color: white; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #eee; margin-top: 5px;
+  }
+  .walk-card-content { padding: 20px; text-align: center; background: #fff; }
+  .walk-card-icon { font-size: 40px; color: #ffc107; margin-bottom: 12px; }
+  .walk-card-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; color: #333; }
+  .walk-card-desc { font-size: 13px; color: #888; margin-bottom: 0; }
+  .btn-start-walk {
+    width: 100%; border: none; background-color: #f8f9fa; padding: 12px 0;
+    font-size: 14px; color: #333; cursor: pointer; border-top: 1px solid #eee;
+    font-weight: bold; transition: background 0.2s;
+  }
+  .btn-start-walk:hover { background-color: #ffe082; }
 </style>
 
 <div class="chat-wrapper">
@@ -37,22 +80,69 @@
           <c:choose>
             <c:when test="${msg.senderId == user.userId}">
               <div class="message-box my-msg">
-                <div class="msg-bubble">${msg.content}</div>
+                <c:choose>
+                  <c:when test="${msg.content eq '[[WALK_REQUEST]]'}">
+                    <div class="walk-card">
+                      <div class="walk-card-content">
+                        <div class="walk-card-icon"><i class="fas fa-dog"></i></div>
+                        <div class="walk-card-title">산책해요!</div>
+                        <p class="walk-card-desc">산책 메이트 신청을 보냈습니다.</p>
+                      </div>
+                      <button class="btn-start-walk" onclick="startWalk()">산책 시작하기</button>
+                    </div>
+                  </c:when>
+                  <c:otherwise>
+                    <div class="msg-bubble">${msg.content}</div>
+                  </c:otherwise>
+                </c:choose>
               </div>
             </c:when>
             <c:otherwise>
               <div class="message-box other-msg">
-                <div class="msg-bubble">${msg.content}</div>
+                <c:choose>
+                  <c:when test="${msg.content eq '[[WALK_REQUEST]]'}">
+                    <div class="walk-card">
+                      <div class="walk-card-content">
+                        <div class="walk-card-icon"><i class="fas fa-dog"></i></div>
+                        <div class="walk-card-title">산책해요!</div>
+                        <p class="walk-card-desc">함께 산책하시겠습니까?</p>
+                      </div>
+                      <button class="btn-start-walk" onclick="startWalk()">산책 시작하기</button>
+                    </div>
+                  </c:when>
+                  <c:otherwise>
+                    <div class="msg-bubble">${msg.content}</div>
+                  </c:otherwise>
+                </c:choose>
               </div>
             </c:otherwise>
           </c:choose>
         </c:forEach>
       </div>
 
-      <div class="input-group">
-        <input type="text" id="msgInput" class="form-control" placeholder="메시지 입력..." onkeypress="if(event.keyCode==13) sendMessage();">
-        <div class="input-group-append">
-          <button class="btn btn-warning" onclick="sendMessage()">전송</button>
+      <div class="chat-input-area">
+        <button type="button" id="plusBtn" class="btn-plus" onclick="togglePlusMenu()">
+          <i class="fas fa-plus"></i>
+        </button>
+
+        <div class="input-group" style="flex: 1;">
+          <input type="text" id="msgInput" class="form-control" placeholder="메시지 입력..." onkeypress="if(event.keyCode==13) sendMessage();">
+          <div class="input-group-append">
+            <button class="btn btn-warning" onclick="sendMessage()">전송</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="plusMenu" class="plus-menu">
+        <div class="plus-menu-grid">
+          <div class="menu-item" onclick="requestVideoCall()">
+            <div class="menu-icon-box"><i class="fas fa-video"></i></div>
+            <span>영상통화</span>
+          </div>
+          <div class="menu-item" onclick="requestWalk()">
+            <div class="menu-icon-box"><i class="fas fa-walking"></i></div>
+            <span>산책하기</span>
+          </div>
         </div>
       </div>
     </div>
@@ -91,18 +181,33 @@
     ws.onmessage = function(event) {
       var data = JSON.parse(event.data);
 
-      // 알림 메시지나 입장 메시지는 무시 (화면에만 안 그림)
       if(data.type === "NOTIFICATION" || data.content === "ENTER") return;
 
       var msgDiv = document.createElement("div");
-      var content = '<div class="msg-bubble">' + data.content + '</div>';
+
+      // [수정] 산책 요청 카드 또는 일반 텍스트 렌더링
+      if (data.content === "[[WALK_REQUEST]]") {
+        var cardHtml =
+                '<div class="walk-card">' +
+                '<div class="walk-card-content">' +
+                '<div class="walk-card-icon"><i class="fas fa-dog"></i></div>' +
+                '<div class="walk-card-title">산책해요!</div>' +
+                '<p class="walk-card-desc">산책 요청이 도착했습니다.</p>' +
+                '</div>' +
+                '<button class="btn-start-walk" onclick="startWalk()">산책 시작하기</button>' +
+                '</div>';
+        msgDiv.innerHTML = cardHtml;
+      } else {
+        var content = '<div class="msg-bubble">' + data.content + '</div>';
+        msgDiv.innerHTML = content;
+      }
+
       if(data.senderId == myId) {
         msgDiv.className = "message-box my-msg";
       } else {
         msgDiv.className = "message-box other-msg";
       }
 
-      msgDiv.innerHTML = content;
       chatContainer.appendChild(msgDiv);
       chatContainer.scrollTop = chatContainer.scrollHeight;
     };
@@ -119,5 +224,41 @@
     };
     ws.send(JSON.stringify(msg));
     input.value = "";
+  }
+
+  // [추가] 플러스 메뉴 토글
+  function togglePlusMenu() {
+    var menu = document.getElementById("plusMenu");
+    var btn = document.getElementById("plusBtn");
+
+    if (menu.style.display === "block") {
+      menu.style.display = "none";
+      btn.classList.remove("active");
+    } else {
+      menu.style.display = "block";
+      btn.classList.add("active");
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }
+
+  // [추가] 영상통화 요청 (기능 구현 필요)
+  function requestVideoCall() {
+    alert("영상통화 요청 기능");
+  }
+
+  // [추가] 산책하기 요청 (카드 전송)
+  function requestWalk() {
+    togglePlusMenu(); // 메뉴 닫기
+    var msg = {
+      roomId: roomId,
+      senderId: myId,
+      content: "[[WALK_REQUEST]]" // 특수 코드 전송
+    };
+    ws.send(JSON.stringify(msg));
+  }
+
+  // [추가] 산책 시작 버튼 동작
+  function startWalk() {
+    alert("산책 모드를 시작합니다!");
   }
 </script>
