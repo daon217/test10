@@ -42,7 +42,7 @@
                     </div>
                     <div class="profile-stat-item">
                         <span class="profile-stat-label">활동</span>
-                        <span class="profile-stat-value">247일</span> <%-- 실제 활동 데이터 출력 필요 --%>
+                        <span class="profile-stat-value">247일</span>
                     </div>
                 </div>
             </div>
@@ -248,7 +248,6 @@
             </div>
 
             <!-- ========== 탭 3: 펫 다이어리 ========== -->
-            <!-- ========== 탭 3: 펫 다이어리 (자동 통합) ========== -->
             <div id="tab-diary" class="tab-panel">
                 <h2 class="section-title">
                     <i class="fas fa-book"></i>
@@ -352,7 +351,6 @@
                         통합 타임라인 캘린더
                     </h3>
                     <div id="diary-calendar-container" style="min-height: 600px;">
-                        <!-- FullCalendar가 여기에 렌더링됨 -->
                         <div class="text-center py-5">
                             <i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
                             <p class="text-muted">캘린더를 불러오는 중...</p>
@@ -669,6 +667,213 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- ========== 반려동물 추가 모달 (회원가입 스타일) ========== -->
+<div class="modal fade" id="addPetModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius: 1.5rem; border: none;">
+            <div class="modal-header" style="border-bottom: 2px solid #e9ecef; padding: 1.5rem 2rem;">
+                <h5 class="modal-title" style="font-size: 1.25rem; font-weight: 700; color: #212529;">
+                    <i class="fas fa-paw mr-2" style="color: #FF6B6B;"></i>
+                    반려동물 추가하기
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" style="font-size: 1.5rem; opacity: 0.5;">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" style="padding: 2rem;">
+                <form id="addPetForm">
+                    <div class="pet-form-card">
+                        <!-- 사진 업로드 -->
+                        <div class="pet-photo-section">
+                            <div class="pet-photo-wrapper">
+                                <div class="pet-photo-preview" id="modal-pet-photo-preview">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <label for="modalPetPhoto" class="pet-photo-btn">
+                                    <i class="fas fa-plus"></i>
+                                </label>
+                                <input type="file" id="modalPetPhoto" name="petPhoto" accept="image/*"
+                                       onchange="previewModalPetPhoto(this)" hidden>
+                            </div>
+                            <p class="pet-photo-guide">프로필 사진을 등록해주세요</p>
+                        </div>
+
+                        <!-- 2열 레이아웃 -->
+                        <div class="form-row-group">
+                            <!-- 이름 -->
+                            <div class="form-group">
+                                <label><i class="fas fa-font mr-1"></i> 이름 <span class="required">*</span></label>
+                                <input type="text" class="form-control-auth" name="petName" placeholder="반려동물 이름" required>
+                            </div>
+
+                            <!-- 종류 -->
+                            <div class="form-group">
+                                <label><i class="fas fa-paw mr-1"></i> 종류 <span class="required">*</span></label>
+                                <select class="form-control-auth" name="petType" id="modalPetType"
+                                        onchange="toggleModalCustomPetType()" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="DOG">강아지</option>
+                                    <option value="CAT">고양이</option>
+                                    <option value="ETC">기타 (직접 입력)</option>
+                                </select>
+                                <!-- 기타 선택 시 직접 입력 필드 -->
+                                <input type="text" class="form-control-auth mt-2" name="customPetType"
+                                       id="modalCustomPetType" placeholder="어떤 동물을 키우시나요?" style="display: none;" maxlength="20">
+                            </div>
+                        </div>
+
+                        <div class="form-row-group">
+                            <!-- 품종 -->
+                            <div class="form-group">
+                                <label><i class="fas fa-dna mr-1"></i> 품종</label>
+                                <input type="text" class="form-control-auth" name="petBreed" placeholder="예: 골든 리트리버">
+                            </div>
+
+                            <!-- 성별 -->
+                            <div class="form-group">
+                                <label><i class="fas fa-venus-mars mr-1"></i> 성별 <span class="required">*</span></label>
+                                <select class="form-control-auth" name="petGender" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="MALE">수컷</option>
+                                    <option value="FEMALE">암컷</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row-group">
+                            <!-- 나이 -->
+                            <div class="form-group">
+                                <label><i class="fas fa-birthday-cake mr-1"></i> 나이 <span class="required">*</span></label>
+                                <input type="number" class="form-control-auth" name="petAge" placeholder="나이 (년)"
+                                       min="0" max="30" required>
+                            </div>
+
+                            <!-- 몸무게 -->
+                            <div class="form-group">
+                                <label><i class="fas fa-weight mr-1"></i> 몸무게 <span class="required">*</span></label>
+                                <input type="number" class="form-control-auth" name="petWeight" placeholder="몸무게 (kg)"
+                                       step="0.1" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer" style="border-top: 2px solid #e9ecef; padding: 1rem 2rem;">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
+                        style="height: 2.75rem; border-radius: 0.75rem; font-weight: 600; padding: 0 1.5rem;">
+                    <i class="fas fa-times mr-2"></i> 취소
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitAddPet()"
+                        style="background: linear-gradient(135deg, #FF6B6B, #FA5252); border: none; height: 2.75rem; border-radius: 0.75rem; font-weight: 600; padding: 0 1.5rem;">
+                    <i class="fas fa-check mr-2"></i> 추가하기
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== 반려동물 수정 모달 (회원가입 스타일) ========== -->
+<div class="modal fade" id="editPetModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius: 1.5rem; border: none;">
+            <div class="modal-header" style="border-bottom: 2px solid #e9ecef; padding: 1.5rem 2rem;">
+                <h5 class="modal-title" style="font-size: 1.25rem; font-weight: 700; color: #212529;">
+                    <i class="fas fa-edit mr-2" style="color: #FF6B6B;"></i>
+                    반려동물 정보 수정
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" style="font-size: 1.5rem; opacity: 0.5;">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body" style="padding: 2rem;">
+                <form id="editPetForm">
+                    <input type="hidden" id="editPetId" name="id">
+
+                    <div class="pet-form-card">
+                        <!-- 사진 업로드 -->
+                        <div class="pet-photo-section">
+                            <div class="pet-photo-wrapper">
+                                <div class="pet-photo-preview" id="edit-pet-photo-preview">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <label for="editPetPhoto" class="pet-photo-btn">
+                                    <i class="fas fa-edit"></i>
+                                </label>
+                                <input type="file" id="editPetPhoto" name="petPhoto" accept="image/*"
+                                       onchange="previewEditPetPhoto(this)" hidden>
+                            </div>
+                            <p class="pet-photo-guide">새 사진을 선택하지 않으면 기존 사진이 유지됩니다</p>
+                        </div>
+
+                        <!-- 2열 레이아웃 -->
+                        <div class="form-row-group">
+                            <div class="form-group">
+                                <label><i class="fas fa-font mr-1"></i> 이름 <span class="required">*</span></label>
+                                <input type="text" class="form-control-auth" id="editPetName" name="petName" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-paw mr-1"></i> 종류 <span class="required">*</span></label>
+                                <select class="form-control-auth" id="editPetType" name="petType"
+                                        onchange="toggleEditCustomPetType()" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="DOG">강아지</option>
+                                    <option value="CAT">고양이</option>
+                                    <option value="ETC">기타 (직접 입력)</option>
+                                </select>
+                                <input type="text" class="form-control-auth mt-2" id="editCustomPetType" name="customPetType"
+                                       placeholder="어떤 동물을 키우시나요?" style="display: none;" maxlength="20">
+                            </div>
+                        </div>
+
+                        <div class="form-row-group">
+                            <div class="form-group">
+                                <label><i class="fas fa-dna mr-1"></i> 품종</label>
+                                <input type="text" class="form-control-auth" id="editPetBreed" name="petBreed">
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-venus-mars mr-1"></i> 성별 <span class="required">*</span></label>
+                                <select class="form-control-auth" id="editPetGender" name="petGender" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="MALE">수컷</option>
+                                    <option value="FEMALE">암컷</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row-group">
+                            <div class="form-group">
+                                <label><i class="fas fa-birthday-cake mr-1"></i> 나이 <span class="required">*</span></label>
+                                <input type="number" class="form-control-auth" id="editPetAge" name="petAge" min="0" max="30" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-weight mr-1"></i> 몸무게 <span class="required">*</span></label>
+                                <input type="number" class="form-control-auth" id="editPetWeight" name="petWeight" step="0.1" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer" style="border-top: 2px solid #e9ecef; padding: 1rem 2rem;">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
+                        style="height: 2.75rem; border-radius: 0.75rem; font-weight: 600; padding: 0 1.5rem;">
+                    <i class="fas fa-times mr-2"></i> 취소
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitEditPet()"
+                        style="background: linear-gradient(135deg, #FF6B6B, #FA5252); border: none; height: 2.75rem; border-radius: 0.75rem; font-weight: 600; padding: 0 1.5rem;">
+                    <i class="fas fa-save mr-2"></i> 저장하기
+                </button>
+            </div>
         </div>
     </div>
 </div>

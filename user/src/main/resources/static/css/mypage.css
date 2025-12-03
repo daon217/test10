@@ -964,4 +964,48 @@
     .diary-item[data-type="special"] .diary-item-icon {
         background: linear-gradient(135deg, #FF6B6B, #FA5252);
     }
+
+    /* ========== FullCalendar 커스텀 스타일 ========== */
+    #diary-calendar-container .fc {
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    #diary-calendar-container .fc-toolbar-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #212529;
+    }
+
+    #diary-calendar-container .fc-button {
+        background: white;
+        border: 2px solid #e9ecef;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+    }
+
+    #diary-calendar-container .fc-button:hover {
+        background: #f8f9fa;
+        border-color: #FF6B6B;
+        color: #FF6B6B;
+    }
+
+    #diary-calendar-container .fc-button-active {
+        background: linear-gradient(135deg, #FF6B6B, #FA5252) !important;
+        border-color: transparent !important;
+        color: white !important;
+    }
+
+    #diary-calendar-container .fc-day-today {
+        background: rgba(255, 107, 107, 0.1) !important;
+    }
+
+    #diary-calendar-container .fc-event {
+        border-radius: 0.375rem;
+        padding: 2px 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
 }
