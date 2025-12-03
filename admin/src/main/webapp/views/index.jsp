@@ -6,12 +6,10 @@
 <html>
 
 <head>
-	<!-- Basic Page Info -->
 	<meta charset="utf-8" />
-	<title>Mun'cok</title>
+	<title>Mun'cok - Admin</title>
 
 
-	<!-- Site favicon -->
 	<link
 			rel="apple-touch-icon"
 			sizes="180x180"
@@ -30,18 +28,15 @@
 			href="/vendors/images/favicon-16x16.png"
 	/>
 
-	<!-- Mobile Specific Metas -->
 	<meta
 			name="viewport"
 			content="width=device-width, initial-scale=1, maximum-scale=1"
 	/>
 
-	<!-- Google Font -->
 	<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
 			rel="stylesheet"
 	/>
-	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="/vendors/styles/core.css" />
 	<link
 			rel="stylesheet"
@@ -61,7 +56,6 @@
 	<link rel="stylesheet" type="text/css" href="/vendors/styles/style.css" />
 	<link rel="stylesheet" type="text/css" href="/vendors/styles/custom.css" />
 
-	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script
 			async
 			src="https://www.googletagmanager.com/gtag/js?id=G-GBZ3SGGX85"
@@ -80,7 +74,6 @@
 
 		gtag("config", "G-GBZ3SGGX85");
 	</script>
-	<!-- Google Tag Manager -->
 	<script>
 		(function (w, d, s, l, i) {
 			w[l] = w[l] || [];
@@ -93,7 +86,6 @@
 			f.parentNode.insertBefore(j, f);
 		})(window, document, "script", "dataLayer", "GTM-NXZMQSS");
 	</script>
-	<!-- End Google Tag Manager -->
 </head>
 <body>
 
@@ -188,70 +180,6 @@
 					<span class="badge notification-active"></span>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<%--							<div class="notification-list mx-h-350 customscroll">--%>
-					<%--								<ul>--%>
-					<%--									<li>--%>
-					<%--										<a href="#">--%>
-					<%--											<img src="vendors/images/img.jpg" alt="" />--%>
-					<%--											<h3>John Doe</h3>--%>
-					<%--											<p>--%>
-					<%--												Lorem ipsum dolor sit amet, consectetur adipisicing--%>
-					<%--												elit, sed...--%>
-					<%--											</p>--%>
-					<%--										</a>--%>
-					<%--									</li>--%>
-					<%--									<li>--%>
-					<%--										<a href="#">--%>
-					<%--											<img src="vendors/images/photo1.jpg" alt="" />--%>
-					<%--											<h3>Lea R. Frith</h3>--%>
-					<%--											<p>--%>
-					<%--												Lorem ipsum dolor sit amet, consectetur adipisicing--%>
-					<%--												elit, sed...--%>
-					<%--											</p>--%>
-					<%--										</a>--%>
-					<%--									</li>--%>
-					<%--									<li>--%>
-					<%--										<a href="#">--%>
-					<%--											<img src="vendors/images/photo2.jpg" alt="" />--%>
-					<%--											<h3>Erik L. Richards</h3>--%>
-					<%--											<p>--%>
-					<%--												Lorem ipsum dolor sit amet, consectetur adipisicing--%>
-					<%--												elit, sed...--%>
-					<%--											</p>--%>
-					<%--										</a>--%>
-					<%--									</li>--%>
-					<%--									<li>--%>
-					<%--										<a href="#">--%>
-					<%--											<img src="vendors/images/photo3.jpg" alt="" />--%>
-					<%--											<h3>John Doe</h3>--%>
-					<%--											<p>--%>
-					<%--												Lorem ipsum dolor sit amet, consectetur adipisicing--%>
-					<%--												elit, sed...--%>
-					<%--											</p>--%>
-					<%--										</a>--%>
-					<%--									</li>--%>
-					<%--									<li>--%>
-					<%--										<a href="#">--%>
-					<%--											<img src="vendors/images/photo4.jpg" alt="" />--%>
-					<%--											<h3>Renee I. Hansen</h3>--%>
-					<%--											<p>--%>
-					<%--												Lorem ipsum dolor sit amet, consectetur adipisicing--%>
-					<%--												elit, sed...--%>
-					<%--											</p>--%>
-					<%--										</a>--%>
-					<%--									</li>--%>
-					<%--									<li>--%>
-					<%--										<a href="#">--%>
-					<%--											<img src="vendors/images/img.jpg" alt="" />--%>
-					<%--											<h3>Vicki M. Coleman</h3>--%>
-					<%--											<p>--%>
-					<%--												Lorem ipsum dolor sit amet, consectetur adipisicing--%>
-					<%--												elit, sed...--%>
-					<%--											</p>--%>
-					<%--										</a>--%>
-					<%--									</li>--%>
-					<%--								</ul>--%>
-					<%--							</div>--%>
 				</div>
 			</div>
 		</div>
@@ -467,7 +395,8 @@
 		<a href="/">
 			<img src="/vendors/images/MunCokLogo.jpg"
 				 alt="문콕 로고"
-				 style="display:block;width:120px;max-width:80%;height:auto;margin:16px auto 12px;object-fit:contain;">
+				 style="display:block;width:120px;max-width:80%;height:auto;margin:16px auto
+12px;object-fit:contain;">
 		</a>
 		<div class="close-sidebar" data-toggle="left-sidebar-close">
 			<i class="ion-close-round"></i>
@@ -478,7 +407,8 @@
 			<ul id="accordion-menu">
 				<hr>
 				<li class="dropdown">
-					<a href="javascript:;" class="dropdown-toggle">
+					<a href="javascript:;"
+					   class="dropdown-toggle">
 								<span class="micon bi bi-house"></span
 								><span class="mtext">데이터 로그 확인</span>
 					</a>
@@ -490,7 +420,8 @@
 				</li>
 				<br>
 				<li class="dropdown">
-					<a href="javascript:;" class="dropdown-toggle">
+					<a href="javascript:;"
+					   class="dropdown-toggle">
 								<span class="micon bi bi-textarea-resize"></span
 								><span class="mtext">시설 상태 확인</span>
 					</a>
@@ -509,7 +440,8 @@
 				</li>
 				<br>
 				<li class="dropdown">
-					<a href="javascript:;" class="dropdown-toggle">
+					<a href="javascript:;"
+					   class="dropdown-toggle">
 								<span class="micon bi bi-table"></span
 								><span class="mtext">시설별 장비 조작</span>
 					</a>
@@ -520,7 +452,8 @@
 				</li>
 				<br>
 				<li class="dropdown">
-					<a href="javascript:;" class="dropdown-toggle">
+					<a href="javascript:;"
+					   class="dropdown-toggle">
 								<span class="micon bi bi-table"></span
 								><span class="mtext">시설별 파일 적재</span>
 					</a>
@@ -539,32 +472,13 @@
 					</a>
 				</li>
 				<br>
-				<li class="dropdown">
-					<a href="javascript:;" class="dropdown-toggle">
-								 <span class="micon bi bi-archive"></span
-								 ><span class="mtext">고객 대응</span>
+				<%-- 고객 센터 메뉴 수정 부분 --%>
+				<li>
+					<a href="<c:url value='/admin/customer'/>" class="dropdown-toggle no-arrow">
+						<span class="micon bi bi-headset"></span><span class="mtext">고객센터 관리</span>
 					</a>
-					<ul class="submenu">
-						<li><a href="<c:url value='/page/support'/>">상담사 현황</a></li>
-						<li><a href="ui-cards.html">Cards</a></li>
-						<li><a href="ui-cards-hover.html">Cards Hover</a></li>
-						<li><a href="ui-modals.html">Modals</a></li>
-						<li><a href="ui-tabs.html">Tabs</a></li>
-						<li>
-							<a href="ui-tooltip-popover.html">Tooltip &amp; Popover</a>
-						</li>
-						<li><a href="ui-sweet-alert.html">Sweet Alert</a></li>
-						<li><a href="ui-notification.html">Notification</a></li>
-						<li><a href="ui-timeline.html">Timeline</a></li>
-						<li><a href="ui-progressbar.html">Progressbar</a></li>
-						<li><a href="ui-typography.html">Typography</a></li>
-						<li><a href="ui-list-group.html">List group</a></li>
-						<li><a href="ui-range-slider.html">Range slider</a></li>
-						<li><a href="ui-carousel.html">Carousel</a></li>
-					</ul>
 				</li>
-
-
+				<%-- // 고객 센터 메뉴 수정 부분 끝 --%>
 
 				<li>
 					<div class="dropdown-divider"></div>
@@ -591,7 +505,6 @@
 
 <%--center end--%>
 
-<!-- js -->
 <script src="/vendors/scripts/core.js"></script>
 <script src="/vendors/scripts/script.min.js"></script>
 <script src="/vendors/scripts/process.js"></script>
@@ -602,15 +515,14 @@
 <script src="/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
 <script src="/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
 <script src="/vendors/scripts/dashboard3.js"></script>
-<!-- Google Tag Manager (noscript) -->
 <noscript
 ><iframe
 		src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
 		height="0"
 		width="0"
-		style="display: none; visibility: hidden"
+		style="display: none;
+visibility: hidden"
 ></iframe
 ></noscript>
-<!-- End Google Tag Manager (noscript) -->
 </body>
 </html>
