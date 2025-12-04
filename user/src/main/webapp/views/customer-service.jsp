@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <div class="container mt-5 mb-5">
     <div class="text-center mb-5">
@@ -9,6 +10,11 @@
 
     <div class="row justify-content-center">
         <div class="col-lg-10">
+            <c:if test="${not empty message}">
+                <div class="alert alert-success" role="alert">
+                    ${message}
+                </div>
+            </c:if>
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
                     <ul class="nav nav-tabs card-header-tabs" id="customerTab" role="tablist">
@@ -92,6 +98,48 @@
                                     <button type="submit" class="btn btn-pet-primary">문의 등록</button>
                                 </div>
                             </form>
+
+                            <div class="mt-4">
+                                <h5 class="mb-3">나의 문의 내역</h5>
+                                <c:choose>
+                                    <c:when test="${empty inquiries}">
+                                        <p class="text-muted">등록된 문의가 없습니다.</p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">제목</th>
+                                                    <th scope="col">분류</th>
+                                                    <th scope="col">등록일</th>
+                                                    <th scope="col">상태</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <c:forEach items="${inquiries}" var="inquiry">
+                                                    <tr>
+                                                        <td><c:out value="${inquiry.title}"/></td>
+                                                        <td><c:out value="${inquiry.category}"/></td>
+                                                        <td><c:out value="${inquiry.createdAt}"/></td>
+                                                        <td>
+                                                            <c:choose>
+                                                                <c:when test="${inquiry.status eq 'ANSWERED'}">
+                                                                    <span class="badge badge-success">답변완료</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span class="badge badge-warning">답변대기</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
                         </div>
                     </div>
                 </div>

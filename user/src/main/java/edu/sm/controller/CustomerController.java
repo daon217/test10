@@ -1,23 +1,53 @@
 package edu.sm.controller;
 
+import edu.sm.app.dto.User;
+import edu.sm.app.service.CustomerInquiryService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Collections;
 
 @Controller
 public class CustomerController {
 
-    @RequestMapping("/customer-service")
-    public String customerService(Model model) {
-        // user/src/main/webapp/views/customer-service.jsp 로 이동
-        model.addAttribute("center", "customer-service");
+    private final CustomerInquiryService inquiryService;
+
+    public CustomerController(CustomerInquiryService inquiryService) {
+        this.inquiryService = inquiryService;
+    }
+
+    @GetMapping("/customer-service")
+    public String customerService(Model model, HttpSession session) {
+        model.addAttribute("center", "customer-service"); // user/src/main/webapp/views/customer-service.jsp
+
+        Object userObj = session.getAttribute("user");
+        if (userObj instanceof User) {
+            model.addAttribute("inquiries", inquiryService.getMyInquiries());
+        } else {
+            model.addAttribute("inquiries", Collections.emptyList());
+        }
+
         return "index";
     }
 
-    // 문의 등록 처리 예시 (추후 구현)
-    @RequestMapping("/customer/inquiry")
-    public String submitInquiry(String title, String content) {
-        // service.registerInquiry(title, content);
-        return "redirect:/customer-service";
+    @PostMapping("/customer/inquiry")
+    public String submitInquiry(@RequestParam String category,
+                                @RequestParam String title,
+                                @RequestParam String content,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            inquiryService.submit(category, title, content);
+            redirectAttributes.addFlashAttribute("message", "문의가 등록되었습니다.");
+            return "redirect:/customer-service";
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("message", "로그인 후 문의를 등록해 주세요.");
+            return "redirect:/login";
+        }
     }
 }

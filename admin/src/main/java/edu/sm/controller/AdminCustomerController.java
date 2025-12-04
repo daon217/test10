@@ -1,5 +1,6 @@
 package edu.sm.controller;
 
+import edu.sm.app.service.AdminCustomerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,11 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class AdminCustomerController {
 
+    private final AdminCustomerService adminCustomerService;
+
+    public AdminCustomerController(AdminCustomerService adminCustomerService) {
+        this.adminCustomerService = adminCustomerService;
+    }
+
     @RequestMapping("/customer")
     public String adminCustomer(Model model) {
-        // 추후 Service를 통해 DB에서 문의 내역을 가져와 모델에 담습니다.
-        // List<Inquiry> inquiries = customerService.getAllInquiries();
-        // model.addAttribute("inquiries", inquiries);
+        model.addAttribute("inquiries", adminCustomerService.getAllInquiries());
 
         // admin/src/main/webapp/views/page/customer-center.jsp 로 이동
         model.addAttribute("center", "page/customer-center");

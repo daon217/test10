@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.sm.app.repository.CustomerInquiryMapper">
+
+    <resultMap id="CustomerInquiryMap" type="edu.sm.app.dto.CustomerInquiry">
+        <id property="inquiryId" column="inquiry_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="category" column="category"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at" javaType="java.time.OffsetDateTime" jdbcType="TIMESTAMP"/>
+        <result property="updatedAt" column="updated_at" javaType="java.time.OffsetDateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="edu.sm.app.dto.CustomerInquiry" useGeneratedKeys="true" keyProperty="inquiryId">
+        INSERT INTO customer_inquiry
+        (user_id, username, category, title, content, status, created_at, updated_at)
+        VALUES
+        (#{userId}, #{username}, #{category}, #{title}, #{content}, #{status}, NOW(), NOW())
+    </insert>
+
+    <select id="findByUserId" parameterType="int" resultMap="CustomerInquiryMap">
+        SELECT *
+        FROM customer_inquiry
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+</mapper>
