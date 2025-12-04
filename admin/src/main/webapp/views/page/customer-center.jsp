@@ -35,9 +35,11 @@
                                 <th class="table-plus datatable-nosort">번호</th>
                                 <th>제목</th>
                                 <th>작성자</th>
-                                <th>등록일</th>
-                                <th>상태</th>
-                                <th class="datatable-nosort">내용</th>
+                                    <%-- 내용 컬럼 너비를 45%로 넓게 설정 --%>
+                                <th class="datatable-nosort" style="width: 45%;">내용</th>
+                                <th>1:1 채팅</th>
+                                    <%-- 등록일 컬럼 너비를 10%로 좁게 설정 --%>
+                                <th style="width: 10%;">등록일</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -46,22 +48,18 @@
                                     <td class="table-plus">${status.count}</td>
                                     <td><c:out value="${inquiry.title}"/></td>
                                     <td><c:out value="${inquiry.username}"/></td>
-                                    <td><c:out value="${inquiry.createdAt}"/></td>
                                     <td>
-                                        <c:choose>
-                                            <c:when test="${inquiry.status eq 'ANSWERED'}">
-                                                <span class="badge badge-success">답변완료</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="badge badge-warning">답변대기</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td>
-                                        <div class="text-truncate" style="max-width: 300px;">
+                                            <%-- max-width를 300px -> 500px로 늘려 내용이 더 길게 보이도록 함 --%>
+                                        <div class="text-truncate" style="max-width: 500px;">
                                             <c:out value="${inquiry.content}"/>
                                         </div>
                                     </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="location.href='/admin/chat/room?userId=${inquiry.username}'">
+                                            <i class="fa fa-comments"></i> 채팅하기
+                                        </button>
+                                    </td>
+                                    <td><c:out value="${inquiry.createdAt}"/></td>
                                 </tr>
                             </c:forEach>
                             </tbody>
