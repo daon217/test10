@@ -1,484 +1,462 @@
-/* Pet Diary Page Styles */
+/* ============================================
+   펫 다이어리 전용 스타일
+   ============================================ */
 
+/* ========== 다이어리 컨테이너 ========== */
 .diary-container {
-    min-height: 100vh;
-    padding: var(--space-8) 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: calc(100vh - 70px);
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #ffeaea 0%, #e3fff9 100%);
 }
 
-/* Header */
+.diary-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* ========== 헤더 섹션 ========== */
 .diary-header {
-    margin-bottom: var(--space-6);
-}
-
-.diary-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 0.5rem;
-}
-
-.diary-header .subtitle {
-    font-size: 1.125rem;
-    color: #6c757d;
-    margin-bottom: 0;
-}
-
-/* Summary Statistics */
-.diary-summary-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 1.5rem;
+    padding: 2rem 2.5rem;
     margin-bottom: 2rem;
-}
-
-.summary-stat-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 1.25rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.summary-stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-.summary-stat-card .stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-}
-
-.summary-stat-card .stat-content h4 {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #868e96;
-    margin-bottom: 0.5rem;
-}
-
-.summary-stat-card .stat-number {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 0.25rem;
-}
-
-.summary-stat-card .stat-detail {
-    font-size: 0.75rem;
-    color: #adb5bd;
-}
-
-/* Filters */
-.diary-filters {
-    background: white;
-    padding: 1.25rem;
-    border-radius: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.filter-tags {
-    display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 1.5rem;
 }
 
-.filter-tag {
-    padding: 0.5rem 1.25rem;
-    border: 2px solid #e9ecef;
-    border-radius: 2rem;
-    background: white;
-    color: #6c757d;
-    font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.filter-tag i {
-    font-size: 1rem;
-}
-
-.filter-tag:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: rgba(151, 117, 250, 0.05);
-}
-
-.filter-tag.active {
-    border-color: var(--primary-color);
-    background: var(--primary-color);
-    color: white;
-}
-
-.view-toggle {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.view-toggle .btn {
-    border-radius: 0.5rem;
-}
-
-.view-toggle .btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-
-/* Calendar Section */
-.diary-calendar-section {
-    margin-bottom: 2rem;
-}
-
-.info-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.info-card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.info-card-title i {
-    color: var(--primary-color);
-}
-
-.calendar-header {
-    margin-bottom: 1.5rem;
-}
-
-.calendar-header p {
-    margin-top: 0.5rem;
-    margin-bottom: 0;
-}
-
-/* FullCalendar Customization */
-#calendar {
-    margin-top: 1rem;
-}
-
-.fc {
-    font-family: 'Noto Sans KR', sans-serif;
-}
-
-.fc-toolbar-title {
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-}
-
-.fc-button {
-    border-radius: 0.5rem !important;
-    font-weight: 600 !important;
-    text-transform: none !important;
-    padding: 0.5rem 1rem !important;
-}
-
-.fc-button-primary {
-    background-color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
-}
-
-.fc-button-primary:not(:disabled):hover {
-    background-color: #7950F2 !important;
-    border-color: #7950F2 !important;
-}
-
-.fc-daygrid-day-number {
-    font-weight: 600;
-}
-
-.fc-event {
-    border-radius: 0.375rem;
-    padding: 0.25rem 0.5rem;
-    font-weight: 500;
-}
-
-/* List View / Timeline */
-.diary-list-section {
-    margin-bottom: 2rem;
-}
-
-.sort-options select {
-    border-radius: 0.5rem;
-    border: 2px solid #e9ecef;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-}
-
-.diary-timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-.diary-item {
-    display: flex;
-    gap: 1.25rem;
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.diary-item:hover {
-    background: #e9ecef;
-    transform: translateX(4px);
-}
-
-.diary-item-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 1.25rem;
-    color: white;
-}
-
-.diary-item-content {
+.diary-header-content {
     flex: 1;
 }
 
-.diary-item-title {
-    font-size: 1.125rem;
+.diary-title {
+    font-size: 2rem;
     font-weight: 700;
     color: #212529;
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
-.diary-item-date {
-    font-size: 0.875rem;
+.diary-title i {
+    color: #FF6B6B;
+}
+
+.diary-subtitle {
     color: #6c757d;
-    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    margin: 0;
 }
 
-.diary-item-date i {
-    margin-right: 0.5rem;
-}
-
-.diary-item-preview {
-    font-size: 0.9375rem;
-    color: #495057;
-    margin-bottom: 0.75rem;
-    line-height: 1.6;
-}
-
-.diary-item-meta {
+.diary-legend {
     display: flex;
-    flex-wrap: wrap;
     gap: 1rem;
-    font-size: 0.875rem;
-    color: #6c757d;
+    flex-wrap: wrap;
 }
 
-.diary-item-meta span {
+.legend-item {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
-}
-
-.diary-item-meta i {
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
     font-size: 0.875rem;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-}
-
-.empty-state i {
-    color: #dee2e6;
-}
-
-/* Modal Customization */
-.form-group label {
     font-weight: 600;
-    color: #343a40;
-    margin-bottom: 0.5rem;
-}
-
-.form-control {
-    border: 2px solid #e9ecef;
-    border-radius: 0.75rem;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(151, 117, 250, 0.15);
-}
-
-.custom-file-label {
-    border: 2px solid #e9ecef;
-    border-radius: 0.75rem;
-    padding: 0.75rem 1rem;
-}
-
-.custom-file-label::after {
-    height: 100%;
-    border-radius: 0 0.75rem 0.75rem 0;
-    background: var(--primary-color);
     color: white;
 }
 
-/* Entry Detail Content */
-.entry-detail-content {
-    padding: 1rem 0;
+.legend-item.walk {
+    background: linear-gradient(135deg, #4ECDC4, #38D9A9);
 }
 
-.detail-meta {
-    margin-bottom: 1rem;
+.legend-item.behavior {
+    background: linear-gradient(135deg, #51CF66, #37B24D);
 }
 
-.entry-content {
-    font-size: 1rem;
-    line-height: 1.8;
-    color: #343a40;
-    white-space: pre-wrap;
+.legend-item.daily {
+    background: linear-gradient(135deg, #B197FC, #9775FA);
 }
 
-.entry-images {
-    margin-top: 1.5rem;
+.legend-item.health {
+    background: linear-gradient(135deg, #FF8787, #FF6B9D);
 }
 
-.entry-images img {
+/* ========== 캘린더 카드 ========== */
+.diary-calendar-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== FullCalendar 커스터마이징 ========== */
+#diaryCalendar {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.fc .fc-button-primary {
+    background: linear-gradient(135deg, #FF6B6B, #FA5252);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.fc .fc-button-primary:hover {
+    background: linear-gradient(135deg, #FA5252, #FF6B6B);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background: linear-gradient(135deg, #FA5252, #FF6B6B);
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border-color: #e9ecef;
+}
+
+.fc .fc-daygrid-day-top {
+    padding: 0.5rem;
+}
+
+.fc .fc-daygrid-day-number {
+    padding: 0.25rem 0.5rem;
+}
+
+.fc .fc-event {
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.25rem;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-.entry-images img:hover {
+.fc .fc-event:hover {
     transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.entry-tags {
+.fc .fc-daygrid-day.fc-day-today {
+    background-color: rgba(255, 107, 107, 0.05);
+}
+
+/* ========== 모달 스타일 ========== */
+.diary-modal-content {
+    border-radius: 1.5rem;
+    border: none;
+    overflow: hidden;
+}
+
+.diary-modal-header {
+    padding: 1.5rem 2rem;
+    border: none;
+    color: white;
+}
+
+.diary-modal-header .modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
 }
 
-.entry-tags .badge {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border: 2px solid #e9ecef;
-    background: white;
-    color: #6c757d;
+.walk-modal .walk-header {
+    background: linear-gradient(135deg, #4ECDC4, #38D9A9);
 }
 
-/* Responsive */
+.behavior-modal .behavior-header {
+    background: linear-gradient(135deg, #51CF66, #37B24D);
+}
+
+.daily-modal .daily-header {
+    background: linear-gradient(135deg, #B197FC, #9775FA);
+}
+
+.health-modal .health-header {
+    background: linear-gradient(135deg, #FF8787, #FF6B9D);
+}
+
+.diary-modal-body {
+    padding: 2rem;
+}
+
+/* ========== 다이어리 메타 정보 ========== */
+.diary-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.diary-date {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 107, 107, 0.1);
+    color: #FF6B6B;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.diary-date::before {
+    content: '📅 ';
+    margin-right: 0.25rem;
+}
+
+.diary-pet {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(78, 205, 196, 0.1);
+    color: #4ECDC4;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.diary-pet::before {
+    content: '🐾 ';
+    margin-right: 0.25rem;
+}
+
+/* ========== 다이어리 본문 ========== */
+.diary-content {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #495057;
+    margin-bottom: 2rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* ========== 메타데이터 섹션 ========== */
+.diary-metadata {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 1rem;
+}
+
+.diary-metadata h6 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.diary-metadata h6 i {
+    color: #FF6B6B;
+}
+
+/* ========== 산책일기 메타데이터 ========== */
+.metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.metadata-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.metadata-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.metadata-value {
+    font-size: 1rem;
+    color: #212529;
+    font-weight: 600;
+}
+
+/* ========== 행동일기 이벤트 리스트 ========== */
+.event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.event-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.75rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.event-item:hover {
+    border-color: #51CF66;
+    box-shadow: 0 4px 12px rgba(81, 207, 102, 0.15);
+}
+
+.event-time {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    background: rgba(81, 207, 102, 0.1);
+    color: #51CF66;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.event-desc {
+    font-size: 0.95rem;
+    color: #212529;
+    font-weight: 500;
+}
+
+.event-analysis {
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-align: right;
+}
+
+/* ========== 하루일기 요약 ========== */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.75rem;
+    border: 1px solid #e9ecef;
+}
+
+.summary-item i {
+    font-size: 1.5rem;
+    color: #B197FC;
+}
+
+.summary-item span {
+    font-size: 0.95rem;
+    color: #495057;
+    line-height: 1.5;
+}
+
+/* ========== 반응형 디자인 ========== */
 @media (max-width: 768px) {
-    .diary-header h1 {
-        font-size: 2rem;
+    .diary-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem;
     }
 
-    .diary-header .subtitle {
-        font-size: 1rem;
+    .diary-title {
+        font-size: 1.5rem;
     }
 
-    .summary-stat-card {
-        margin-bottom: 1rem;
+    .diary-legend {
+        width: 100%;
+        justify-content: flex-start;
     }
 
-    .filter-tags {
-        justify-content: center;
+    .diary-calendar-card {
+        padding: 1.5rem;
     }
 
-    .diary-filters {
+    .fc .fc-toolbar {
         flex-direction: column;
         gap: 1rem;
     }
 
-    .diary-filters > div {
-        width: 100%;
-        justify-content: center;
+    .fc .fc-toolbar-title {
+        font-size: 1.25rem;
     }
 
-    .view-toggle {
-        justify-content: center;
-        width: 100%;
+    .diary-modal-body {
+        padding: 1.5rem;
     }
 
-    .diary-item {
+    .diary-meta {
         flex-direction: column;
+        gap: 0.5rem;
     }
 
-    .diary-item-icon {
-        align-self: flex-start;
+    .metadata-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .event-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .event-time {
+        width: fit-content;
+    }
+
+    .event-analysis {
+        text-align: left;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
     }
 }
 
-/* Utility Classes */
-.text-danger {
-    color: #dc3545;
-}
+@media (max-width: 576px) {
+    .diary-container {
+        padding: 1.5rem 0;
+    }
 
-.rounded {
-    border-radius: 0.75rem;
-}
+    .diary-title {
+        font-size: 1.25rem;
+    }
 
-.badge {
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.375rem;
-    font-weight: 600;
-}
+    .diary-subtitle {
+        font-size: 0.875rem;
+    }
 
-.badge-primary {
-    background-color: var(--primary-color);
-}
+    .legend-item {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
 
-.badge-secondary {
-    background-color: #6c757d;
-}
+    .fc .fc-toolbar-title {
+        font-size: 1rem;
+    }
 
-.badge-success {
-    background-color: #38D9A9;
-}
-
-.badge-warning {
-    background-color: #FFD43B;
-}
-
-.badge-info {
-    background-color: #4ECDC4;
-}
-
-.badge-danger {
-    background-color: #FA5252;
-}
-
-.badge-light {
-    background-color: #f8f9fa;
-    color: #495057;
-    border: 2px solid #e9ecef;
-}
-
-.badge-dark {
-    background-color: #495057;
+    .fc .fc-button {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
 }
