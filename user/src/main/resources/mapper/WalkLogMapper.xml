@@ -22,6 +22,9 @@
         <result column="walked_route_data"     property="walkedRouteData"/>
         <result column="shape_type"            property="shapeType"/>
         <result column="target_km"             property="targetKm"/>
+
+
+        <result column="pet_id"             property="petId"/>
     </resultMap>
 
 
@@ -42,7 +45,8 @@
          planned_route_data,
          walked_route_data,
          shape_type,
-         target_km)
+         target_km,
+         pet_id)
         VALUES
             (#{userId},
              #{startTime},
@@ -50,11 +54,12 @@
              #{distanceKm},
              #{routeData},
              #{plannedDistanceKm},
-             #{walkedDistanceKm},
+             COALESCE(#{walkedDistanceKm}, 0),
              #{plannedRouteData},
              #{walkedRouteData},
              #{shapeType},
-             #{targetKm})
+             #{targetKm},
+             #{petId})
     </insert>
 
     <!-- 2) 사용자별 전체 코스 목록 -->
@@ -67,7 +72,8 @@
             start_time,
             end_time,
             distance,
-            route_data
+            route_data,
+            pet_id
         FROM walk_log
         WHERE user_id = #{userId}
         ORDER BY start_time DESC
@@ -83,10 +89,22 @@
             start_time,
             end_time,
             distance,
-            route_data
+            route_data,
+            pet_id
         FROM walk_log
         WHERE walking_recode_id = #{id}
           AND user_id = #{userId}
     </select>
+
+    <select id="findByUserIdAndMonth" resultMap="WalkLogResultMap">
+        SELECT * FROM walk_log
+        WHERE user_id = #{userId}
+        AND TO_CHAR(start_time, 'YYYY-MM') = #{yearMonth}
+        ORDER BY start_time DESC
+    </select>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM walk_log WHERE walking_recode_id = #{id}
+    </delete>
 
 </mapper>

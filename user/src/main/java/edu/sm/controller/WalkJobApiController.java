@@ -1,7 +1,10 @@
 package edu.sm.controller;
 
+import edu.sm.app.dto.Pet;
 import edu.sm.app.dto.WalkLogSaveRequest;
 import edu.sm.app.dto.WalkLogSaveResponse;
+import edu.sm.app.repository.PetRepository;
+import edu.sm.app.service.CurrentUserService;
 import edu.sm.app.service.WalkJobSessionService;
 import edu.sm.app.service.WalkLogService;
 import jakarta.servlet.http.HttpSession;
@@ -24,6 +27,10 @@ public class WalkJobApiController {
 
     private final WalkJobSessionService sessionService;
     private final WalkLogService walkLogService;
+
+    // ★ 반려인용 반려동물 조회/검증에 사용
+    private final PetRepository petRepository;
+    private final CurrentUserService currentUserService;
 
     /** 반려인: SSE 구독 */
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -82,6 +89,11 @@ public class WalkJobApiController {
         // ★ 반려인 userId(세션 구독 시 저장된 값)를 사용해서 저장
         Integer ownerUserId = snap.getOwnerUserId();
 
+        // ★ petId도 함께 저장 (walk_log.pet_id)
+        if (snap.getPetId() != null) {
+            req.setPetId(snap.getPetId());
+        }
+
         if (ownerUserId == null) {
             // 예외 상황 대비: ownerUserId가 없으면 기존 방식대로(현재 로그인 유저) 저장
             log.warn("WalkSnapshot에 ownerUserId가 없음 → 현재 로그인 유저로 저장");
@@ -98,8 +110,6 @@ public class WalkJobApiController {
         private double distanceKm;
         private long elapsedSec;
     }
-
-    // 기존 stream, update, finish 는 그대로 유지
 
     // 🔹 알바생용 SSE
     @GetMapping(value = "/worker-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -122,9 +132,23 @@ public class WalkJobApiController {
         sessionService.requestFinish();
     }
 
-    // 🔹 현재 세션 상태 조회 (알바생 화면 복구용)
+    // 🔹 현재 세션 상태 조회 (알바생 화면 복구용 + pet 선택 여부 확인)
     @GetMapping("/state")
     public WalkJobSessionService.WalkSnapshot state() {
         return sessionService.getSnapshot();
+    }
+
+    // ★ 반려인: 자신의 반려동물 목록 조회 (여러 마리)
+    @GetMapping("/owner-pets")
+    public List<Pet> ownerPets() {
+        int ownerId = currentUserService.getCurrentUserIdOrThrow();
+        return petRepository.selectByUserId(ownerId);
+    }
+
+    // ★ 반려인: 오늘 산책에 사용할 반려동물 선택
+    @PostMapping("/select-pet")
+    public void selectPet(@RequestParam("petId") int petId) throws Exception {
+        log.info("산책알바 pet 선택 요청: petId={}", petId);
+        sessionService.selectPet(petId);
     }
 }

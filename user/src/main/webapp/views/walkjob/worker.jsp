@@ -87,7 +87,6 @@
     margin-top: 4px;
   }
 
-  /* 🔹 오늘 산책할 반려동물 정보 카드 */
   .walkjob-worker-page .pet-info-card {
     margin-top: 10px;
     padding: 14px 18px;
@@ -325,6 +324,7 @@
     }
   }
 </style>
+
 <br>
 <div class="walkjob-worker-page">
   <header class="walkjob-worker-header">
@@ -339,20 +339,6 @@
       </div>
     </div>
   </header>
-
-<%--  <!-- 🔹 오늘 산책할 반려동물 정보 섹션 -->--%>
-<%--  <section class="pet-info-card">--%>
-<%--    <div class="pet-info-title-row">--%>
-<%--      <h2>오늘 산책할 반려동물</h2>--%>
-<%--      <div class="pet-info-chip">AI 추천 산책 정보</div>--%>
-<%--    </div>--%>
-<%--    <p id="petInfoText">반려동물 정보를 불러오는 중입니다...</p>--%>
-<%--    <p>--%>
-<%--      추천 산책 거리:--%>
-<%--      <strong id="petRecommendKm">- km</strong>--%>
-<%--    </p>--%>
-<%--    <p class="note" id="petReasonText"></p>--%>
-  </section>
 
   <div class="map-wrap">
     <div id="map"></div>
@@ -395,7 +381,25 @@
   </div>
 </div>
 
-<!-- 🔹 반려인(산책 의뢰자) userId – 컨트롤러에서 model.addAttribute("ownerUserId", ...)로 전달 -->
+<!-- ★ 산책 종료 후 요약 모달 -->
+<div id="walkjobFinishSummaryModal"
+     style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:10000;
+            align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:20px 24px; border-radius:16px; max-width:320px; width:90%;">
+    <h3 style="margin-top:0; margin-bottom:10px; font-size:1.1rem;">산책이 끝났습니다!</h3>
+    <p id="walkjobFinishSummaryText"
+       style="font-size:0.9rem; color:#374151; margin-bottom:16px;">
+      거리 0.00 km, 소요시간 0초, 칼로리 0 kcal
+    </p>
+    <div style="display:flex; justify-content:flex-end; gap:8px;">
+      <button id="walkjobFinishSummaryOkBtn"
+              style="padding:6px 12px; border-radius:999px; border:none; background:#2563eb; color:#fff;">
+        확인
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   const OWNER_USER_ID = ${ownerUserId != null ? ownerUserId : -1};
 </script>
@@ -409,6 +413,9 @@
   let lastLat = null, lastLon = null;
   let distanceMeters = 0;
   let routePoints = [];
+
+  // ★ 반려인이 pet을 선택했는지 여부
+  let petSelected = false;
 
   // ★ 1초마다 UI/서버 갱신용 타이머
   let tickTimerId = null;
@@ -431,11 +438,34 @@
     return `${min}'${secStr}"/km`;
   }
 
+  function formatDuration(sec) {
+    if (!sec || sec <= 0) return "0초";
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    if (m <= 0) return `${s}초`;
+    return `${m}분 ${s}초`;
+  }
+
   function initMap() {
     map = L.map('map').setView([36.777381, 127.001764], 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19
     }).addTo(map);
+  }
+
+  function redirectToChatRoom() {
+    window.location.href = '<c:url value="/chat/list"/>';
+  }
+
+  function showFinishSummary(distanceKm, elapsedSec) {
+    const modal = document.getElementById('walkjobFinishSummaryModal');
+    const textEl = document.getElementById('walkjobFinishSummaryText');
+    const kcal = calcKcal(distanceKm, elapsedSec);
+    const timeStr = formatDuration(elapsedSec);
+
+    textEl.textContent =
+            `거리 ${distanceKm.toFixed(2)} km, 소요시간 ${timeStr}, 칼로리 약 ${kcal.toFixed(0)} kcal`;
+    modal.style.display = 'flex';
   }
 
   // 하버사인으로 두 좌표 간 거리(m) 계산
@@ -512,6 +542,12 @@
   }
 
   function startWalk() {
+    // ★ 반려인이 pet을 아직 선택하지 않았다면 시작 불가
+    if (!petSelected) {
+      alert('반려인이 오늘 산책할 반려동물을 아직 선택하지 않았습니다.\n반려인에게 먼저 반려동물 선택을 요청해 주세요.');
+      return;
+    }
+
     if (!navigator.geolocation) {
       alert('이 브라우저는 위치 정보를 지원하지 않습니다.');
       return;
@@ -584,7 +620,7 @@
     );
   }
 
-  // 🔴 여기서부터가 “산책 종료 요청만 보내고 실제 종료는 안 하는” 핵심 부분
+  // 🔴 “산책 종료 요청만 보내고 실제 종료는 안 하는” 부분 (기존 로직 유지)
   async function stopWalk() {
     if (!isWalking) {
       // 이미 산책 중이 아니면 아무 것도 안 함
@@ -602,8 +638,6 @@
       if (!res.ok) throw new Error('finish-request error');
 
       alert('반려인에게 산책 종료 요청을 보냈습니다.\n반려인이 승인하면 산책이 종료됩니다.');
-      // 필요하면 종료 요청 후 stopBtn 잠시 disable 할 수도 있음 (선택 사항)
-      // document.getElementById('stopBtn').disabled = true;
     } catch (e) {
       console.error(e);
       alert('산책 종료 요청 중 오류가 발생했습니다.');
@@ -689,6 +723,16 @@
     const eventSource = new EventSource('<c:url value="/api/walkjob/worker-stream"/>');
     const statusEl = document.getElementById('statusText');
 
+    // ★ 반려인이 pet 선택하면 petSelected 이벤트 수신
+    eventSource.addEventListener('petSelected', (e) => {
+      const data = JSON.parse(e.data); // {petId, name}
+      petSelected = true;
+      if (statusEl) {
+        statusEl.textContent = `반려동물 선택 완료: ${data.name}`;
+        statusEl.className = 'status-pill status-waiting';
+      }
+    });
+
     eventSource.addEventListener('finish', (e) => {
       const data = JSON.parse(e.data);
 
@@ -736,6 +780,9 @@
       document.getElementById('stopBtn').disabled = true;
 
       eventSource.close();
+
+      // ★ 요약 모달 표시 후 확인 시 채팅방으로 이동
+      showFinishSummary(distKm, elapsedSec);
     });
 
     eventSource.onerror = (e) => {
@@ -743,7 +790,7 @@
     };
   }
 
-  // 🔹 페이지 재진입 시 진행 중 산책 복구
+  // 🔹 페이지 재진입 시 진행 중 산책 복구 + pet 선택 여부 확인
   async function restoreWalkIfExists() {
     try {
       const res = await fetch('<c:url value="/api/walkjob/state"/>');
@@ -751,6 +798,16 @@
       const snap = await res.json();
 
       if (!snap || !snap.status) return;
+
+      // ★ petId가 이미 선택된 상태라면 플래그 세팅
+      if (snap.petId != null) {
+        petSelected = true;
+        const statusEl = document.getElementById('statusText');
+        if (statusEl && snap.status === 'IDLE') {
+          statusEl.textContent = '반려인이 반려동물을 선택했습니다. 산책을 시작할 수 있습니다.';
+          statusEl.className = 'status-pill status-waiting';
+        }
+      }
 
       if (snap.status === 'IDLE' || snap.status === 'FINISHED') {
         return;
@@ -860,14 +917,21 @@
     document.getElementById('startBtn').addEventListener('click', startWalk);
     document.getElementById('stopBtn').addEventListener('click', stopWalk);
 
-    // 🔹 알바생 화면 진입 시 반려동물 정보 + 추천 거리 로딩 (기존 기능)
+    // 기존 AI 추천 반려동물 정보 (주석이면 자동 skip)
     loadOwnerPetRecommend();
 
-    // 🔹 알바생 SSE 연결 (반려인 승인 후 종료 통지)
+    // 알바생 SSE 연결 (반려인 승인 후 종료/펫선택 통지)
     connectWorkerSse();
 
-    // 🔹 진행 중 산책이 있으면 화면 복구
+    // 진행 중 산책이 있으면 화면 복구 및 pet 선택 여부 반영
     restoreWalkIfExists();
+
+    const okBtn = document.getElementById('walkjobFinishSummaryOkBtn');
+    if (okBtn) {
+      okBtn.addEventListener('click', () => {
+        document.getElementById('walkjobFinishSummaryModal').style.display = 'none';
+        redirectToChatRoom();
+      });
+    }
   });
 </script>
-

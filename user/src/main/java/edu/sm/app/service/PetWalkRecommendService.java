@@ -19,18 +19,13 @@ public class PetWalkRecommendService {
     private final ChatClient chatClient;
     private final CurrentUserService currentUserService;
 
-    /**
-     * 기존 기능: 현재 로그인한 사용자(반려인) 기준 추천
-     */
+    /** 기존 기능: 현재 로그인한 사용자(반려인) 기준 추천 */
     public WalkRecommendResponse recommendForCurrentUser() {
         int userId = currentUserService.getCurrentUserIdOrThrow();
         return recommendForUserInternal(userId);
     }
 
-    /**
-     * 새 기능: 특정 userId(반려인) 기준 추천
-     * - 알바생 화면에서 "오늘 산책할 반려인의 반려동물" 정보를 보고 싶을 때 사용
-     */
+    /** 새 기능: 특정 userId(반려인) 기준 추천 (알바생 화면 등에서 사용) */
     public WalkRecommendResponse recommendForUser(Integer userId) {
         if (userId == null) {
             throw new IllegalArgumentException("userId는 null일 수 없습니다.");
@@ -38,18 +33,48 @@ public class PetWalkRecommendService {
         return recommendForUserInternal(userId);
     }
 
-    /**
-     * 공통 내부 로직: 주어진 userId의 반려동물 중 대표 1마리 기준으로 추천
-     */
+    /** ★ 새 기능: 특정 petId 기준 추천 (맵 화면에서 선택한 반려동물) */
+    public WalkRecommendResponse recommendForPet(Integer petId) {
+        if (petId == null) {
+            throw new IllegalArgumentException("petId는 null일 수 없습니다.");
+        }
+
+        int currentUserId = currentUserService.getCurrentUserIdOrThrow();
+
+        Pet pet;
+        try {
+            pet = petRepository.select(petId);
+        } catch (Exception e) {
+            throw new IllegalStateException("반려동물 조회 중 오류가 발생했습니다.", e);
+        }
+
+        if (pet == null || !pet.getUserId().equals(currentUserId)) {
+            throw new IllegalStateException("해당 반려동물 정보를 찾을 수 없거나, 현재 사용자 소유가 아닙니다.");
+        }
+
+        return buildRecommendFromPet(pet);
+    }
+
+    /** ★ 현재 로그인 사용자의 반려동물 리스트 (펫 선택용) */
+    public List<Pet> getPetsForCurrentUser() {
+        int userId = currentUserService.getCurrentUserIdOrThrow();
+        return petRepository.selectByUserId(userId);
+    }
+
+    /** 공통 내부 로직: 주어진 userId의 반려동물 중 대표 1마리 기준으로 추천 */
     private WalkRecommendResponse recommendForUserInternal(int userId) {
         List<Pet> pets = petRepository.selectByUserId(userId);
         if (pets == null || pets.isEmpty()) {
             throw new IllegalStateException("등록된 반려동물이 없습니다. 반려동물을 먼저 등록해 주세요.");
         }
 
-        // 대표 반려동물: 일단 첫 번째 사용
+        // 대표 반려동물: 일단 첫 번째 사용 (기존 로직 그대로)
         Pet pet = pets.get(0);
+        return buildRecommendFromPet(pet);
+    }
 
+    /** 공통: Pet 한 마리로부터 추천 생성 */
+    private WalkRecommendResponse buildRecommendFromPet(Pet pet) {
         String type = safeString(pet.getType());           // DOG, CAT, ETC
         String customType = safeString(pet.getCustomType());
         String breed = safeString(pet.getBreed());

@@ -116,7 +116,8 @@ public class WalkLogService {
         log.setWalkedRouteData(walkedRouteJson);
         log.setShapeType(req.getShapeType());
         log.setTargetKm(req.getTargetKm());
-
+// ★ 새로 추가: pet_id 저장
+        log.setPetId(req.getPetId());
         // ---- 4) INSERT ----
         walkLogMapper.insert(log);
 

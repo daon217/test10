@@ -38,11 +38,9 @@
                 <div class="profile-stats">
                     <div class="profile-stat-item">
                         <span class="profile-stat-label">가입일</span>
-                        <span class="profile-stat-value">${user.createdAt}</span>
-                    </div>
-                    <div class="profile-stat-item">
-                        <span class="profile-stat-label">활동</span>
-                        <span class="profile-stat-value">247일</span>
+                        <span class="profile-stat-value">
+                            ${not empty formattedCreatedAt ? formattedCreatedAt : '정보 없음'}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -57,14 +55,6 @@
             <button class="mypage-tab" onclick="showTab('pets')">
                 <i class="fas fa-paw"></i>
                 <span>반려동물</span>
-            </button>
-            <button class="mypage-tab" onclick="showTab('diary')">
-                <i class="fas fa-book"></i>
-                <span>펫 다이어리</span>
-            </button>
-            <button class="mypage-tab" onclick="showTab('report')">
-                <i class="fas fa-chart-line"></i>
-                <span>행동 리포트</span>
             </button>
         </div>
 
@@ -191,6 +181,13 @@
                     반려동물 관리
                 </h2>
 
+                <!-- ✅ 디버깅: pets 변수 확인 -->
+                <c:if test="${empty pets}">
+                    <div style="padding: 20px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; margin-bottom: 20px;">
+                        <strong>디버깅:</strong> pets 변수가 비어있습니다. petCount = ${petCount}
+                    </div>
+                </c:if>
+
                 <c:choose>
                     <c:when test="${user.role == 'OWNER'}">
                         <!-- 반려인용: 반려동물 카드 그리드 -->
@@ -208,13 +205,26 @@
                                         </c:choose>
                                     </div>
                                     <h4 class="pet-card-name">${pet.name}</h4>
-                                    <p class="pet-card-info">${pet.species} · ${pet.breed}</p>
+
+                                    <!-- ✅ type 필드 사용 + 한글 변환 -->
+                                    <p class="pet-card-info">
+                                        <c:choose>
+                                            <c:when test="${pet.type == 'DOG'}">강아지</c:when>
+                                            <c:when test="${pet.type == 'CAT'}">고양이</c:when>
+                                            <c:otherwise>
+                                                <c:if test="${not empty pet.customType}">${pet.customType}</c:if>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <c:if test="${not empty pet.breed}"> · ${pet.breed}</c:if>
+                                    </p>
+
                                     <p class="pet-card-info">${pet.age}살 · ${pet.weight}kg</p>
                                     <div class="pet-card-actions">
-                                        <button class="btn-pet-edit" onclick="editPet(${pet.id})">
+                                        <!-- ✅ pet.id → pet.petId -->
+                                        <button class="btn-pet-edit" onclick="editPet(${pet.petId})">
                                             <i class="fas fa-edit"></i> 수정
                                         </button>
-                                        <button class="btn-pet-delete" onclick="deletePet(${pet.id})">
+                                        <button class="btn-pet-delete" onclick="deletePet(${pet.petId})">
                                             <i class="fas fa-trash"></i> 삭제
                                         </button>
                                     </div>
@@ -246,498 +256,74 @@
                     </c:otherwise>
                 </c:choose>
             </div>
-
-            <!-- ========== 탭 3: 펫 다이어리 ========== -->
-            <div id="tab-diary" class="tab-panel">
-                <h2 class="section-title">
-                    <i class="fas fa-book"></i>
-                    펫 다이어리
-                </h2>
-
-                <!-- 안내 메시지 -->
-                <div class="alert alert-info mb-4">
-                    <i class="fas fa-info-circle mr-2"></i>
-                    <strong>자동 기록 시스템:</strong> 산책, 홈캠 이벤트, 건강 체크 등 모든 활동이 자동으로 다이어리에 저장됩니다.
-                </div>
-
-                <!-- 다이어리 요약 통계 -->
-                <div class="diary-summary-section mb-4">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="summary-stat-card">
-                                <div class="stat-icon" style="background: linear-gradient(135deg, #9775FA, #7950F2);">
-                                    <i class="fas fa-book-open"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <h4>총 기록</h4>
-                                    <p class="stat-number">156개</p>
-                                    <span class="stat-detail">전체 활동</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="summary-stat-card">
-                                <div class="stat-icon" style="background: linear-gradient(135deg, #FF6B6B, #FA5252);">
-                                    <i class="fas fa-walking"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <h4>산책 기록</h4>
-                                    <p class="stat-number">89회</p>
-                                    <span class="stat-detail">자동 저장</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="summary-stat-card">
-                                <div class="stat-icon" style="background: linear-gradient(135deg, #4ECDC4, #38D9A9);">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <h4>홈캠 이벤트</h4>
-                                    <p class="stat-number">43건</p>
-                                    <span class="stat-detail">자동 감지</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="summary-stat-card">
-                                <div class="stat-icon" style="background: linear-gradient(135deg, #FFD43B, #FF922B);">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-                                <div class="stat-content">
-                                    <h4>사진/영상</h4>
-                                    <p class="stat-number">342장</p>
-                                    <span class="stat-detail">수동 + 자동</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 필터 및 검색 -->
-                <div class="diary-filters mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="filter-tags">
-                            <button class="filter-tag active" data-tag="all">
-                                <i class="fas fa-list"></i> 전체
-                            </button>
-                            <button class="filter-tag" data-tag="walk">
-                                <i class="fas fa-walking"></i> 산책
-                            </button>
-                            <button class="filter-tag" data-tag="health">
-                                <i class="fas fa-heartbeat"></i> 건강
-                            </button>
-                            <button class="filter-tag" data-tag="homecam">
-                                <i class="fas fa-video"></i> 홈캠
-                            </button>
-                            <button class="filter-tag" data-tag="memo">
-                                <i class="fas fa-pen"></i> 메모
-                            </button>
-                            <button class="filter-tag" data-tag="special">
-                                <i class="fas fa-star"></i> 기념일
-                            </button>
-                        </div>
-                        <button class="btn btn-pet-primary" onclick="openAddMemoModal()">
-                            <i class="fas fa-plus-circle mr-2"></i>
-                            메모 추가하기
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 다이어리 캘린더 (FullCalendar) -->
-                <div class="info-card mb-4">
-                    <h3 class="info-card-title">
-                        <i class="fas fa-calendar-alt"></i>
-                        통합 타임라인 캘린더
-                    </h3>
-                    <div id="diary-calendar-container" style="min-height: 600px;">
-                        <div class="text-center py-5">
-                            <i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
-                            <p class="text-muted">캘린더를 불러오는 중...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 최근 활동 타임라인 -->
-                <div class="info-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="info-card-title mb-0">
-                            <i class="fas fa-clock"></i>
-                            최근 활동 내역
-                        </h3>
-                        <div class="view-options">
-                            <button class="btn btn-sm btn-pet-outline" onclick="changeView('timeline')">
-                                <i class="fas fa-stream"></i> 타임라인
-                            </button>
-                            <button class="btn btn-sm btn-pet-outline active" onclick="changeView('list')">
-                                <i class="fas fa-list"></i> 리스트
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="diary-timeline" id="diaryTimeline">
-                        <!-- 자동 기록: 산책 -->
-                        <div class="diary-item" data-type="walk">
-                            <div class="diary-item-icon">
-                                <i class="fas fa-walking"></i>
-                            </div>
-                            <div class="diary-item-content">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="diary-item-title">
-                                            한강공원 산책
-                                            <span class="badge badge-primary ml-2">자동</span>
-                                        </h5>
-                                        <p class="diary-item-date">
-                                            <i class="fas fa-calendar"></i> 2024년 12월 2일 오후 3:20
-                                        </p>
-                                    </div>
-                                    <span class="badge badge-success">산책</span>
-                                </div>
-                                <p class="diary-item-preview">
-                                    오늘 산책을 완료했습니다. 날씨가 좋았어요! 🐕
-                                </p>
-                                <div class="diary-item-meta">
-                                    <span><i class="fas fa-route"></i> 2.3km</span>
-                                    <span><i class="fas fa-clock"></i> 45분</span>
-                                    <span><i class="fas fa-image"></i> 사진 5장</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 자동 기록: 홈캠 이벤트 -->
-                        <div class="diary-item" data-type="homecam">
-                            <div class="diary-item-icon" style="background: linear-gradient(135deg, #FFD43B, #FF922B);">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <div class="diary-item-content">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="diary-item-title">
-                                            귀여운 행동 감지
-                                            <span class="badge badge-primary ml-2">자동</span>
-                                        </h5>
-                                        <p class="diary-item-date">
-                                            <i class="fas fa-calendar"></i> 2024년 12월 2일 오전 10:15
-                                        </p>
-                                    </div>
-                                    <span class="badge badge-warning">홈캠</span>
-                                </div>
-                                <p class="diary-item-preview">
-                                    AI가 감지한 특별한 순간: 뭉치가 장난감과 놀고 있어요 🎾
-                                </p>
-                                <div class="diary-item-meta">
-                                    <span><i class="fas fa-robot"></i> AI 감지</span>
-                                    <span><i class="fas fa-video"></i> 영상 1개</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 자동 기록: 건강 체크 -->
-                        <div class="diary-item" data-type="health">
-                            <div class="diary-item-icon" style="background: linear-gradient(135deg, #4ECDC4, #38D9A9);">
-                                <i class="fas fa-heartbeat"></i>
-                            </div>
-                            <div class="diary-item-content">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="diary-item-title">
-                                            동물병원 방문
-                                            <span class="badge badge-primary ml-2">자동</span>
-                                        </h5>
-                                        <p class="diary-item-date">
-                                            <i class="fas fa-calendar"></i> 2024년 11월 30일 오후 2:00
-                                        </p>
-                                    </div>
-                                    <span class="badge badge-info">건강</span>
-                                </div>
-                                <p class="diary-item-preview">
-                                    정기 검진차 병원 다녀왔어요. 건강 상태 양호! 💪
-                                </p>
-                                <div class="diary-item-meta">
-                                    <span><i class="fas fa-user-md"></i> 김수의 수의사</span>
-                                    <span><i class="fas fa-won-sign"></i> 50,000원</span>
-                                    <span><i class="fas fa-check-circle"></i> 양호</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 수동 기록: 사용자 메모 -->
-                        <div class="diary-item" data-type="memo">
-                            <div class="diary-item-icon" style="background: linear-gradient(135deg, #9775FA, #7950F2);">
-                                <i class="fas fa-pen"></i>
-                            </div>
-                            <div class="diary-item-content">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="diary-item-title">
-                                            새로운 간식 도전
-                                            <span class="badge badge-secondary ml-2">수동</span>
-                                        </h5>
-                                        <p class="diary-item-date">
-                                            <i class="fas fa-calendar"></i> 2024년 11월 28일 오후 5:30
-                                        </p>
-                                    </div>
-                                    <span class="badge badge-dark">메모</span>
-                                </div>
-                                <p class="diary-item-preview">
-                                    오늘 새로운 간식을 줘봤는데 정말 좋아하네요! 앞으로 자주 사줘야겠어요 😋
-                                </p>
-                                <div class="diary-item-meta">
-                                    <span><i class="fas fa-tag"></i> 음식</span>
-                                    <span><i class="fas fa-image"></i> 사진 3장</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 특별한 날: 기념일 -->
-                        <div class="diary-item" data-type="special">
-                            <div class="diary-item-icon" style="background: linear-gradient(135deg, #FF6B6B, #FA5252);">
-                                <i class="fas fa-birthday-cake"></i>
-                            </div>
-                            <div class="diary-item-content">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="diary-item-title">
-                                            생일 축하해요!
-                                            <span class="badge badge-secondary ml-2">수동</span>
-                                        </h5>
-                                        <p class="diary-item-date">
-                                            <i class="fas fa-calendar"></i> 2024년 11월 25일
-                                        </p>
-                                    </div>
-                                    <span class="badge badge-danger">기념일</span>
-                                </div>
-                                <p class="diary-item-preview">
-                                    우리 뭉치 3살 생일 🎉 케이크 만들어줬어요!
-                                </p>
-                                <div class="diary-item-meta">
-                                    <span><i class="fas fa-star"></i> 특별한 날</span>
-                                    <span><i class="fas fa-image"></i> 사진 12장</span>
-                                    <span><i class="fas fa-video"></i> 영상 1개</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 더보기 버튼 -->
-                    <div class="text-center mt-4">
-                        <button class="btn btn-pet-outline" onclick="loadMoreDiary()">
-                            <i class="fas fa-chevron-down mr-2"></i>
-                            더보기
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ========== 탭 4: 행동 리포트 ========== -->
-            <div id="tab-report" class="tab-panel">
-                <h2 class="section-title">
-                    <i class="fas fa-chart-line"></i>
-                    행동 리포트
-                </h2>
-
-                <!-- 리포트 기간 선택 -->
-                <div class="report-controls mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-pet-outline active" onclick="changeReportPeriod('week')">
-                                <i class="fas fa-calendar-week"></i> 주간
-                            </button>
-                            <button type="button" class="btn btn-pet-outline" onclick="changeReportPeriod('month')">
-                                <i class="fas fa-calendar-alt"></i> 월간
-                            </button>
-                            <button type="button" class="btn btn-pet-outline" onclick="changeReportPeriod('year')">
-                                <i class="fas fa-calendar"></i> 연간
-                            </button>
-                        </div>
-                        <button class="btn btn-pet-primary" onclick="generateReport()">
-                            <i class="fas fa-sync-alt mr-2"></i>
-                            리포트 생성하기
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 행동 요약 카드 -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="report-stat-card">
-                            <div class="report-stat-icon" style="background: linear-gradient(135deg, #FF6B6B, #FA5252);">
-                                <i class="fas fa-walking"></i>
-                            </div>
-                            <div class="report-stat-content">
-                                <h5>평균 산책 시간</h5>
-                                <p class="report-stat-value">45분</p>
-                                <span class="report-stat-change positive">
-                                    <i class="fas fa-arrow-up"></i> 12% 증가
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="report-stat-card">
-                            <div class="report-stat-icon" style="background: linear-gradient(135deg, #4ECDC4, #38D9A9);">
-                                <i class="fas fa-route"></i>
-                            </div>
-                            <div class="report-stat-content">
-                                <h5>평균 거리</h5>
-                                <p class="report-stat-value">2.3km</p>
-                                <span class="report-stat-change positive">
-                                    <i class="fas fa-arrow-up"></i> 8% 증가
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="report-stat-card">
-                            <div class="report-stat-icon" style="background: linear-gradient(135deg, #9775FA, #7950F2);">
-                                <i class="fas fa-bed"></i>
-                            </div>
-                            <div class="report-stat-content">
-                                <h5>평균 수면 시간</h5>
-                                <p class="report-stat-value">12시간</p>
-                                <span class="report-stat-change neutral">
-                                    <i class="fas fa-minus"></i> 변화 없음
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="report-stat-card">
-                            <div class="report-stat-icon" style="background: linear-gradient(135deg, #FFD43B, #FF922B);">
-                                <i class="fas fa-heartbeat"></i>
-                            </div>
-                            <div class="report-stat-content">
-                                <h5>활동량 지수</h5>
-                                <p class="report-stat-value">85점</p>
-                                <span class="report-stat-change positive">
-                                    <i class="fas fa-arrow-up"></i> 5점 상승
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 활동량 차트 -->
-                <div class="info-card mb-4">
-                    <h3 class="info-card-title">
-                        <i class="fas fa-chart-area"></i>
-                        주간 활동량 추이
-                    </h3>
-                    <div id="activity-chart" style="height: 300px;">
-                        <canvas id="activityCanvas"></canvas>
-                    </div>
-                </div>
-
-                <!-- AI 추천 사항 -->
-                <div class="info-card">
-                    <h3 class="info-card-title">
-                        <i class="fas fa-lightbulb"></i>
-                        AI 추천 및 권장 사항
-                    </h3>
-                    <div class="recommendations-list">
-                        <div class="recommendation-item">
-                            <div class="recommendation-icon success">
-                                <i class="fas fa-thumbs-up"></i>
-                            </div>
-                            <div class="recommendation-content">
-                                <h5>산책 루틴 유지</h5>
-                                <p>현재 산책 패턴이 매우 양호합니다. 이 패턴을 꾸준히 유지해주세요.</p>
-                            </div>
-                        </div>
-                        <div class="recommendation-item">
-                            <div class="recommendation-icon info">
-                                <i class="fas fa-info-circle"></i>
-                            </div>
-                            <div class="recommendation-content">
-                                <h5>주말 활동량 증가 권장</h5>
-                                <p>주말 산책 시간을 평일 수준으로 늘리면 더 건강한 생활 패턴을 유지할 수 있습니다.</p>
-                            </div>
-                        </div>
-                        <div class="recommendation-item">
-                            <div class="recommendation-icon success">
-                                <i class="fas fa-heart"></i>
-                            </div>
-                            <div class="recommendation-content">
-                                <h5>건강 상태 양호</h5>
-                                <p>전반적인 활동량과 수면 패턴이 건강한 상태를 유지하고 있습니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
 
-<!-- ========== 반려동물 추가 모달 (회원가입 스타일) ========== -->
+<!-- 반려동물 추가 모달 -->
 <div class="modal fade" id="addPetModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content" style="border-radius: 1.5rem; border: none;">
-            <div class="modal-header" style="border-bottom: 2px solid #e9ecef; padding: 1.5rem 2rem;">
-                <h5 class="modal-title" style="font-size: 1.25rem; font-weight: 700; color: #212529;">
-                    <i class="fas fa-paw mr-2" style="color: #FF6B6B;"></i>
+        <div class="modal-content" style="border-radius: 1rem; border: none;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #FF6B6B, #FA5252); color: white; border-radius: 1rem 1rem 0 0;">
+                <h5 class="modal-title">
+                    <i class="fas fa-paw mr-2"></i>
                     반려동물 추가하기
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" style="font-size: 1.5rem; opacity: 0.5;">
+                <button type="button" class="close" data-dismiss="modal" style="color: white;">
                     <span>&times;</span>
                 </button>
             </div>
-
             <div class="modal-body" style="padding: 2rem;">
-                <form id="addPetForm">
-                    <div class="pet-form-card">
-                        <!-- 사진 업로드 -->
-                        <div class="pet-photo-section">
-                            <div class="pet-photo-wrapper">
-                                <div class="pet-photo-preview" id="modal-pet-photo-preview">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-                                <label for="modalPetPhoto" class="pet-photo-btn">
-                                    <i class="fas fa-plus"></i>
-                                </label>
-                                <input type="file" id="modalPetPhoto" name="petPhoto" accept="image/*"
-                                       onchange="previewModalPetPhoto(this)" hidden>
+                <form id="addPetForm" enctype="multipart/form-data">
+                    <!-- 사진 업로드 -->
+                    <div class="text-center mb-4">
+                        <div style="width: 120px; height: 120px; margin: 0 auto; position: relative;">
+                            <div id="petPhotoPreview" style="width: 100%; height: 100%; border-radius: 50%; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border: 3px dashed #dee2e6; overflow: hidden;">
+                                <i class="fas fa-camera" style="font-size: 2rem; color: #adb5bd;"></i>
                             </div>
-                            <p class="pet-photo-guide">프로필 사진을 등록해주세요</p>
+                            <label for="petImage" style="position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; background: #FF6B6B; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                <i class="fas fa-plus"></i>
+                            </label>
+                            <input type="file" id="petImage" name="petImage" accept="image/*" hidden>
+                        </div>
+                        <p class="text-muted mt-2" style="font-size: 0.9rem;">프로필 사진 (선택)</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- 이름 -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><i class="fas fa-font mr-1"></i> 이름 <span style="color: #dc3545;">*</span></label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
                         </div>
 
-                        <!-- 2열 레이아웃 -->
-                        <div class="form-row-group">
-                            <!-- 이름 -->
+                        <!-- 종류 -->
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label><i class="fas fa-font mr-1"></i> 이름 <span class="required">*</span></label>
-                                <input type="text" class="form-control-auth" name="petName" placeholder="반려동물 이름" required>
-                            </div>
-
-                            <!-- 종류 -->
-                            <div class="form-group">
-                                <label><i class="fas fa-paw mr-1"></i> 종류 <span class="required">*</span></label>
-                                <select class="form-control-auth" name="petType" id="modalPetType"
-                                        onchange="toggleModalCustomPetType()" required>
+                                <label><i class="fas fa-paw mr-1"></i> 종류 <span style="color: #dc3545;">*</span></label>
+                                <select class="form-control" name="type" id="petTypeSelect" required>
                                     <option value="">선택하세요</option>
                                     <option value="DOG">강아지</option>
                                     <option value="CAT">고양이</option>
-                                    <option value="ETC">기타 (직접 입력)</option>
+                                    <option value="ETC">기타</option>
                                 </select>
-                                <!-- 기타 선택 시 직접 입력 필드 -->
-                                <input type="text" class="form-control-auth mt-2" name="customPetType"
-                                       id="modalCustomPetType" placeholder="어떤 동물을 키우시나요?" style="display: none;" maxlength="20">
                             </div>
                         </div>
 
-                        <div class="form-row-group">
-                            <!-- 품종 -->
+                        <!-- 품종 -->
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label><i class="fas fa-dna mr-1"></i> 품종</label>
-                                <input type="text" class="form-control-auth" name="petBreed" placeholder="예: 골든 리트리버">
+                                <label><i class="fas fa-list mr-1"></i> 품종</label>
+                                <input type="text" class="form-control" name="breed" placeholder="예: 포메라니안">
                             </div>
+                        </div>
 
-                            <!-- 성별 -->
+                        <!-- 성별 -->
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label><i class="fas fa-venus-mars mr-1"></i> 성별 <span class="required">*</span></label>
-                                <select class="form-control-auth" name="petGender" required>
+                                <label><i class="fas fa-venus-mars mr-1"></i> 성별 <span style="color: #dc3545;">*</span></label>
+                                <select class="form-control" name="gender" required>
                                     <option value="">선택하세요</option>
                                     <option value="MALE">수컷</option>
                                     <option value="FEMALE">암컷</option>
@@ -745,33 +331,29 @@
                             </div>
                         </div>
 
-                        <div class="form-row-group">
-                            <!-- 나이 -->
+                        <!-- 나이 -->
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label><i class="fas fa-birthday-cake mr-1"></i> 나이 <span class="required">*</span></label>
-                                <input type="number" class="form-control-auth" name="petAge" placeholder="나이 (년)"
-                                       min="0" max="30" required>
+                                <label><i class="fas fa-birthday-cake mr-1"></i> 나이 <span style="color: #dc3545;">*</span></label>
+                                <input type="number" class="form-control" name="age" min="0" max="30" required>
                             </div>
+                        </div>
 
-                            <!-- 몸무게 -->
+                        <!-- 몸무게 -->
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label><i class="fas fa-weight mr-1"></i> 몸무게 <span class="required">*</span></label>
-                                <input type="number" class="form-control-auth" name="petWeight" placeholder="몸무게 (kg)"
-                                       step="0.1" min="0" required>
+                                <label><i class="fas fa-weight mr-1"></i> 몸무게 (kg) <span style="color: #dc3545;">*</span></label>
+                                <input type="number" class="form-control" name="weight" step="0.1" min="0" required>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
-
-            <div class="modal-footer" style="border-top: 2px solid #e9ecef; padding: 1rem 2rem;">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
-                        style="height: 2.75rem; border-radius: 0.75rem; font-weight: 600; padding: 0 1.5rem;">
-                    <i class="fas fa-times mr-2"></i> 취소
-                </button>
-                <button type="button" class="btn btn-primary" onclick="submitAddPet()"
-                        style="background: linear-gradient(135deg, #FF6B6B, #FA5252); border: none; height: 2.75rem; border-radius: 0.75rem; font-weight: 600; padding: 0 1.5rem;">
-                    <i class="fas fa-check mr-2"></i> 추가하기
+            <div class="modal-footer" style="border: none; padding: 1rem 2rem 2rem;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-pet-primary" onclick="submitAddPet()">
+                    <i class="fas fa-check mr-2"></i>
+                    추가하기
                 </button>
             </div>
         </div>

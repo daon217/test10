@@ -17,5 +17,9 @@ public interface WalkLogMapper {
 
     // 3) 특정 사용자 + 코스 1개 조회
     WalkLogDto findByIdAndUserId(@Param("id") long id,
-                                 @Param("userId") int userId);
+            @Param("userId") int userId);
+
+    List<WalkLogDto> findByUserIdAndMonth(@Param("userId") int userId, @Param("yearMonth") String yearMonth);
+
+    void delete(Integer id);
 }

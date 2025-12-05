@@ -16,6 +16,8 @@ public class WalkLogSaveRequest {
 
     private String startTimeIso;
     private String endTimeIso;
+    // ★ 추가
+    private Integer petId;
 
     @Data
     public static class RouteDto {

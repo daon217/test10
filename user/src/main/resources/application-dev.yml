@@ -60,6 +60,10 @@ logging:
 
 app:
   dir:
+    imgsdir: file:///C:/smspring/imgs/
+    uploadimgsdir: C:/smspring/imgs/
+    logsdir: file:///C:/smspring/logs/
+    logsdirRead: C:/smspring/logs/
   key:
     algo: PBEWithMD5AndDES
     skey: ${MY_KEY}

@@ -24,48 +24,40 @@
                 <h4 class="text-blue h4">1:1 문의 내역</h4>
             </div>
             <div class="pb-20">
-                <c:choose>
-                    <c:when test="${empty inquiries}">
-                        <p class="text-muted px-4 pb-3">등록된 문의가 없습니다.</p>
-                    </c:when>
-                    <c:otherwise>
-                        <table class="data-table table stripe hover nowrap">
-                            <thead>
-                            <tr>
-                                <th class="table-plus datatable-nosort">번호</th>
-                                <th>제목</th>
-                                <th>작성자</th>
-                                    <%-- 내용 컬럼 너비를 45%로 넓게 설정 --%>
-                                <th class="datatable-nosort" style="width: 45%;">내용</th>
-                                <th>1:1 채팅</th>
-                                    <%-- 등록일 컬럼 너비를 10%로 좁게 설정 --%>
-                                <th style="width: 10%;">등록일</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <c:forEach items="${inquiries}" var="inquiry" varStatus="status">
-                                <tr>
-                                    <td class="table-plus">${status.count}</td>
-                                    <td><c:out value="${inquiry.title}"/></td>
-                                    <td><c:out value="${inquiry.username}"/></td>
-                                    <td>
-                                            <%-- max-width를 300px -> 500px로 늘려 내용이 더 길게 보이도록 함 --%>
-                                        <div class="text-truncate" style="max-width: 500px;">
-                                            <c:out value="${inquiry.content}"/>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-primary" onclick="location.href='/admin/chat/room?userId=${inquiry.username}'">
-                                            <i class="fa fa-comments"></i> 채팅하기
-                                        </button>
-                                    </td>
-                                    <td><c:out value="${inquiry.createdAt}"/></td>
-                                </tr>
-                            </c:forEach>
-                            </tbody>
-                        </table>
-                    </c:otherwise>
-                </c:choose>
+                <table class="data-table table stripe hover nowrap">
+                    <thead>
+                    <tr>
+                        <th class="table-plus datatable-nosort">번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>등록일</th>
+                        <th>상태</th>
+                        <th class="datatable-nosort">관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="table-plus">1</td>
+                        <td>로그인이 안됩니다.</td>
+                        <td>hong123</td>
+                        <td>2024-06-01</td>
+                        <td><span class="badge badge-warning">답변대기</span></td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" href="#"><i class="dw dw-edit2"></i> 답변하기</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-plus">2</td>
+                        <td>CCTV 화면이 안나옵니다.</td>
+                        <td>admin_sub</td>
+                        <td>2024-05-28</td>
+                        <td><span class="badge badge-success">답변완료</span></td>
+                        <td>
+                            <a class="btn btn-sm btn-secondary" href="#"><i class="dw dw-eye"></i> 확인</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

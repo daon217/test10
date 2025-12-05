@@ -1,5 +1,7 @@
 package edu.sm.app.service;
 
+import edu.sm.app.dto.Pet;
+import edu.sm.app.repository.PetRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RequiredArgsConstructor
 public class WalkJobSessionService {
 
-    private final CurrentUserService currentUserService;   // ★ 추가
+    private final CurrentUserService currentUserService;   // ★ 로그인 유저
+    private final PetRepository petRepository;            // ★ 반려동물 조회용
 
     // 데모: roomId 하나만 쓴다고 가정 ("demo")
     private final List<SseEmitter> ownerEmitters = new CopyOnWriteArrayList<>();
@@ -26,6 +29,7 @@ public class WalkJobSessionService {
 
     private Instant startTime = null;
     private double totalDistanceKm = 0.0;
+
     // 🔹 추가: 알림용, 알바생용 SSE
     private final List<AlertClient> alertEmitters = new CopyOnWriteArrayList<>();
     private final List<SseEmitter> workerEmitters = new CopyOnWriteArrayList<>();
@@ -42,8 +46,11 @@ public class WalkJobSessionService {
 
     private Status status = Status.IDLE;
 
-    // ★ 현재 산책 세션의 "반려인 userId" 저장
+    // ★ 현재 산책 세션의 "반려인 userId"
     private Integer ownerUserId = null;
+
+    // ★ 이번 산책에 사용될 반려동물 pet_id
+    private Integer petId = null;
 
     public SseEmitter subscribeOwner() {
         SseEmitter emitter = new SseEmitter(0L);
@@ -150,7 +157,7 @@ public class WalkJobSessionService {
         List<AlertClient> dead = new ArrayList<>();
         for (AlertClient client : alertEmitters) {
             try {
-                // 🟢 이 줄이 핵심: ownerUserId와 같은 유저에게만 finishRequest 이벤트 전송
+                // 🟢 ownerUserId와 같은 유저에게만 finishRequest 이벤트 전송
                 if (client.getUserId() != null && client.getUserId().equals(ownerUserId)) {
                     client.getEmitter().send(
                             SseEmitter.event()
@@ -165,12 +172,58 @@ public class WalkJobSessionService {
         alertEmitters.removeAll(dead);
     }
 
+    // ★ 반려인이 오늘 산책할 반려동물을 선택할 때 호출
+    public void selectPet(int petId) throws Exception {
+        int currentOwnerId = currentUserService.getCurrentUserIdOrThrow();
+        Pet pet = petRepository.select(petId);
+
+        if (pet == null || pet.getUserId() == null || !pet.getUserId().equals(currentOwnerId)) {
+            throw new IllegalArgumentException("본인 계정의 반려동물만 선택할 수 있습니다.");
+        }
+
+        this.petId = petId;
+        log.info("산책알바 pet 선택: ownerUserId={}, petId={}", currentOwnerId, petId);
+
+        PetSelectedEvent event = new PetSelectedEvent(petId, pet.getName());
+
+        // owner / worker에게 petSelected 이벤트 브로드캐스트
+        List<SseEmitter> deadOwner = new ArrayList<>();
+        for (SseEmitter emitter : ownerEmitters) {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("petSelected")
+                        .data(event));
+            } catch (Exception e) {
+                deadOwner.add(emitter);
+            }
+        }
+        ownerEmitters.removeAll(deadOwner);
+
+        List<SseEmitter> deadWorker = new ArrayList<>();
+        for (SseEmitter emitter : workerEmitters) {
+            try {
+                emitter.send(SseEmitter.event()
+                        .name("petSelected")
+                        .data(event));
+            } catch (Exception e) {
+                deadWorker.add(emitter);
+            }
+        }
+        workerEmitters.removeAll(deadWorker);
+    }
 
     @Data
     @AllArgsConstructor
     public static class FinishRequestAlert {
         private double distanceKm;
         private long elapsedSec;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class PetSelectedEvent {
+        private int petId;
+        private String name;
     }
 
     public WalkSnapshot finish() {
@@ -188,6 +241,7 @@ public class WalkJobSessionService {
         snap.setOwnerUserId(ownerUserId);
         snap.setElapsedSec(elapsed);
         snap.setStatus(Status.FINISHED.name());
+        snap.setPetId(petId);   // ★ 이번 산책에 사용된 pet_id
 
         status = Status.FINISHED;
 
@@ -222,11 +276,11 @@ public class WalkJobSessionService {
         startTime = null;
         ownerUserId = null;
         lastElapsedSec = 0L;
+        petId = null;          // ★ 다음 산책을 위해 초기화
         status = Status.IDLE;
 
         return snap;
     }
-
 
     @Data
     @AllArgsConstructor
@@ -249,10 +303,10 @@ public class WalkJobSessionService {
         private List<Point> points;
         private Instant startTime;
         private Instant endTime;
-        private Integer ownerUserId;   // ★ 추가
-        // 🔹 추가
+        private Integer ownerUserId;   // 반려인 userId
         private long elapsedSec;
-        private String status;  // IDLE / WALKING / FINISH_REQUESTED / FINISHED
+        private String status;         // IDLE / WALKING / FINISH_REQUESTED / FINISHED
+        private Integer petId;         // ★ 이번 산책에 사용된 pet_id
     }
 
     public WalkSnapshot getSnapshot() {
@@ -264,8 +318,10 @@ public class WalkJobSessionService {
         snap.setOwnerUserId(ownerUserId);
         snap.setElapsedSec(lastElapsedSec);
         snap.setStatus(status.name());
+        snap.setPetId(petId);   // ★ 중간 상태 조회 시에도 petId 포함
         return snap;
     }
+
     // 🔹 알림 클라이언트
     @Data
     @AllArgsConstructor

@@ -140,14 +140,17 @@ public class AuthController {
             @RequestParam("email") String email,
             @RequestParam("phone") String phone,
             @RequestParam("userRole") String userRole,
-            @RequestParam(value = "petName_0", required = false) String petName,
-            @RequestParam(value = "petType_0", required = false) String petType,
-            @RequestParam(value = "customPetType_0", required = false) String customPetType,
-            @RequestParam(value = "petBreed_0", required = false) String petBreed,
-            @RequestParam(value = "petGender_0", required = false) String petGender,
-            @RequestParam(value = "petAge_0", required = false) Integer petAge,
-            @RequestParam(value = "petWeight_0", required = false) BigDecimal petWeight,
-            @RequestParam(value = "petPhoto_0", required = false) MultipartFile petPhoto,
+
+            // ✅ 배열로 변경
+            @RequestParam(value = "petName", required = false) String[] petNames,
+            @RequestParam(value = "petType", required = false) String[] petTypes,
+            @RequestParam(value = "customPetType", required = false) String[] customPetTypes,
+            @RequestParam(value = "petBreed", required = false) String[] petBreeds,
+            @RequestParam(value = "petGender", required = false) String[] petGenders,
+            @RequestParam(value = "petAge", required = false) Integer[] petAges,
+            @RequestParam(value = "petWeight", required = false) BigDecimal[] petWeights,
+            @RequestParam(value = "petPhoto", required = false) MultipartFile[] petPhotos,
+
             Model model) {
 
         try {
@@ -166,33 +169,76 @@ public class AuthController {
                     .role(userRole)
                     .build();
 
-            Pet pet = null;
-            // 반려인이고 반려동물 정보가 실제로 입력된 경우에만 반려동물 객체 생성
-            if ("OWNER".equals(userRole) && petName != null && !petName.trim().isEmpty()) {
-                pet = Pet.builder()
-                        .userId(null) // userId는 UserService에서 설정됨
-                        .name(petName.trim())
-                        .type(petType)
-                        .customType("ETC".equals(petType) ? customPetType : null)
-                        .breed(petBreed != null ? petBreed.trim() : null)
-                        .gender(petGender)
-                        .age(petAge)
-                        .weight(petWeight)
-                        .build();
+            // ✅ 첫 번째 반려동물 처리
+            Pet firstPet = null;
+            if ("OWNER".equals(userRole) && petNames != null && petNames.length > 0) {
+                String petName = petNames[0];
+                if (petName != null && !petName.trim().isEmpty()) {
+                    String petType = (petTypes != null && petTypes.length > 0) ? petTypes[0] : null;
+                    String customPetType = (customPetTypes != null && customPetTypes.length > 0) ? customPetTypes[0] : null;
+                    String petBreed = (petBreeds != null && petBreeds.length > 0) ? petBreeds[0] : null;
+                    String petGender = (petGenders != null && petGenders.length > 0) ? petGenders[0] : null;
+                    Integer petAge = (petAges != null && petAges.length > 0) ? petAges[0] : null;
+                    BigDecimal petWeight = (petWeights != null && petWeights.length > 0) ? petWeights[0] : null;
 
-                // TODO: 사진 업로드 처리
-                // if (petPhoto != null && !petPhoto.isEmpty()) {
-                //     String photoUrl = uploadPetPhoto(petPhoto);
-                //     pet.setPhoto(photoUrl);
-                // }
+                    firstPet = Pet.builder()
+                            .userId(null)
+                            .name(petName.trim())
+                            .type(petType)
+                            .customType("ETC".equals(petType) ? customPetType : null)
+                            .breed(petBreed != null ? petBreed.trim() : null)
+                            .gender(petGender)
+                            .age(petAge)
+                            .weight(petWeight)
+                            .build();
+
+                    // TODO: 사진 업로드 처리
+                    // if (petPhotos != null && petPhotos.length > 0 && petPhotos[0] != null && !petPhotos[0].isEmpty()) {
+                    //     String photoUrl = uploadPetPhoto(petPhotos[0]);
+                    //     firstPet.setPhoto(photoUrl);
+                    // }
+                }
             }
 
-            // 사용자 및 반려동물 등록 (트랜잭션 처리)
-            userService.register(user, pet);
-            
+            // 사용자 및 첫 번째 반려동물 등록 (트랜잭션 처리)
+            userService.register(user, firstPet);
+
             log.info("회원가입 성공 - username: {}, role: {}", username, userRole);
-            if (pet != null) {
-                log.info("반려동물 정보 등록 완료 - petName: {}", pet.getName());
+
+            // ✅ 두 번째 반려동물부터 추가 등록
+            if ("OWNER".equals(userRole) && petNames != null && petNames.length > 1) {
+                for (int i = 1; i < petNames.length; i++) {
+                    String petName = petNames[i];
+
+                    if (petName == null || petName.trim().isEmpty()) {
+                        continue;
+                    }
+
+                    String petType = (petTypes != null && i < petTypes.length) ? petTypes[i] : null;
+                    String customPetType = (customPetTypes != null && i < customPetTypes.length) ? customPetTypes[i] : null;
+                    String petBreed = (petBreeds != null && i < petBreeds.length) ? petBreeds[i] : null;
+                    String petGender = (petGenders != null && i < petGenders.length) ? petGenders[i] : null;
+                    Integer petAge = (petAges != null && i < petAges.length) ? petAges[i] : null;
+                    BigDecimal petWeight = (petWeights != null && i < petWeights.length) ? petWeights[i] : null;
+
+                    Pet pet = Pet.builder()
+                            .userId(user.getUserId())
+                            .name(petName.trim())
+                            .type(petType)
+                            .customType("ETC".equals(petType) ? customPetType : null)
+                            .breed(petBreed != null ? petBreed.trim() : null)
+                            .gender(petGender)
+                            .age(petAge)
+                            .weight(petWeight)
+                            .build();
+
+                    petService.register(pet);
+                    log.info("추가 반려동물 등록 완료 [{}/{}] - petName: {}", i, petNames.length - 1, pet.getName());
+                }
+            }
+
+            if (firstPet != null) {
+                log.info("반려동물 정보 등록 완료 - petName: {}", firstPet.getName());
             } else if ("OWNER".equals(userRole)) {
                 log.info("반려인이지만 반려동물 정보가 입력되지 않음");
             } else {

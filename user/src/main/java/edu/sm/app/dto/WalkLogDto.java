@@ -23,4 +23,8 @@ public class WalkLogDto {
     private String walkedRouteData;
     private String shapeType;
     private Double targetKm;
+
+    // ★ 새로 추가
+    private Integer petId;
+
 }

@@ -20,26 +20,7 @@
 <body>
 
 <br>
-<!-- 반려인/알바생 진입 버튼 -->
-<section style="margin-top:40px; text-align:center;">
-    <h2>산책 알바</h2>
 
-    <button type="button"
-            onclick="location.href='<c:url value="/walkjob/owner"/>'"
-            style="padding:10px 20px; margin:8px; border-radius:999px; border:1px solid #ddd; background:#1d4ed8; color:white;">
-        반려인 화면 열기
-    </button>
-
-    <button type="button"
-            onclick="location.href='<c:url value="/walkjob/worker"/>'"
-            style="padding:10px 20px; margin:8px; border-radius:999px; border:1px solid #ddd; background:#10b981; color:white;">
-        알바생 화면 열기
-    </button>
-
-    <p style="font-size:0.85rem; color:#6b7280; margin-top:8px;">
-        실제 테스트 시에는 한 브라우저(또는 PC/모바일)에서 반려인, 다른 브라우저에서 알바생으로 접속하세요.
-    </p>
-</section>
 
 <!-- HERO -->
 <section class="map-hero">
@@ -50,6 +31,17 @@
             현재 위치를 기준으로 예쁜 도형 산책 코스와 일반 산책 코스를 기록할 수 있어요.<br>
             반려동물 정보 기반 AI 제시 거리, 음성으로 코스 요청, 저장된 코스 네비게이션까지 한 화면에서 이용해 보세요.
         </p>
+
+        <!-- ★ 추가: 반려동물 선택 -->
+        <div class="pet-row" style="margin-bottom:8px;">
+            <label for="petSelect" style="font-size:0.9rem; margin-right:4px;">
+                반려동물 선택
+            </label>
+            <select id="petSelect" style="padding:4px 8px; font-size:0.9rem;">
+                <!-- JS에서 채움 -->
+            </select>
+        </div>
+
         <div class="map-hero__actions">
             <button type="button" class="btn btn-primary btn-lg" id="heroGeneralBtn">
                 일반 산책 시작
@@ -141,9 +133,6 @@
                         <div class="pet-row">
                             <small id="petReasonText"></small>
                         </div>
-                        <button type="button" class="btn btn-primary btn-sm" id="petApplyBtn" disabled>
-                            제시된 거리로 코스 생성
-                        </button>
                     </div>
 
                     <div id="petErrorText" style="display:none; color:#d9534f;">
@@ -216,7 +205,7 @@
 
                 <button type="button" class="control-pill primary" onclick="reloadRoute()">코스 다시 생성</button>
 
-                <button type="button" class="control-pill" onclick="openSavedCourseModal()">저장된 코스 불러오기</button>
+                <button type="button" class="control-pill" onclick="openSavedCourseModal()">저장된 모양 코스 불러오기</button>
 
                 <button type="button" class="control-pill" id="voiceBtn">음성으로 요청</button>
                 <span id="voiceSpinner" style="visibility:hidden;">녹음/처리중...</span>
@@ -359,6 +348,7 @@
         crossorigin=""></script>
 
 <script>
+
     const DEFAULT_CENTER_LAT = 36.777381;
     const DEFAULT_CENTER_LON = 127.001764;
 
@@ -885,6 +875,9 @@
 
 <!-- 반려동물 산책 거리 추천 -->
 <script>
+    let selectedPetId = null;
+    let hasPetList = false;
+
     async function loadPetWalkRecommendation() {
         const loadingText = document.getElementById('petLoadingText');
         const contentBox = document.getElementById('petContent');
@@ -892,15 +885,87 @@
         const infoText = document.getElementById('petInfoText');
         const reasonText = document.getElementById('petReasonText');
         const recommendKmSpan = document.getElementById('petRecommendKm');
-        const applyBtn = document.getElementById('petApplyBtn');
+        const petSelect = document.getElementById('petSelect');
 
         loadingText.style.display = 'block';
         contentBox.style.display = 'none';
         errorText.style.display = 'none';
-        applyBtn.disabled = true;
 
         try {
-            const res = await fetch('/api/pet/walk-recommend');
+            // 1) 현재 로그인 사용자의 반려동물 목록 조회
+            const resPets = await fetch('/api/pet/my-pets');
+            if (!resPets.ok) {
+                throw new Error('my-pets error');
+            }
+            const pets = await resPets.json();
+
+            petSelect.innerHTML = '';
+
+            if (!pets || pets.length === 0) {
+                hasPetList = false;
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = '등록된 반려동물이 없습니다';
+                petSelect.appendChild(opt);
+
+                loadingText.style.display = 'none';
+                errorText.style.display = 'block';
+                errorText.textContent = '등록된 반려동물이 없습니다. 반려동물을 먼저 등록해 주세요.';
+                return;
+            }
+
+            hasPetList = true;
+
+            // 셀렉트 박스 채우기
+            pets.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.petId;
+                opt.textContent = p.name + ' (' + p.type + ')';
+                petSelect.appendChild(opt);
+            });
+
+            // 기본 선택: 첫 번째 반려동물
+            selectedPetId = pets[0].petId;
+            petSelect.value = selectedPetId;
+
+            // 셀렉트 변경 시마다 추천 다시 불러오기
+            petSelect.addEventListener('change', async () => {
+                const v = petSelect.value;
+                selectedPetId = v ? parseInt(v) : null;
+                if (selectedPetId) {
+                    await fetchRecommendForSelectedPet(
+                        loadingText, contentBox, errorText, infoText,
+                        reasonText, recommendKmSpan
+                    );
+                }
+            });
+
+            // 2) 기본 선택된 반려동물 기준 추천 호출
+            await fetchRecommendForSelectedPet(
+                loadingText, contentBox, errorText, infoText,
+                reasonText, recommendKmSpan
+            );
+
+        } catch (e) {
+            console.error(e);
+            loadingText.style.display = 'none';
+            errorText.style.display = 'block';
+        }
+    }
+
+    async function fetchRecommendForSelectedPet(
+        loadingText, contentBox, errorText, infoText, reasonText, recommendKmSpan
+    ) {
+        if (!selectedPetId) {
+            return;
+        }
+
+        loadingText.style.display = 'block';
+        contentBox.style.display = 'none';
+        errorText.style.display = 'none';
+
+        try {
+            const res = await fetch('/api/pet/walk-recommend/for-pet/' + selectedPetId);
             if (!res.ok) {
                 throw new Error('pet recommend error');
             }
@@ -945,9 +1010,6 @@
                 heroPlannedKmEl.textContent = km.toFixed(2) + ' km';
             }
 
-            applyBtn.dataset.recommendKm = km;
-            applyBtn.disabled = false;
-
             loadingText.style.display = 'none';
             contentBox.style.display = 'block';
         } catch (e) {
@@ -956,20 +1018,8 @@
             errorText.style.display = 'block';
         }
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const applyBtn = document.getElementById('petApplyBtn');
-        applyBtn.addEventListener('click', () => {
-            const km = parseFloat(applyBtn.dataset.recommendKm || '0');
-            if (!km || km <= 0) return;
-
-            const input = document.getElementById('targetKmInput');
-            input.value = km.toFixed(1);
-
-            reloadRoute();
-        });
-    });
 </script>
+
 
 <!-- 도형 코스 + 실제 코스 저장 -->
 <script>
@@ -1072,7 +1122,9 @@
             plannedRoute: plannedRoute,
             walkedRoute: walkedRoute,
             startTimeIso: startTime.toISOString(),
-            endTimeIso: endTime.toISOString()
+            endTimeIso: endTime.toISOString(),
+            // ★ 추가
+            petId: selectedPetId
         };
 
         try {
@@ -1134,15 +1186,21 @@
 
     function updateFreeNavigation(lat, lon) {
         if (freeTrackLatLngs.length === 0) {
+            // 첫 지점은 무조건 추가
             freeTrackLatLngs.push([lat, lon]);
         } else {
             const [prevLat, prevLon] = freeTrackLatLngs[freeTrackLatLngs.length - 1];
             const move = distanceMeters(prevLat, prevLon, lat, lon);
-            if (move < 2) return;
-            freeTrackLatLngs.push([lat, lon]);
-            freeWalkedMeters += move;
+
+            // ★ 이동 거리가 2m 미만이면 "거리/경로"만 업데이트 안 하고,
+            //    아래 시간/마커 갱신은 그대로 진행하도록 변경
+            if (move >= 2) {
+                freeTrackLatLngs.push([lat, lon]);
+                freeWalkedMeters += move;
+            }
         }
 
+        // ★ 현재 위치 마커는 항상 갱신
         if (!freeUserMarker) {
             freeUserMarker = L.marker([lat, lon], {
                 title: '현재 위치',
@@ -1152,6 +1210,7 @@
             freeUserMarker.setLatLng([lat, lon]);
         }
 
+        // ★ 경로 polyline 은 실제로 이동이 있을 때만 갱신
         if (freeTrackLatLngs.length >= 2) {
             if (freePolyline) {
                 freePolyline.setLatLngs(freeTrackLatLngs);
@@ -1168,12 +1227,14 @@
         const km = freeWalkedMeters / 1000;
         document.getElementById('generalDistanceLabel').textContent = km.toFixed(2) + ' km';
 
+        // ★ 여기 시간 부분은 이동 거리와 상관없이 항상 갱신되게 유지
         if (freeWalkingStartedAt) {
             const now = new Date();
             const minutes = Math.max(1, Math.round((now - freeWalkingStartedAt) / 60000));
             document.getElementById('generalTimeLabel').textContent = minutes + ' 분';
         }
     }
+
 
     function startGeneralWalk() {
         if (!navigator.geolocation) {
@@ -1211,10 +1272,12 @@
     }
 
     async function finishGeneralWalk() {
-        if (!freeWalkingStartedAt || freeTrackLatLngs.length < 2) {
-            alert('아직 저장할 일반 산책 기록이 없습니다. 먼저 네비게이션을 시작해서 걸어주세요.');
+        // ★ "네비게이션 시작" 버튼만 누르면, 0km여도 종료 가능하게 변경
+        if (!freeWalkingStartedAt) {
+            alert('아직 일반 산책 네비게이션이 시작되지 않았습니다. 먼저 네비게이션을 시작해 주세요.');
             return;
         }
+
         if (freeWatchId !== null) {
             navigator.geolocation.clearWatch(freeWatchId);
             freeWatchId = null;
@@ -1224,19 +1287,35 @@
         const endTime = new Date();
         const distanceKm = freeWalkedMeters / 1000;
 
-        const body = {
-            shapeType: null,
-            targetKm: null,
-            plannedRoute: null,
-            walkedRoute: {
+        // ★ 0km 여부에 따라 walkedRoute를 null 로 보낼지 결정
+        const hasWalked =
+            freeTrackLatLngs && freeTrackLatLngs.length >= 2 && distanceKm > 0;
+
+        let walkedRoutePayload = null;
+        if (hasWalked) {
+            walkedRoutePayload = {
                 distanceKm: distanceKm,
                 points: freeTrackLatLngs.map(ll => ({
                     lat: ll[0],
                     lon: ll[1]
                 }))
-            },
+            };
+        } else {
+            // 0km인 경우: walkedRoute = null → DB의 walked_distance / walked_route_data 는 null로 들어감
+            walkedRoutePayload = null;
+        }
+
+        const body = {
+            // ★ 일반 산책은 항상 "normal" 로 저장 (기존 shape_type null 문제 해결)
+            shapeType: 'normal',
+            targetKm: null,
+            plannedRoute: null,
+            walkedRoute: walkedRoutePayload,
             startTimeIso: startTime.toISOString(),
-            endTimeIso: endTime.toISOString()
+            endTimeIso: endTime.toISOString(),
+
+            // ★ 선택된 펫 id 전달
+            petId: selectedPetId
         };
 
         try {
@@ -1260,6 +1339,7 @@
             alert('일반 산책 기록 저장 중 오류가 발생했습니다.');
         }
     }
+
 </script>
 
 <!-- 초기화 -->

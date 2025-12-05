@@ -124,7 +124,7 @@
                     <i class="fas fa-paw"></i>
                     내 반려동물 요약
                 </h3>
-                <a href="<c:url value='/mypage'/>" class="btn btn-pet-outline btn-sm">
+                <a href="<c:url value='/diary'/>" class="btn btn-pet-outline btn-sm">
                     전체 보기 <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
@@ -299,9 +299,29 @@
                 </p>
             </div>
 
-            <!-- 6. 펫 다이어리 (제거)-->
+            <!-- 6. 펫 다이어리 -->
+            <div class="service-card" onclick="location.href='<c:url value='/diary'/>'">
+                <div class="service-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="service-title">펫 다이어리</h3>
+                <p class="service-desc">
+                    매일의 특별한 순간을<br>
+                    기록하고 추억을 간직하세요
+                </p>
+            </div>
 
-            <!-- 7. 행동 리포트 (제거)-->
+            <!-- 7. 행동 리포트 -->
+            <div class="service-card" onclick="location.href='<c:url value='/report'/>'">
+                <div class="service-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="service-title">행동 리포트</h3>
+                <p class="service-desc">
+                    AI 기반 행동 분석으로<br>
+                    반려동물 건강을 체크하세요
+                </p>
+            </div>
 
             <!-- 8. 함께 산책 -->
             <div class="service-card" onclick="location.href='<c:url value='/walk-together'/>'">

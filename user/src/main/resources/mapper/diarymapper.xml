@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.sm.app.repository.DiaryMapper">
+
+    <resultMap id="DiaryResultMap" type="edu.sm.app.dto.DiaryDTO">
+        <id property="id" column="diary_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="petId" column="pet_id"/>
+        <result property="type" column="diary_type"/>
+        <result property="title" column="diary_title"/>
+        <result property="content" column="diary_content"/>
+        <result property="date" column="diary_date"/>
+        <result property="images" column="diary_images"/>
+        <result property="tags" column="diary_tags"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="edu.sm.app.dto.DiaryDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO diary (
+            user_id, pet_id, diary_type, diary_title, diary_content, diary_date, diary_images, diary_tags, created_at
+        ) VALUES (
+            #{userId}, #{petId}, #{type}, #{title}, #{content}, #{date}, #{images}, #{tags}, NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="edu.sm.app.dto.DiaryDTO">
+        UPDATE diary
+        SET
+            pet_id = #{petId},
+            diary_type = #{type},
+            diary_title = #{title},
+            diary_content = #{content},
+            diary_date = #{date},
+            diary_images = #{images},
+            diary_tags = #{tags}
+        WHERE diary_id = #{id} AND user_id = #{userId}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM diary WHERE diary_id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="Integer" resultMap="DiaryResultMap">
+        SELECT * FROM diary WHERE diary_id = #{id}
+    </select>
+
+    <select id="selectByUserId" parameterType="Integer" resultMap="DiaryResultMap">
+        SELECT * FROM diary WHERE user_id = #{userId} ORDER BY diary_date DESC
+    </select>
+
+    <select id="selectByUserIdAndMonth" resultMap="DiaryResultMap">
+        SELECT * FROM diary 
+        WHERE user_id = #{userId} 
+        AND TO_CHAR(diary_date, 'YYYY-MM') = #{yearMonth}
+        <if test="petId != null">
+            AND pet_id = #{petId}
+        </if>
+        ORDER BY diary_date DESC
+    </select>
+
+</mapper>

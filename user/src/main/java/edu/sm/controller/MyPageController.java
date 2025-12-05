@@ -284,7 +284,8 @@ public class MyPageController {
     public ResponseEntity<Map<String, Object>> addPet(
             @RequestParam("name") String name,
             @RequestParam("type") String type,
-            @RequestParam("breed") String breed,
+            @RequestParam(value = "customType", required = false) String customType,
+            @RequestParam(value = "breed", required = false) String breed,
             @RequestParam("gender") String gender,
             @RequestParam("age") Integer age,
             @RequestParam("weight") BigDecimal weight,
@@ -303,9 +304,10 @@ public class MyPageController {
 
             Pet pet = Pet.builder()
                     .userId(user.getUserId())
-                    .name(name)
+                    .name(name.trim())
                     .type(type)
-                    .breed(breed)
+                    .customType("ETC".equals(type) ? customType : null)
+                    .breed(breed != null ? breed.trim() : null)
                     .gender(gender)
                     .age(age)
                     .weight(weight)
@@ -361,7 +363,8 @@ public class MyPageController {
 
             boolean roleChanged = !previousRole.equals(updatedUser.getRole());
 
-            log.info("반려동물 추가 성공 - userId: {}, petId: {}", user.getUserId(), pet.getPetId());
+            log.info("반려동물 추가 성공 - userId: {}, petId: {}, roleChanged: {}",
+                    user.getUserId(), pet.getPetId(), roleChanged);
 
             response.put("success", true);
             response.put("message", "반려동물이 추가되었습니다.");

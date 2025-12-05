@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -42,22 +43,40 @@ public class MainController {
     @RequestMapping("/mypage")
     public String mypage(Model model, HttpSession session) {
         try {
-            // 세션에서 사용자 정보 가져오기
             User user = (User) session.getAttribute("user");
 
             if (user == null) {
-                // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
                 return "redirect:/login";
             }
 
-            // 사용자 정보 갱신
             user = userService.get(user.getUserId());
 
-            // 반려동물 정보 조회
+            // 가입일 포맷팅 (LocalDateTime이라면)
+            if (user.getCreatedAt() != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+                String formattedDate = user.getCreatedAt().format(formatter);
+                model.addAttribute("formattedCreatedAt", formattedDate);
+            }
+
             List<Pet> pets = petService.getByUserId(user.getUserId());
             int petCount = pets.size();
 
-            // 모델에 데이터 추가
+            // ✅ 반려동물 정보 상세 로그
+            log.info("조회된 반려동물 수: {}", petCount);
+            for (Pet pet : pets) {
+                log.info("Pet [petId={}, name={}, type={}, customType={}, breed={}, age={}, weight={}]",
+                        pet.getPetId(), pet.getName(), pet.getType(), pet.getCustomType(),
+                        pet.getBreed(), pet.getAge(), pet.getWeight());
+            }
+
+            // 가입일 포맷팅
+            if (user.getCreatedAt() != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+                String formattedDate = user.getCreatedAt().format(formatter);
+                model.addAttribute("formattedCreatedAt", formattedDate);
+            }
+
+
             model.addAttribute("user", user);
             model.addAttribute("pets", pets);
             model.addAttribute("petCount", petCount);
@@ -102,4 +121,27 @@ public class MainController {
         return "index";
     }
 
+    @RequestMapping("/diary")
+    public String diary(Model model, HttpSession session) {
+        // 로그인 체크
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("center", "diary");
+        return "index";
+    }
+
+    @RequestMapping("/report")
+    public String report(Model model, HttpSession session) {
+        // 로그인 체크
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("center", "report");
+        return "index";
+    }
 }

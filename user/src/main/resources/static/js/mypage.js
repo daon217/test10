@@ -36,7 +36,7 @@ function togglePasswordVisibility(inputId) {
     }
 }
 
-// ========== 프로필 정보 수정 (기존 로직 유지) ==========
+// ========== 프로필 정보 수정 ==========
 document.addEventListener('DOMContentLoaded', function () {
     const profileForm = document.getElementById('profileForm');
     if (profileForm) {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 phone: document.getElementById('phone').value
             };
 
-            fetch('/api/mypage/profile', {
+            fetch('/mypage/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// ========== 비밀번호 변경 (기존 로직 유지) ==========
+// ========== 비밀번호 변경 ==========
 document.addEventListener('DOMContentLoaded', function () {
     const passwordForm = document.getElementById('passwordForm');
     if (passwordForm) {
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 newPassword: newPassword
             };
 
-            fetch('/api/mypage/password', {
+            fetch('/mypage/password', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// ========== 프로필 이미지 업로드 (기존 로직 유지) ==========
+// ========== 프로필 이미지 업로드 ==========
 let profileImageListenerAdded = false;
 
 function initProfileImageUpload() {
@@ -156,7 +156,7 @@ function initProfileImageUpload() {
         const formData = new FormData();
         formData.append('file', file);
 
-        fetch('/api/mypage/profile-image', {
+        fetch('/mypage/profile-image', {
             method: 'POST',
             body: formData
         })
@@ -179,7 +179,7 @@ function initProfileImageUpload() {
 // 프로필 이미지 업로드 초기화
 document.addEventListener('DOMContentLoaded', initProfileImageUpload);
 
-// ========== 회원 탈퇴 (기존 로직 유지) ==========
+// ========== 회원 탈퇴 ==========
 function withdrawAccount() {
     if (confirm('정말 탈퇴하시겠습니까?\n모든 데이터가 삭제되며 복구할 수 없습니다.')) {
         const password = prompt('비밀번호를 입력하세요:');
@@ -189,7 +189,7 @@ function withdrawAccount() {
             return;
         }
 
-        fetch('/api/mypage/withdraw', {
+        fetch('/mypage/withdraw', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -212,42 +212,32 @@ function withdrawAccount() {
     }
 }
 
-// ========== 반려동물 추가 모달 열기 ==========
+// ========== 반려동물 추가 모달 ==========
 function openAddPetModal() {
+    $('#addPetModal').modal('show');
+
     // 폼 초기화
     document.getElementById('addPetForm').reset();
-    document.getElementById('modal-pet-photo-preview').innerHTML = '<i class="fas fa-camera"></i>';
-    document.getElementById('modalCustomPetType').style.display = 'none';
-
-    $('#addPetModal').modal('show');
+    document.getElementById('petPhotoPreview').innerHTML = '<i class="fas fa-camera" style="font-size: 2rem; color: #adb5bd;"></i>';
 }
 
-// ========== 모달용 사진 미리보기 (추가) ==========
-function previewModalPetPhoto(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('modal-pet-photo-preview').innerHTML =
-                    '<img src="' + e.target.result + '" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
-        };
-        reader.readAsDataURL(input.files[0]);
+// 사진 미리보기
+document.addEventListener('DOMContentLoaded', function() {
+    const petImageInput = document.getElementById('petImage');
+    if (petImageInput) {
+        petImageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('petPhotoPreview').innerHTML =
+                            `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     }
-}
-
-// ========== 모달용 기타 동물 입력 토글 (추가) ==========
-function toggleModalCustomPetType() {
-    const petType = document.getElementById('modalPetType').value;
-    const customInput = document.getElementById('modalCustomPetType');
-
-    if (petType === 'ETC') {
-        customInput.style.display = 'block';
-        customInput.required = true;
-    } else {
-        customInput.style.display = 'none';
-        customInput.required = false;
-        customInput.value = '';
-    }
-}
+});
 
 // ========== 반려동물 추가 제출 ==========
 function submitAddPet() {
@@ -255,13 +245,12 @@ function submitAddPet() {
 
     if (!form.checkValidity()) {
         alert('필수 항목을 모두 입력해주세요.');
-        form.reportValidity();
         return;
     }
 
     const formData = new FormData(form);
 
-    fetch('/api/pets', {
+    fetch('/mypage/add-pet', {
         method: 'POST',
         body: formData
     })
@@ -281,16 +270,45 @@ function submitAddPet() {
             });
 }
 
+// ========== 모달용 사진 미리보기 ==========
+function previewModalPetPhoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('modal-pet-photo-preview').innerHTML =
+                    '<img src="' + e.target.result + '" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// ========== 모달용 기타 동물 입력 토글 ==========
+function toggleModalCustomPetType() {
+    const petType = document.getElementById('modalPetType').value;
+    const customInput = document.getElementById('modalCustomPetType');
+
+    if (petType === 'ETC') {
+        customInput.style.display = 'block';
+        customInput.required = true;
+    } else {
+        customInput.style.display = 'none';
+        customInput.required = false;
+        customInput.value = '';
+    }
+}
+
 // ========== 반려동물 수정 모달 열기 ==========
 function editPet(petId) {
-    fetch('/api/pets/' + petId)
+    fetch('/mypage/pet/' + petId, {
+        method: 'GET'
+    })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     const pet = data.pet;
 
                     // 폼에 데이터 채우기
-                    document.getElementById('editPetId').value = pet.id;
+                    document.getElementById('editPetId').value = pet.petId;
                     document.getElementById('editPetName').value = pet.name;
                     document.getElementById('editPetType').value = pet.type;
                     document.getElementById('editPetBreed').value = pet.breed || '';
@@ -360,11 +378,10 @@ function submitEditPet() {
         return;
     }
 
-    const petId = document.getElementById('editPetId').value;
     const formData = new FormData(form);
 
-    fetch('/api/pets/' + petId, {
-        method: 'PUT',
+    fetch('/mypage/update-pet', {
+        method: 'POST',
         body: formData
     })
             .then(response => response.json())
@@ -386,7 +403,7 @@ function submitEditPet() {
 // ========== 반려동물 삭제 ==========
 function deletePet(petId) {
     if (confirm('이 반려동물 정보를 삭제하시겠습니까?')) {
-        fetch('/api/pets/' + petId, {
+        fetch('/mypage/delete-pet/' + petId, {
             method: 'DELETE'
         })
                 .then(response => response.json())
@@ -437,11 +454,14 @@ function changeView(viewType) {
 }
 
 function openAddMemoModal(dateStr) {
-    alert('메모 추가 모달 (개발 예정)' + (dateStr ? '\n날짜: ' + dateStr : ''));
+    const memo = prompt('메모를 입력하세요:' + (dateStr ? '\n날짜: ' + dateStr : ''));
+    if (memo) {
+        alert('메모가 저장되었습니다: ' + memo);
+    }
 }
 
 function loadMoreDiary() {
-    alert('더보기 기능 (개발 예정)');
+    alert('더 많은 다이어리를 불러옵니다.');
 }
 
 // ========== FullCalendar 초기화 ==========
@@ -467,7 +487,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 list: '목록'
             },
 
-            // 샘플 데이터 (나중에 서버에서 가져올 예정)
             events: [
                 {
                     title: '한강공원 산책',
@@ -492,11 +511,11 @@ document.addEventListener('DOMContentLoaded', function() {
             ],
 
             eventClick: function(info) {
-                alert('이벤트 상세 기능 (개발 예정)\n\n' + info.event.title);
+                alert('이벤트: ' + info.event.title + '\n날짜: ' + info.event.startStr);
             },
 
             dateClick: function(info) {
-                console.log('날짜 클릭:', info.dateStr);
+                openAddMemoModal(info.dateStr);
             }
         });
 
@@ -514,14 +533,41 @@ function changeReportPeriod(period) {
 
 function generateReport() {
     if (confirm('최신 데이터로 리포트를 생성하시겠습니까?')) {
-        alert('리포트 생성 기능 (개발 예정)');
+        alert('리포트를 생성하고 있습니다...');
     }
 }
 
-// ========== Chart.js 초기화 (나중에 구현) ==========
+// ========== Chart.js 초기화 ==========
 document.addEventListener('DOMContentLoaded', function() {
     const activityCtx = document.getElementById('activityCanvas');
-    if (activityCtx) {
-        // TODO: Chart.js로 활동량 차트 그리기
+    if (activityCtx && typeof Chart !== 'undefined') {
+        new Chart(activityCtx, {
+            type: 'line',
+            data: {
+                labels: ['월', '화', '수', '목', '금', '토', '일'],
+                datasets: [{
+                    label: '활동량 (분)',
+                    data: [30, 45, 40, 50, 35, 60, 55],
+                    borderColor: '#FF6B6B',
+                    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     }
 });

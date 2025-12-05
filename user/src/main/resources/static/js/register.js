@@ -240,28 +240,47 @@ function validatePetInfo() {
         return false;
     }
 
-    // 필수 필드 검증
-    const requiredFields = {
-        'petName_0': '이름',
-        'petType_0': '종류',
-        'petGender_0': '성별',
-        'petAge_0': '나이',
-        'petWeight_0': '몸무게'
-    };
+    // ✅ name 속성으로 찾기 (인덱스 없음)
+    const petName = container.querySelector('input[name="petName"]');
+    const petType = container.querySelector('select[name="petType"]');
+    const petGender = container.querySelector('select[name="petGender"]');
+    const petAge = container.querySelector('input[name="petAge"]');
+    const petWeight = container.querySelector('input[name="petWeight"]');
 
-    for (const [name, label] of Object.entries(requiredFields)) {
-        const input = document.querySelector(`[name="${name}"]`);
-        if (!input || !input.value || input.value.trim() === '') {
-            alert(`반려동물의 ${label}을(를) 입력해주세요.`);
-            if (input) input.focus();
-            return false;
-        }
+    // 필수 필드 검증
+    if (!petName || !petName.value || petName.value.trim() === '') {
+        alert('반려동물의 이름을 입력해주세요.');
+        if (petName) petName.focus();
+        return false;
+    }
+
+    if (!petType || !petType.value || petType.value.trim() === '') {
+        alert('반려동물의 종류를 선택해주세요.');
+        if (petType) petType.focus();
+        return false;
+    }
+
+    if (!petGender || !petGender.value || petGender.value.trim() === '') {
+        alert('반려동물의 성별을 선택해주세요.');
+        if (petGender) petGender.focus();
+        return false;
+    }
+
+    if (!petAge || !petAge.value || petAge.value.trim() === '') {
+        alert('반려동물의 나이를 입력해주세요.');
+        if (petAge) petAge.focus();
+        return false;
+    }
+
+    if (!petWeight || !petWeight.value || petWeight.value.trim() === '') {
+        alert('반려동물의 몸무게를 입력해주세요.');
+        if (petWeight) petWeight.focus();
+        return false;
     }
 
     // 기타 선택 시 customPetType 검증
-    const petType = document.querySelector('[name="petType_0"]');
     if (petType && petType.value === 'ETC') {
-        const customType = document.querySelector('[name="customPetType_0"]');
+        const customType = container.querySelector('input[name="customPetType"]');
         if (!customType || !customType.value || customType.value.trim() === '') {
             alert('기타 동물의 종류를 입력해주세요.');
             if (customType) customType.focus();
@@ -340,73 +359,66 @@ document.addEventListener('DOMContentLoaded', function () {
 // ==================== 반려동물 관리 ====================
 
 function addPetForm() {
+    petFormCount++;
     const container = document.getElementById('petFormsContainer');
-    const newIndex = petFormCount;
-    const displayNumber = newIndex + 1;
 
     const newForm = `
-        <div class="pet-form-card" data-pet-index="${newIndex}">
+        <div class="pet-form-card" data-pet-index="${petFormCount}">
             <div class="pet-card-header">
                 <h5 class="pet-card-title">
-                    <span class="pet-number-badge">${displayNumber}</span>
+                    <span class="pet-number-badge">${petFormCount + 1}</span>
                     반려동물 정보
                 </h5>
-                <button type="button" class="btn-remove-pet" onclick="removePetForm(${newIndex})">
-                    <i class="fas fa-trash-alt"></i>
+                <button type="button" class="btn-remove-pet" onclick="removePetForm(${petFormCount})">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-
+            
             <div class="pet-card-body">
-                <!-- 사진 업로드 -->
                 <div class="pet-photo-section">
                     <div class="pet-photo-wrapper">
-                        <div class="pet-photo-preview" id="pet-photo-preview-${newIndex}">
+                        <div class="pet-photo-preview" id="pet-photo-preview-${petFormCount}">
                             <i class="fas fa-camera"></i>
                         </div>
-                        <label for="petPhoto_${newIndex}" class="pet-photo-btn">
+                        <label for="petPhoto_${petFormCount}" class="pet-photo-btn">
                             <i class="fas fa-plus"></i>
                         </label>
-                        <input type="file" id="petPhoto_${newIndex}" name="petPhoto_${newIndex}" accept="image/*" onchange="previewPetPhoto(${newIndex}, this)" hidden>
+                        <input type="file" id="petPhoto_${petFormCount}" name="petPhoto" accept="image/*"
+                            onchange="previewPetPhoto(${petFormCount}, this)" hidden>
                     </div>
                     <p class="pet-photo-guide">프로필 사진을 등록해주세요</p>
                 </div>
 
-                <!-- 2열 레이아웃 -->
                 <div class="form-row-group">
-                    <!-- 이름 -->
                     <div class="form-group">
                         <label><i class="fas fa-font mr-1"></i> 이름 <span class="required">*</span></label>
-                        <input type="text" class="form-control-auth" name="petName_${newIndex}" placeholder="반려동물 이름" required>
+                        <input type="text" class="form-control-auth" name="petName" placeholder="반려동물 이름" required>
                     </div>
 
-                    <!-- 종류 -->
                     <div class="form-group">
                         <label><i class="fas fa-paw mr-1"></i> 종류 <span class="required">*</span></label>
-                        <select class="form-control-auth" name="petType_${newIndex}" id="petType_${newIndex}" onchange="toggleCustomPetType(${newIndex})" required>
+                        <select class="form-control-auth" name="petType" id="petType_${petFormCount}"
+                            onchange="toggleCustomPetType(${petFormCount})" required>
                             <option value="">선택하세요</option>
                             <option value="DOG">강아지</option>
                             <option value="CAT">고양이</option>
                             <option value="ETC">기타 (직접 입력)</option>
                         </select>
-                        <!-- 기타 선택 시 직접 입력 필드 -->
-                        <input type="text" class="form-control-auth mt-2" name="customPetType_${newIndex}" id="customPetType_${newIndex}"
-                               placeholder="어떤 동물을 키우시나요?"
-                               style="display: none;"
-                               maxlength="20">
+                        <input type="text" class="form-control-auth mt-2" name="customPetType"
+                            id="customPetType_${petFormCount}" placeholder="어떤 동물을 키우시나요?" 
+                            style="display: none;" maxlength="20">
                     </div>
                 </div>
 
                 <div class="form-row-group">
-                    <!-- 품종 -->
                     <div class="form-group">
                         <label><i class="fas fa-dna mr-1"></i> 품종</label>
-                        <input type="text" class="form-control-auth" name="petBreed_${newIndex}" placeholder="예: 골든 리트리버">
+                        <input type="text" class="form-control-auth" name="petBreed" placeholder="예: 골든 리트리버">
                     </div>
 
-                    <!-- 성별 -->
                     <div class="form-group">
                         <label><i class="fas fa-venus-mars mr-1"></i> 성별 <span class="required">*</span></label>
-                        <select class="form-control-auth" name="petGender_${newIndex}" required>
+                        <select class="form-control-auth" name="petGender" required>
                             <option value="">선택하세요</option>
                             <option value="MALE">수컷</option>
                             <option value="FEMALE">암컷</option>
@@ -415,16 +427,16 @@ function addPetForm() {
                 </div>
 
                 <div class="form-row-group">
-                    <!-- 나이 -->
                     <div class="form-group">
                         <label><i class="fas fa-birthday-cake mr-1"></i> 나이 <span class="required">*</span></label>
-                        <input type="number" class="form-control-auth" name="petAge_${newIndex}" placeholder="나이 (년)" min="0" max="30" required>
+                        <input type="number" class="form-control-auth" name="petAge" placeholder="나이 (년)"
+                            min="0" max="30" required>
                     </div>
 
-                    <!-- 몸무게 -->
                     <div class="form-group">
                         <label><i class="fas fa-weight mr-1"></i> 몸무게 <span class="required">*</span></label>
-                        <input type="number" class="form-control-auth" name="petWeight_${newIndex}" placeholder="몸무게 (kg)" step="0.1" min="0" required>
+                        <input type="number" class="form-control-auth" name="petWeight" placeholder="몸무게 (kg)"
+                            step="0.1" min="0" max="100" required>
                     </div>
                 </div>
             </div>
@@ -432,7 +444,6 @@ function addPetForm() {
     `;
 
     container.insertAdjacentHTML('beforeend', newForm);
-    petFormCount++;
 }
 
 function removePetForm(index) {

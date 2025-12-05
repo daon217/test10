@@ -49,6 +49,7 @@
         SET name = #{name},
             email = #{email},
             phone = #{phone},
+            role = #{role},
             profile_image = #{profileImage},
             updated_at = CURRENT_TIMESTAMP
         WHERE user_id = #{userId}
