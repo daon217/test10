@@ -161,7 +161,7 @@
     }
 
     /* 카드 공통 스타일 */
-    .walk-card, .video-card, .resume-card {
+    .walk-card, .video-card, .resume-card, .report-card { /* report-card 추가 */
         width: 260px;
         background-color: white;
         border-radius: 20px;
@@ -224,6 +224,10 @@
     .resume-theme .card-icon-large { color: var(--sub-color); }
     .resume-theme .btn-card-action { background-color: var(--sub-color); color: white; }
     .resume-theme .btn-card-action:hover { opacity: 0.9; }
+
+    .report-theme .card-icon-large { color: #845EF7; } /* 리포트 테마 색상 */
+    .report-theme .btn-card-action { background-color: #845EF7; color: white; }
+    .report-theme .btn-card-action:hover { opacity: 0.9; }
 
     .resume-list {
         text-align: left;
@@ -382,6 +386,72 @@
     .modal-footer-btn:hover {
         background-color: #26A69A;
     }
+
+    /* === 리포트 모달 전용 스타일 (From report.jsp) === */
+    /* include 되는 내용에 대한 스타일 정의가 필요합니다 */
+    .llm-report-content {
+        padding: 1rem 0;
+    }
+    .llm-report-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .llm-report-section:last-child {
+        border-bottom: none;
+    }
+    .llm-section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .llm-section-title i {
+        color: #FF6B6B;
+    }
+    .llm-report-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #495057;
+        margin: 0;
+    }
+    .llm-recommendations {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
+    .llm-recommendation-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .llm-recommendation-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        align-items: flex-start; /* 아이콘과 텍스트 상단 정렬 */
+        gap: 0.75rem;            /* 아이콘과 텍스트 사이 간격 */
+        font-size: 0.9rem;
+        color: #555;             /* 글자색 명시 */
+    }
+    .llm-recommendation-list li:last-child {
+        border-bottom: none;
+    }
+    .llm-recommendation-list li i {
+        margin-top: 0.25rem;
+        font-size: 1.1rem;
+    }
+    .llm-recommendation-list li strong {
+        color: #212529;
+    }
+    /* 상태 뱃지 등 */
+    .text-success { color: #28a745 !important; }
+    .text-info { color: #17a2b8 !important; }
+    .text-primary { color: #007bff !important; }
+    .text-warning { color: #ffc107 !important; }
 </style>
 
 <div class="chat-wrapper">
@@ -431,11 +501,21 @@
                                             <div class="card-content-area">
                                                 <div class="card-icon-large"><i class="fas fa-id-card-alt"></i></div>
                                                 <div class="card-title">이력서 전송 완료</div>
-                                                    <%-- [수정] 카드 내용 변경 --%>
                                                 <ul class="resume-list">
                                                     <li><strong>반려견 산책:</strong> 3회</li>
                                                     <li><strong>반려묘 미용:</strong> 1회</li>
                                                 </ul>
+                                            </div>
+                                            <button class="btn-card-action" style="background-color: #ddd; color: #777; cursor: default;">전송됨</button>
+                                        </div>
+                                    </c:when>
+                                    <%-- [추가] 리포트 전송 메시지 (내 거) --%>
+                                    <c:when test="${msg.content eq '[[REPORT_SEND]]'}">
+                                        <div class="report-card report-theme">
+                                            <div class="card-content-area">
+                                                <div class="card-icon-large"><i class="fas fa-brain"></i></div>
+                                                <div class="card-title">리포트 전송 완료</div>
+                                                <p class="card-desc">AI 종합 분석 리포트</p>
                                             </div>
                                             <button class="btn-card-action" style="background-color: #ddd; color: #777; cursor: default;">전송됨</button>
                                         </div>
@@ -474,15 +554,24 @@
                                             <div class="card-content-area">
                                                 <div class="card-icon-large"><i class="fas fa-id-card-alt"></i></div>
                                                 <div class="card-title">이력서가 도착했습니다</div>
-                                                    <%-- [수정] 카드 내용 변경 --%>
                                                 <ul class="resume-list">
                                                     <li><strong>반려견 산책:</strong> 3회</li>
                                                     <li><strong>반려묘 미용:</strong> 1회</li>
                                                 </ul>
                                             </div>
-                                                <%-- JSP 로딩 시점 상대방 이름 설정 --%>
                                             <c:set var="targetName" value="${room.ownerId == user.userId ? room.workerName : room.ownerName}" />
                                             <button class="btn-card-action" onclick="openResumeModal('${targetName}')">상세보기</button>
+                                        </div>
+                                    </c:when>
+                                    <%-- [추가] 리포트 전송 메시지 (상대방) --%>
+                                    <c:when test="${msg.content eq '[[REPORT_SEND]]'}">
+                                        <div class="report-card report-theme">
+                                            <div class="card-content-area">
+                                                <div class="card-icon-large"><i class="fas fa-brain"></i></div>
+                                                <div class="card-title">AI 분석 리포트</div>
+                                                <p class="card-desc">반려동물 종합 분석 리포트가 도착했습니다.</p>
+                                            </div>
+                                            <button class="btn-card-action" onclick="openReportModal()">상세보기</button>
                                         </div>
                                     </c:when>
                                     <c:otherwise>
@@ -528,7 +617,7 @@
                     </c:if>
 
                     <c:if test="${room.ownerId == user.userId}">
-                        <div class="menu-item" onclick="openReport()">
+                        <div class="menu-item" onclick="sendReport()">
                             <div class="menu-icon-box"><i class="fas fa-clipboard-list"></i></div>
                             <span>리포트</span>
                         </div>
@@ -542,7 +631,6 @@
 <div id="resumeModal" class="modal" onclick="closeResumeModal(event)">
     <div class="modal-content">
         <span class="close-modal" onclick="closeResumeModal(event)">&times;</span>
-
         <div class="resume-header">
             <div class="resume-avatar">
                 <i class="fas fa-user"></i>
@@ -550,7 +638,6 @@
             <div class="resume-name" id="modalResumeName">이름 없음</div>
             <div class="resume-meta">24세 / 서울시 강남구</div>
         </div>
-
         <div class="resume-section">
             <h4><i class="fas fa-history"></i> 경력사항</h4>
             <table class="resume-table">
@@ -564,7 +651,6 @@
                 </tr>
             </table>
         </div>
-
         <div class="resume-section">
             <h4><i class="fas fa-certificate"></i> 자격증</h4>
             <div>
@@ -572,17 +658,32 @@
                 <span class="resume-badge">반려견스타일리스트 3급</span>
             </div>
         </div>
-
         <div class="resume-section">
             <h4><i class="fas fa-comment-dots"></i> 한마디</h4>
             <p style="color: #555; font-size: 0.95rem; line-height: 1.5;">
                 강아지를 너무 좋아해서 시작하게 되었습니다.<br>
-                내 가족처럼 책임감 있게, 사랑으로 돌봐드리겠습니다!
-                믿고 맡겨주세요 :)
+                내 가족처럼 책임감 있게, 사랑으로 돌봐드리겠습니다! 믿고 맡겨주세요 :)
             </p>
         </div>
-
         <button class="modal-footer-btn" onclick="closeResumeModal(event)">닫기</button>
+    </div>
+</div>
+
+<div id="reportModal" class="modal" onclick="closeReportModal(event)">
+    <div class="modal-content" style="max-width: 600px;">
+        <span class="close-modal" onclick="closeReportModal(event)">&times;</span>
+
+        <div class="resume-header" style="border-bottom: 2px solid #eee;">
+            <div class="resume-avatar" style="color: #FF6B6B; background-color: #FFF0F0;">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="resume-name">AI 종합 분석 리포트</div>
+            <div class="resume-meta">2025.12.01 - 2025.12.05 주간 분석</div>
+        </div>
+
+        <jsp:include page="../common/ai_report_content.jsp" />
+
+        <button class="modal-footer-btn" style="background-color: #845EF7;" onclick="closeReportModal(event)">닫기</button>
     </div>
 </div>
 
@@ -612,7 +713,6 @@
     function connect() {
         var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
         var wsUrl = protocol + location.host + "/ws/chat";
-
         console.log("Connecting to: " + wsUrl);
 
         ws = new WebSocket(wsUrl);
@@ -632,7 +732,6 @@
 
             var msgDiv = document.createElement("div");
             var isMine = (data.senderId == myId);
-
             var senderName = isMine ? myName : partnerName;
 
             if (data.content === "[[WALK_REQUEST]]") {
@@ -649,7 +748,6 @@
                     '</div>' +
                     '<button class="btn-card-action" ' + btnAttr + '>' + btnText + '</button>' +
                     '</div>';
-
             } else if (data.content === "[[VIDEO_REQUEST]]") {
                 var btnAttr = isMine ? 'disabled' : 'onclick="startVideoCall()"';
                 var btnText = isMine ? '응답 대기중' : '영상통화 시작하기';
@@ -664,19 +762,16 @@
                     '</div>' +
                     '<button class="btn-card-action" ' + btnAttr + '>' + btnText + '</button>' +
                     '</div>';
-
             } else if (data.content === "[[RESUME_SEND]]") {
                 var titleText = isMine ? '이력서 전송 완료' : '이력서가 도착했습니다';
                 var btnStyle = isMine ? 'style="background-color: #ddd; color: #777; cursor: default;"' : '';
                 var btnText = isMine ? '전송됨' : '상세보기';
                 var btnAttr = isMine ? 'disabled' : 'onclick="openResumeModal(\'' + senderName + '\')"';
-
                 msgDiv.innerHTML =
                     '<div class="resume-card resume-theme">' +
                     '<div class="card-content-area">' +
                     '<div class="card-icon-large"><i class="fas fa-id-card-alt"></i></div>' +
                     '<div class="card-title">' + titleText + '</div>' +
-                    // [수정] JS 렌더링 카드 내용 변경
                     '<ul class="resume-list">' +
                     '<li><strong>반려견 산책:</strong> 3회</li>' +
                     '<li><strong>반려묘 미용:</strong> 1회</li>' +
@@ -684,8 +779,26 @@
                     '</div>' +
                     '<button class="btn-card-action" ' + btnStyle + ' ' + btnAttr + '>' + btnText + '</button>' +
                     '</div>';
+            }
+            // [추가] 리포트 메시지 수신 처리
+            else if (data.content === "[[REPORT_SEND]]") {
+                var titleText = isMine ? '리포트 전송 완료' : 'AI 분석 리포트';
+                var descText = isMine ? 'AI 종합 분석 리포트' : '반려동물 종합 분석 리포트가 도착했습니다.';
+                var btnStyle = isMine ? 'style="background-color: #ddd; color: #777; cursor: default;"' : '';
+                var btnText = isMine ? '전송됨' : '상세보기';
+                var btnAttr = isMine ? 'disabled' : 'onclick="openReportModal()"';
 
-            } else {
+                msgDiv.innerHTML =
+                    '<div class="report-card report-theme">' +
+                    '<div class="card-content-area">' +
+                    '<div class="card-icon-large"><i class="fas fa-brain"></i></div>' +
+                    '<div class="card-title">' + titleText + '</div>' +
+                    '<p class="card-desc">' + descText + '</p>' +
+                    '</div>' +
+                    '<button class="btn-card-action" ' + btnStyle + ' ' + btnAttr + '>' + btnText + '</button>' +
+                    '</div>';
+            }
+            else {
                 msgDiv.innerHTML = '<div class="msg-bubble">' + data.content + '</div>';
             }
 
@@ -758,6 +871,18 @@
         ws.send(JSON.stringify(msg));
     }
 
+    // [수정] 리포트 전송 함수 구현
+    function sendReport() {
+        console.log("Sending Report...");
+        togglePlusMenu();
+        var msg = {
+            roomId: roomId,
+            senderId: myId,
+            content: "[[REPORT_SEND]]"
+        };
+        ws.send(JSON.stringify(msg));
+    }
+
     function startWalk() {
         alert("산책 모드를 시작합니다!");
     }
@@ -766,10 +891,6 @@
         if (confirm("영상통화를 연결하시겠습니까?")) {
             alert("영상통화 연결 중...");
         }
-    }
-
-    function openReport() {
-        alert("산책 리포트 확인 기능 (구현 예정)");
     }
 
     function openResumeModal(name) {
@@ -785,6 +906,17 @@
     function closeResumeModal(event) {
         if (event.target.id === "resumeModal" || event.target.className === "close-modal" || event.target.className === "modal-footer-btn") {
             document.getElementById("resumeModal").style.display = "none";
+        }
+    }
+
+    // [추가] 리포트 모달 제어 함수
+    function openReportModal() {
+        document.getElementById("reportModal").style.display = "block";
+    }
+
+    function closeReportModal(event) {
+        if (event.target.id === "reportModal" || event.target.className === "close-modal" || event.target.className === "modal-footer-btn") {
+            document.getElementById("reportModal").style.display = "none";
         }
     }
 </script>

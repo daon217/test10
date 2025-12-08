@@ -1,0 +1,58 @@
+/* 사이드바 전체 배경: 위는 밝은 청록, 아래로 갈수록 진해지게 */
+body.sidebar-dark .left-side-bar,
+body.sidebar-light .left-side-bar,
+.left-side-bar {
+    background: linear-gradient(
+            180deg,
+            #283d70 0%,   /* 위쪽 - 기준 색 */
+            #182442 40%,  /* 중간 - 살짝만 어둡게 */
+            #0F172AFF 100%  /* 아래 - 너무 어둡지 않은 딥 청록 */
+    ) !important;
+
+    /* 굳이 background-image 두 번 줄 필요 없어서 정리 */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+}
+
+
+/* 메뉴 블록 배경은 투명 유지 */
+.left-side-bar .menu-block {
+    background-color: transparent !important;
+}
+
+/* 글자/아이콘 색 */
+.left-side-bar .sidebar-menu a,
+.left-side-bar .sidebar-menu .mtext,
+.left-side-bar .sidebar-menu .micon {
+    color: #f5f5f5 !important;
+}
+
+/* 활성/호버 스타일 */
+.left-side-bar .sidebar-menu .active > a,
+.left-side-bar .sidebar-menu li > a:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 서브메뉴 글자 검정색 */
+.left-side-bar .submenu a,
+.left-side-bar .submenu li a {
+    color: #000000 !important;
+}
+
+/* 서브메뉴 아이콘 / 대시(–) 도 검정색 */
+.left-side-bar .submenu .micon,
+.left-side-bar .submenu .mtext {
+    color: #000000 !important;
+}
+
+.sidebar-small-cap {
+    color: #a1a1a1 !important;
+}
+
+.left-side-bar .sidebar-logo {
+    display: block;
+    width: 80px;       /* 기존 120px → 80px 로 축소 (약 2/3 크기) */
+    max-width: 60%;    /* 사이드바 폭 기준에서도 조금 더 작게 */
+    height: auto;
+    margin: 12px auto 10px;  /* 위·아래 여백도 살짝 줄이기 */
+    object-fit: contain;
+}
